@@ -1,4 +1,4 @@
-## CS2_Retakes_WeaponAllocator
+## cs2-retakes-weapon-allocator
 
 WeaponsAllocator plugin for retakes written in C# (.Net) for CounterStrikeSharp
 
