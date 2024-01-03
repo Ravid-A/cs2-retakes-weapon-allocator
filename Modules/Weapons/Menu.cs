@@ -1,14 +1,13 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
+using RetakesAllocator.Modules.Models;
 
-using WeaponsAllocator;
-using static WeaponsAllocator.Functions;
+using static RetakesAllocator.Modules.Utils;
+using static RetakesAllocator.Modules.Weapons.Allocator;
 
-using static Weapons.Allocator;
+namespace RetakesAllocator.Modules.Weapons;
 
-namespace Weapons;
-
-public class WeaponsMenu
+public class Menu
 {
     private static void OnSelectExit(CCSPlayerController player, ChatMenuOption option)
     {
@@ -28,16 +27,16 @@ public class WeaponsMenu
         PrintToChat(player, $"{PREFIX} You have finished setting up your weapons!");
         PrintToChat(player, $"{PREFIX} The weapons you have selected will be given to you at the start of the next round!");
 
-        player_obj.inGunMenu = false;
+        player_obj.InGunMenu = false;
     }
 
     public static void OpenTPrimaryMenu(CCSPlayerController player)
     {
         ChatMenu menu = new ChatMenu($"{PREFIX} Select a T Primary Weapon");
 
-        foreach (Weapon weapon in primary_t)
+        foreach (Weapon weapon in PrimaryT)
         {
-            menu.AddMenuOption(weapon.display_name, OnTPrimarySelect);
+            menu.AddMenuOption(weapon.DisplayName, OnTPrimarySelect);
         }
 
         menu.AddMenuOption("Exit", OnSelectExit);
@@ -62,7 +61,7 @@ public class WeaponsMenu
 
         PrintToChat(player, $"{PREFIX} You selected {option.Text} as T Primary!");
 
-        player_obj.weaponsAllocator.primaryWeapon_t = GetWeaponIndex(option.Text, WeaponType.PRIMARY_T);
+        player_obj.WeaponsAllocator.PrimaryWeaponT = GetWeaponIndex(option.Text, WeaponType.PrimaryT);
 
         OpenCTPrimaryMenu(player);
     }
@@ -71,9 +70,9 @@ public class WeaponsMenu
     {
         ChatMenu menu = new ChatMenu($"{PREFIX} Select a CT Primary Weapon");
 
-        foreach (Weapon weapon in primary_ct)
+        foreach (Weapon weapon in PrimaryCt)
         {
-            menu.AddMenuOption(weapon.display_name, OnCTPrimarySelect);
+            menu.AddMenuOption(weapon.DisplayName, OnCTPrimarySelect);
         }
 
         menu.AddMenuOption("Exit", OnSelectExit);
@@ -89,7 +88,7 @@ public class WeaponsMenu
             return;
         }
 
-        Player player_obj = FindPlayer(player);
+        var player_obj = FindPlayer(player);
 
         if (player_obj == null!)
         {
@@ -98,18 +97,18 @@ public class WeaponsMenu
 
         PrintToChat(player, $"{PREFIX} You selected {option.Text} as CT Primary!");
 
-        player_obj.weaponsAllocator.primaryWeapon_ct = GetWeaponIndex(option.Text, WeaponType.PRIMARY_CT);
+        player_obj.WeaponsAllocator.PrimaryWeaponCt = GetWeaponIndex(option.Text, WeaponType.PrimaryCt);
 
         OpenSecondaryMenu(player);
     }
 
-    public static void OpenSecondaryMenu(CCSPlayerController player)
+    private static void OpenSecondaryMenu(CCSPlayerController player)
     {
-        ChatMenu menu = new ChatMenu($"{PREFIX} Select a Secondary Weapon");
+        var menu = new ChatMenu($"{PREFIX} Select a Secondary Weapon");
 
-        foreach (Weapon weapon in pistols)
+        foreach (var weapon in Pistols)
         {
-            menu.AddMenuOption(weapon.display_name, OnSecondarySelect);
+            menu.AddMenuOption(weapon.DisplayName, OnSecondarySelect);
         }
 
         menu.AddMenuOption("Exit", OnSelectExit);
@@ -134,12 +133,12 @@ public class WeaponsMenu
 
         PrintToChat(player, $"{PREFIX} You selected {option.Text} as Secondary!");
 
-        player_obj.weaponsAllocator.secondaryWeapon = GetWeaponIndex(option.Text, WeaponType.SECONDARY);
+        player_obj.WeaponsAllocator.SecondaryWeapon = GetWeaponIndex(option.Text, WeaponType.Secondary);
 
         OpenGiveAWPMenu(player);
     }
 
-    public static void OpenGiveAWPMenu(CCSPlayerController player)
+    private static void OpenGiveAWPMenu(CCSPlayerController player)
     {
         ChatMenu menu = new ChatMenu($"{PREFIX} Select when to give the AWP");
 
@@ -160,7 +159,7 @@ public class WeaponsMenu
             return;
         }
 
-        Player player_obj = FindPlayer(player);
+        var player_obj = FindPlayer(player);
 
         if (player_obj == null!)
         {
@@ -172,19 +171,19 @@ public class WeaponsMenu
         switch (option.Text)
         {
             case "Never":
-                player_obj.weaponsAllocator.giveAWP = GiveAWP.NEVER;
+                player_obj.WeaponsAllocator.GiveAwp = GiveAwp.Never;
                 break;
             case "Sometimes":
-                player_obj.weaponsAllocator.giveAWP = GiveAWP.SOMETIMES;
+                player_obj.WeaponsAllocator.GiveAwp = GiveAwp.Sometimes;
                 break;
             case "Always":
-                player_obj.weaponsAllocator.giveAWP = GiveAWP.ALWAYS;
+                player_obj.WeaponsAllocator.GiveAwp = GiveAwp.Always;
                 break;
         }
 
         PrintToChat(player, $"{PREFIX} You have finished setting up your weapons!");
         PrintToChat(player, $"{PREFIX} The weapons you have selected will be given to you at the start of the next round!");
 
-        player_obj.inGunMenu = false;
+        player_obj.InGunMenu = false;
     }
 }

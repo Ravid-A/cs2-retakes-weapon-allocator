@@ -1,10 +1,10 @@
+// Not in use but... **DO NOT REMOVE**
 using System.Linq;
 using MySqlConnector;
 
-using static WeaponsAllocator.Core;
-using static WeaponsAllocator.Functions;
+using static RetakesAllocator.Modules.Utils;
 
-namespace WeaponsAllocator;
+namespace RetakesAllocator.Modules;
 
 public class Database
 {
@@ -20,23 +20,23 @@ public class Database
 
     public static void Connect(ConnectCallback callback, dynamic data = null!)
     {
-        if(config == null!)
+        if (Core.Config == null!)
         {
             ThrowError("Config cannot be null.");
             return;
         }
 
-        if(!config.IsValid())
+        if (!Core.Config.IsValid())
         {
             ThrowError("ConnectionConfig is invalid.");
             return;
         }
 
-        _connectionString = config.BuildConnectionString();
+        _connectionString = Core.Config.BuildConnectionString();
 
         try
         {
-            MySqlConnection connection = new MySqlConnection(_connectionString);
+            var connection = new MySqlConnection(_connectionString);
 
             connection.Open();
 
@@ -50,19 +50,19 @@ public class Database
         }
     }
 
-    public void CreateTables()
+    public static void CreateTables()
     {
-        string query = "CREATE TABLE IF NOT EXISTS `weapons` ( `id` INT NOT NULL AUTO_INCREMENT , `auth` VARCHAR(128) NOT NULL , `name` VARCHAR(128) NOT NULL , `t_primary` INT NOT NULL , `ct_primary` INT NOT NULL , `secondary` INT NOT NULL, `give_awp` INT NOT NULL , PRIMARY KEY (`id`), UNIQUE (`auth`)) ENGINE = InnoDB;";
+        const string query = "CREATE TABLE IF NOT EXISTS `weapons` ( `id` INT NOT NULL AUTO_INCREMENT , `auth` VARCHAR(128) NOT NULL , `name` VARCHAR(128) NOT NULL , `t_primary` INT NOT NULL , `ct_primary` INT NOT NULL , `secondary` INT NOT NULL, `give_awp` INT NOT NULL , PRIMARY KEY (`id`), UNIQUE (`auth`)) ENGINE = InnoDB;";
 
         Query(SQL_CheckForErrors, query);
     }
 
-    public string EscapeString(string buffer)
+    public static string EscapeString(string buffer)
     {
         return MySqlHelper.EscapeString(buffer);
     }
 
-    public void Query(QueryCallback callback, string query, dynamic data = null!)
+    public static void Query(QueryCallback callback, string query, dynamic data = null!)
     {
         try 
         {
@@ -71,20 +71,18 @@ public class Database
                 ThrowError("Query cannot be null or empty.");
             }
 
-            using(MySqlConnection connection = new MySqlConnection(_connectionString))
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+
+            using(var command = new MySqlCommand(query, connection))
             {
-                connection.Open();
-
-                using(MySqlCommand command = new MySqlCommand(query, connection))
+                using(var reader = command.ExecuteReader())
                 {
-                    using(MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        callback(reader, null!, data);
-                    }
+                    callback(reader, null!, data);
                 }
-
-                connection.Close();
             }
+
+            connection.Close();
         }
         catch (Exception e)
         {
@@ -94,10 +92,9 @@ public class Database
 
     public static void SQL_CheckForErrors(MySqlDataReader reader, Exception exception, dynamic data)
     {
-        if(exception != null!)
+        if (exception != null!)
         {
-            ThrowError($"Databse error, {exception.Message}");
-            return;
+            ThrowError($"Database error, {exception.Message}");
         }
     } 
 }
