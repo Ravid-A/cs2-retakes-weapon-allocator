@@ -70,13 +70,19 @@ public class Core : BasePlugin
 
         if(hotReload)
         {
-            Utilities.GetPlayers().ForEach(AddPlayerToList);
+            Utilities.GetPlayers().ForEach(player =>
+            {
+                AddPlayerToList(player, player.AuthorizedSteamID!);
+            });
+            OnMapStart(Server.MapName);
         }
     }
 
-    public override void Unload(bool shutdown)
+    public override void Unload(bool hotReload)
     {
         UnRegisterCommands();
+
+        Utilities.GetPlayers().ForEach(RemovePlayerFromList);
     }
 
     public static bool isLive()

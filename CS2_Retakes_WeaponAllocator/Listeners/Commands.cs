@@ -38,6 +38,7 @@ class CommandsHandlers
 
         if(player_obj == null!)
         {
+            ReplyToCommand(commandinfo, $"{PREFIX} This command can only be executed by a valid player.");
             return;
         }
 

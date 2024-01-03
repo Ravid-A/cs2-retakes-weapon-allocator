@@ -120,6 +120,10 @@ public class Allocator
         {
             give_awp = true;
         }
+        else if (giveAWP == GiveAWP.NEVER)
+        {
+            give_awp = false;
+        }
         else
         {
             give_awp = new Random().Next(0, 2) == 1;

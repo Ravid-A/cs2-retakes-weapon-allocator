@@ -5,7 +5,6 @@ using CounterStrikeSharp.API.Modules.Utils;
 using Weapons;
 
 using static WeaponsAllocator.Core;
-using static WeaponsAllocator.Functions;
 
 namespace WeaponsAllocator;
 
@@ -13,13 +12,16 @@ public class Player
 {
     public CCSPlayerController player;
 
+    private SteamID steamID;
+
     public Allocator weaponsAllocator;
 
     public bool inGunMenu = false;
 
-    public Player(CCSPlayerController player)
+    public Player(CCSPlayerController player, SteamID steamID)
     {
         this.player = player;
+        this.steamID = steamID;
         weaponsAllocator = new Allocator(player);
     }
 
@@ -70,17 +72,7 @@ public class Player
 
     public string GetSteamID2()
     {
-        if(player == null! || !player.IsValid)
-        {
-            return string.Empty;
-        }
-
-        if(player.AuthorizedSteamID == null!)
-        {
-            return string.Empty;
-        }
-
-        return player.AuthorizedSteamID.SteamId2;
+        return steamID.SteamId2;
     }
 
     public string GetName()
