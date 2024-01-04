@@ -17,7 +17,7 @@ public class Core : BasePlugin
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.1";
     public override string ModuleAuthor => "Ravid";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
@@ -67,7 +67,6 @@ public class Core : BasePlugin
             {
                 AddPlayerToList(player, player.AuthorizedSteamID!);
             });
-            OnMapStart(Server.MapName);
         }
     }
 
