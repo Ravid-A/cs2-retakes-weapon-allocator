@@ -155,7 +155,6 @@ public class Allocator
 
         var secondary = Pistols[SecondaryWeapon].Item;
 
-        _player.RemoveWeapons();
         _player.GiveNamedItem(primary);
         _player.GiveNamedItem(secondary);
         _player.GiveNamedItem(CsItem.Knife);
