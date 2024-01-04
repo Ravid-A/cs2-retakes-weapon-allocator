@@ -11,15 +11,9 @@ internal static class Listeners
 {
     public static void RegisterListeners()
     {
-        Plugin.RegisterListener<CounterStrikeSharp.API.Core.Listeners.OnMapStart>(OnMapStart);
         Plugin.RegisterListener<CounterStrikeSharp.API.Core.Listeners.OnClientAuthorized>(OnClientAuthorized);
         Plugin.RegisterListener<CounterStrikeSharp.API.Core.Listeners.OnClientDisconnect>(OnClientDisconnect);
-    }
-
-    public static void OnMapStart(string mapName)
-    {
-        ServerCommand("mp_give_player_c4 0");
-    }   
+    }  
 
     private static void OnClientAuthorized(int playerSlot, [CastFrom(typeof(ulong))] SteamID steamId)
     {
