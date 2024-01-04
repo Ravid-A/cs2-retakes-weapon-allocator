@@ -67,7 +67,6 @@ public class Core : BasePlugin
             {
                 AddPlayerToList(player, player.AuthorizedSteamID!);
             });
-            OnMapStart(Server.MapName);
         }
     }
 
