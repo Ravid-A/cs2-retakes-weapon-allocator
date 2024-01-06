@@ -18,7 +18,7 @@ public class Core : BasePlugin
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
     public override string ModuleVersion => "1.0.1";
-    public override string ModuleAuthor => "Ravid";
+    public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
     private static CCSGameRules? _gameRules;
@@ -54,6 +54,12 @@ public class Core : BasePlugin
         Plugin = this;
 
         Config = LoadConfig();
+
+        if (!Config.IsValid())
+        {
+            ThrowError("Invalid config, please check your config file.");
+            return;
+        }
 
         Connect(SQL_ConnectCallback);
 

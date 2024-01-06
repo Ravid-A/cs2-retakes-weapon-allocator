@@ -20,18 +20,6 @@ public class Database
 
     public static void Connect(ConnectCallback callback, dynamic data = null!)
     {
-        if (Core.Config == null!)
-        {
-            ThrowError("Config cannot be null.");
-            return;
-        }
-
-        if (!Core.Config.IsValid())
-        {
-            ThrowError("ConnectionConfig is invalid.");
-            return;
-        }
-
         _connectionString = Core.Config.BuildConnectionString();
 
         try
