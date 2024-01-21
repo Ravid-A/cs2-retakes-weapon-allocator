@@ -15,8 +15,6 @@ public class Player
 
     public readonly Allocator WeaponsAllocator;
 
-    public bool InGunMenu = false;
-
     public Player(CCSPlayerController player, SteamID steamId)
     {
         this.player = player;

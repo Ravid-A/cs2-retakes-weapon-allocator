@@ -10,27 +10,6 @@ namespace RetakesAllocator.Modules.Weapons;
 
 public class Menu
 {
-    private static void OnSelectExit(CCSPlayerController player, ChatMenuOption option)
-    {
-        if (option == null)
-        {
-            PrintToChat(player, $"{PREFIX} You did not select an option!");
-            return;
-        }
-
-        Player player_obj = FindPlayer(player);
-
-        if (player_obj == null!)
-        {
-            return;
-        }
-
-        PrintToChat(player, $"{PREFIX} You have finished setting up your weapons!");
-        PrintToChat(player, $"{PREFIX} The weapons you have selected will be given to you at the start of the next round!");
-
-        player_obj.InGunMenu = false;
-    }
-
     public static void OpenTPrimaryMenu(CCSPlayerController player)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
@@ -176,7 +155,5 @@ public class Menu
 
         PrintToChat(player, $"{PREFIX} You have finished setting up your weapons!");
         PrintToChat(player, $"{PREFIX} The weapons you have selected will be given to you at the start of the next round!");
-
-        player_obj.InGunMenu = false;
     }
 }

@@ -1,6 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-
+using CounterStrikeSharp.API.Modules.Menu;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Weapons.Menu;
@@ -40,14 +40,6 @@ internal static class Commands
             ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
             return;
         }
-
-        if (playerObj.InGunMenu)
-        {
-            ReplyToCommand(commandInfo, $"{PREFIX} You are already in the gun menu!");
-            return;
-        }
-
-        playerObj.InGunMenu = true;
 
         OpenTPrimaryMenu(player);
     }
