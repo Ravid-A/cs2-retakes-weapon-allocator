@@ -2,6 +2,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
 using RetakesAllocator.Modules.Models;
 
+using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Weapons.Allocator;
 
@@ -32,16 +33,14 @@ public class Menu
 
     public static void OpenTPrimaryMenu(CCSPlayerController player)
     {
-        ChatMenu menu = new ChatMenu($"{PREFIX} Select a T Primary Weapon");
+        CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
 
         foreach (Weapon weapon in PrimaryT)
         {
-            menu.AddMenuOption(weapon.DisplayName, OnTPrimarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnTPrimarySelect);
         }
 
-        menu.AddMenuOption("Exit", OnSelectExit);
-
-        ChatMenus.OpenMenu(player, menu);
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
     private static void OnTPrimarySelect(CCSPlayerController player, ChatMenuOption option)
@@ -68,16 +67,14 @@ public class Menu
 
     public static void OpenCTPrimaryMenu(CCSPlayerController player)
     {
-        ChatMenu menu = new ChatMenu($"{PREFIX} Select a CT Primary Weapon");
+        CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a CT Primary Weapon");
 
         foreach (Weapon weapon in PrimaryCt)
         {
-            menu.AddMenuOption(weapon.DisplayName, OnCTPrimarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnCTPrimarySelect);
         }
 
-        menu.AddMenuOption("Exit", OnSelectExit);
-
-        ChatMenus.OpenMenu(player, menu);
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
     private static void OnCTPrimarySelect(CCSPlayerController player, ChatMenuOption option)
@@ -104,16 +101,14 @@ public class Menu
 
     private static void OpenSecondaryMenu(CCSPlayerController player)
     {
-        var menu = new ChatMenu($"{PREFIX} Select a Secondary Weapon");
+        CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a Secondary Weapon");
 
-        foreach (var weapon in Pistols)
+        foreach (Weapon weapon in Pistols)
         {
-            menu.AddMenuOption(weapon.DisplayName, OnSecondarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnSecondarySelect);
         }
 
-        menu.AddMenuOption("Exit", OnSelectExit);
-
-        ChatMenus.OpenMenu(player, menu);
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
     private static void OnSecondarySelect(CCSPlayerController player, ChatMenuOption option)
@@ -140,15 +135,13 @@ public class Menu
 
     private static void OpenGiveAWPMenu(CCSPlayerController player)
     {
-        ChatMenu menu = new ChatMenu($"{PREFIX} Select when to give the AWP");
+        CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select when to give the AWP");
 
-        menu.AddMenuOption("Never", OnGiveAWPSelect);
-        menu.AddMenuOption("Sometimes", OnGiveAWPSelect);
-        menu.AddMenuOption("Always", OnGiveAWPSelect);
+        centerHtmlMenu.AddMenuOption("Never", OnGiveAWPSelect);
+        centerHtmlMenu.AddMenuOption("Sometimes", OnGiveAWPSelect);
+        centerHtmlMenu.AddMenuOption("Always", OnGiveAWPSelect);
 
-        menu.AddMenuOption("Exit", OnSelectExit);
-
-        ChatMenus.OpenMenu(player, menu);
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
     private static void OnGiveAWPSelect(CCSPlayerController player, ChatMenuOption option)
