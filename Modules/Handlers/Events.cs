@@ -33,11 +33,13 @@ internal static class Events
 
         if (playerController == null! || !playerController.IsValid)
         {
+            PrintToServer("OnPlayerSpawn: playerController is null or invalid");
             return HookResult.Continue;
         }
 
         if (!IsLive())
         {
+            PrintToServer("OnPlayerSpawn: not live");
             return HookResult.Continue;
         }
 
@@ -45,8 +47,11 @@ internal static class Events
 
         if (player == null! || !player.IsValid())
         {
+            PrintToServer("OnPlayerSpawn: player is null or invalid");
             return HookResult.Continue;
         }
+
+        PrintToServer("OnPlayerSpawn");
 
         player.CreateSpawnDelay();
 

@@ -89,7 +89,7 @@ public class Player
 
     public void CreateSpawnDelay()
     {
-        Plugin.AddTimer(.05f, Timer_GiveWeapons);
+        Plugin.AddTimer(.1f, Timer_GiveWeapons);
     }
 
     private void Timer_GiveWeapons()
