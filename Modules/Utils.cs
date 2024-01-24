@@ -62,6 +62,11 @@ internal static class Utils
             return;
         }
 
+        if(FindPlayer(player) != null!)
+        {
+            return;
+        }
+
         var playerObj = new Player(player, steamId);
 
         Players.Add(playerObj);
