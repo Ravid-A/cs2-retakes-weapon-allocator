@@ -1,7 +1,9 @@
 ## cs2-retakes-weapon-allocator
+
 WeaponsAllocator plugin for retakes written in C# (.Net) for CounterStrikeSharp
 
 ## Retakes
+
 This plugin is made to run alongside B3none's retakes implementation: https://github.com/b3none/cs2-retakes
 
 ## Config
@@ -24,7 +26,8 @@ The DBConnection will be generated empty and the plugin will raise an exception,
   "PREFIX": {
     "PREFIX": " \u0004[Retakes]\u0001",
     "PREFIX_CON": "[Retakes]",
-  }
+  },
+  "ArmorAmount": 100
 }
 
 ```
