@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Entities;
 
 namespace RetakesAllocator.Modules.Weapons;
 
@@ -166,6 +167,9 @@ public class Allocator
         {
            GiveCtEquipment();
         }
+
+        if(Core.Config.GiveArmor)
+            GiveArmor();
     }
 
     private CsItem SelectGrenade()
@@ -209,5 +213,10 @@ public class Allocator
                 HasDefuser = true
             };
         }
+    }
+
+    private void GiveArmor()
+    {
+        _player.GiveNamedItem(CsItem.KevlarHelmet); 
     }
 }

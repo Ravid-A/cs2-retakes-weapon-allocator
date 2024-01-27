@@ -27,7 +27,7 @@ The DBConnection will be generated empty and the plugin will raise an exception,
     "PREFIX": " \u0004[Retakes]\u0001",
     "PREFIX_CON": "[Retakes]",
   },
-  "ArmorAmount": 100
+  "GiveArmor": true
 }
 
 ```

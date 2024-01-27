@@ -10,13 +10,13 @@ public class Config
     public ConnectionConfig DbConnection { get; init; } = null!;
     public PrefixConfig Prefix { get; init; } = null!;
 
-    public int ArmorAmount {get; init;} = 100;
+    public bool GiveArmor {get; init;} = true;
 
     public Config()
     {
         DbConnection = new ConnectionConfig();
         Prefix = new PrefixConfig();
-        ArmorAmount = 100;
+        GiveArmor = true;
     }
 
     public bool IsValid()

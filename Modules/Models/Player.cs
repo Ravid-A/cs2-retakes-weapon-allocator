@@ -100,6 +100,5 @@ public class Player
         }
 
         WeaponsAllocator.Allocate();
-        player.PawnArmor = Core.Config.ArmorAmount;
     }
 }
