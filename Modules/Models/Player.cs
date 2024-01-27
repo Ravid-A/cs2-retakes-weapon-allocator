@@ -94,11 +94,6 @@ public class Player
 
     private void Timer_GiveWeapons()
     {
-        if (!IsLive())
-        {
-            return;
-        }
-
         WeaponsAllocator.Allocate();
     }
 }

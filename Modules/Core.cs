@@ -17,32 +17,9 @@ public class Core : BasePlugin
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "1.0.4";
+    public override string ModuleVersion => "1.0.5";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
-
-    private static CCSGameRules? _gameRules;
-    
-    private static void SetGameRules()
-    {
-        var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-
-        if (gameRulesEntities.Any())
-        {
-            _gameRules = gameRulesEntities.First().GameRules!;
-        }
-    }
-
-    private static bool WarmupRunning
-    {
-        get
-        {
-            if (_gameRules is null)
-                SetGameRules();
-
-            return _gameRules is not null && _gameRules.WarmupPeriod;
-        }
-    }
 
     public static Config Config = null!;
 
@@ -77,9 +54,18 @@ public class Core : BasePlugin
         Utilities.GetPlayers().ForEach(RemovePlayerFromList);
     }
 
-    public static bool IsLive()
+    public static CCSGameRules GetGameRules()
     {
-        return !WarmupRunning;
+        var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
+        var gameRules = gameRulesEntities.First().GameRules;
+
+        if(gameRules == null!)
+        {
+            ThrowError("Failed to get game rules");
+            return null!;
+        }
+
+        return gameRules;
     }
 
     private static void SQL_ConnectCallback(string connectionString, Exception exception, dynamic data)

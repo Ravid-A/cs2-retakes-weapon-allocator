@@ -17,7 +17,7 @@ internal static class Events
 
     private static HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
-        if (!IsLive())
+        if (GetGameRules().WarmupPeriod)
         {
             return HookResult.Continue;
         }
@@ -29,17 +29,16 @@ internal static class Events
 
     private static HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
+        if(GetGameRules().WarmupPeriod)
+        {
+            return HookResult.Continue;
+        }
+
         var playerController = @event.Userid;
 
         if (playerController == null! || !playerController.IsValid)
         {
             PrintToServer("OnPlayerSpawn: playerController is null or invalid");
-            return HookResult.Continue;
-        }
-
-        if (!IsLive())
-        {
-            PrintToServer("OnPlayerSpawn: not live");
             return HookResult.Continue;
         }
 
