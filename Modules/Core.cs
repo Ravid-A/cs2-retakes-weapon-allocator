@@ -53,13 +53,7 @@ public class Core : BasePlugin
     {
         Plugin = this;
 
-        Config = LoadConfig();
-
-        if (!Config.IsValid())
-        {
-            ThrowError("Invalid config, please check your config file.");
-            return;
-        }
+        LoadConfigs();
 
         Connect(SQL_ConnectCallback);
 
@@ -133,6 +127,17 @@ public class Core : BasePlugin
             Player player = Players[data];
 
             Query(SQL_CheckForErrors, $"INSERT INTO `weapons` (`auth`, `name`, `t_primary`, `ct_primary`, `secondary`, `give_awp`) VALUES ('{player.GetSteamId2()}', '{EscapeString(player.GetName())}' , '0', '0', '0', '0')");
+        }
+    }
+
+    static void LoadConfigs()
+    {
+        Config = LoadConfig();
+
+        if (!Config.IsValid())
+        {
+            ThrowError("Invalid config, please check your config file.");
+            return;
         }
     }
 }

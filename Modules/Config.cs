@@ -10,6 +10,15 @@ public class Config
     public ConnectionConfig DbConnection { get; init; } = null!;
     public PrefixConfig Prefix { get; init; } = null!;
 
+    public int ArmorAmount {get; init;} = 100;
+
+    public Config()
+    {
+        DbConnection = new ConnectionConfig();
+        Prefix = new PrefixConfig();
+        ArmorAmount = 100;
+    }
+
     public bool IsValid()
     {
         return DbConnection.Database != string.Empty && DbConnection.Host != string.Empty && DbConnection.User != string.Empty && DbConnection.Password != string.Empty && 0 < DbConnection.Port && DbConnection.Port < 65535;
@@ -62,11 +71,7 @@ public static class Configs
 
     private static Config CreateConfig(string configPath)
     {
-        var config = new Config
-        {
-            DbConnection = new ConnectionConfig(),
-            Prefix = new PrefixConfig(),
-        };
+        var config = new Config();
 
         File.WriteAllText(configPath,
             JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
