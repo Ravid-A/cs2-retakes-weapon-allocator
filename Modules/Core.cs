@@ -17,7 +17,7 @@ public class Core : BasePlugin
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "1.0.5";
+    public override string ModuleVersion => "1.1.0";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
@@ -116,14 +116,23 @@ public class Core : BasePlugin
         }
     }
 
-    static void LoadConfigs()
+    public static void LoadConfigs(bool fullReload = true)
     {
-        Config = LoadConfig();
+        CreateConfigsDirectory();
 
-        if (!Config.IsValid())
+        if(fullReload)
         {
-            ThrowError("Invalid config, please check your config file.");
-            return;
+            Config = LoadConfig();
+
+            if (!Config.IsValid())
+            {
+                ThrowError("Invalid config, please check your config file.");
+                return;
+            }
         }
+
+        Weapons.Config.LoadConfig();
+
+        PrintToServer("Configs loaded");
     }
 }

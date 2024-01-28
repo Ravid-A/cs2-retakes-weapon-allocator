@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Entities;
 
 namespace RetakesAllocator.Modules.Weapons;
 
@@ -14,10 +13,10 @@ public enum GiveAwp
 
 public class Weapon
 {
-    public readonly CsItem Item;
-    public readonly string DisplayName;
+    public string Item { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
 
-    public Weapon(CsItem item, string displayName)
+    public Weapon(string item, string displayName)
     {
         Item = item;
         DisplayName = displayName;
@@ -33,27 +32,27 @@ public class Allocator
         Secondary
     };
 
-    public static readonly Weapon[] PrimaryT =
+    public static List<Weapon> PrimaryT = new()
     {
-        new(CsItem.AK47, "AK-47"),
-        new(CsItem.SG553, "SG 553")
+        new("weapon_ak47", "AK-47"),
+        new("weapon_sg553", "SG 553")
     };
 
-    public static readonly Weapon[] PrimaryCt =
+    public static List<Weapon> PrimaryCt = new()
     {
-        new(CsItem.M4A1, "M4A4"),
-        new(CsItem.M4A1S, "M4A1-S"),
-        new(CsItem.AUG, "AUG")
+        new("weapon_m4a1", "M4A4"),
+        new("weapon_m4a1_silencer", "M4A1-S"),
+        new("weapon_aug", "AUG")
     };
 
-    public static readonly Weapon[] Pistols = 
+    public static List<Weapon> Pistols = new()
     {
-        new(CsItem.Glock, "Glock-18"),
-        new(CsItem.USPS, "USP-S"),
-        new(CsItem.P250, "P250"),
-        new(CsItem.Tec9, "Tec-9"),
-        new(CsItem.FiveSeven, "Five-Seven"),
-        new(CsItem.Deagle, "Desert Eagle")
+        new("weapon_glock", "Glock-18"),
+        new("weapon_usp_silencer", "USP-S"),
+        new("weapon_p250", "P250"),
+        new("weapon_tec9", "Tec-9"),
+        new("weapon_fiveseven", "Five-Seven"),
+        new("weapon_deagle", "Desert Eagle")
     };
 
     private readonly CCSPlayerController _player;
@@ -75,34 +74,11 @@ public class Allocator
         switch(type)
         {
             case WeaponType.PrimaryT:
-                for(var i = 0; i < PrimaryT.Length; i++)
-                {
-                    if (PrimaryT[i].DisplayName == weapon)
-                    {
-                        return i;
-                    }
-                }
-                break;
-            
+                return PrimaryT.FindIndex(w => w.DisplayName == weapon);
             case WeaponType.PrimaryCt:
-                for(var i = 0; i < PrimaryCt.Length; i++)
-                {
-                    if (PrimaryCt[i].DisplayName == weapon)
-                    {
-                        return i;
-                    }
-                }
-                break;
-            
+                return PrimaryCt.FindIndex(w => w.DisplayName == weapon);
             case WeaponType.Secondary:
-                for(var i = 0; i < Pistols.Length; i++)
-                {
-                    if (Pistols[i].DisplayName == weapon)
-                    {
-                        return i;
-                    }
-                }
-                break;
+                return Pistols.FindIndex(w => w.DisplayName == weapon);
         }
 
         return -1;
@@ -137,10 +113,10 @@ public class Allocator
             return;
         }
 
-        CsItem primary;
+        string primary;
         if (ShouldGiveAwp)
         {
-            primary = CsItem.AWP;
+            primary = "weapon_awp";
         }
         else
         {
@@ -154,13 +130,13 @@ public class Allocator
             }
         }
 
-        var secondary = Pistols[SecondaryWeapon].Item;
+        string secondary = Pistols[SecondaryWeapon].Item;
 
         _player.GiveNamedItem(primary);
         _player.GiveNamedItem(secondary);
         _player.GiveNamedItem(CsItem.Knife);
 
-        var grenade = SelectGrenade();
+        CsItem grenade = SelectGrenade();
         _player.GiveNamedItem(grenade);
 
         if (_player.TeamNum == (byte)CsTeam.CounterTerrorist)

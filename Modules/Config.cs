@@ -2,6 +2,7 @@ using System.Text.Json;
 using MySqlConnector;
 
 using static RetakesAllocator.Modules.Core;
+using static RetakesAllocator.Modules.Utils;
 
 namespace RetakesAllocator.Modules;
 
@@ -56,9 +57,12 @@ public class PrefixConfig
 
 public static class Configs
 {
+    public const string ConfigDirectory = "configs";
+    private const string ConfigPath = "retakes_allocator.json";
+
     public static Config LoadConfig()
     {
-        var configPath = Path.Combine(Plugin.ModuleDirectory, "config.json");
+        var configPath = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory, ConfigPath);
         if (!File.Exists(configPath))
         {
             return CreateConfig(configPath);
@@ -76,5 +80,15 @@ public static class Configs
         File.WriteAllText(configPath,
             JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
         return config;
+    }
+
+    public static void CreateConfigsDirectory()
+    {
+        var configDirectory = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory);
+
+        if (!Directory.Exists(configDirectory))
+        {
+            Directory.CreateDirectory(configDirectory);
+        }
     }
 }

@@ -8,7 +8,7 @@ This plugin is made to run alongside B3none's retakes implementation: https://gi
 
 ## Config
 
-The config file will be generated automaticly by the plugin and will be located where the plugin is.
+The config file will be generated automaticly by the plugin and will be located where the plugin is and inside a directory named `configs`.
 
 The DBConnection will be generated empty and the plugin will raise an exception, make sure to update it or update the one provided with the release.
 
@@ -31,6 +31,11 @@ The DBConnection will be generated empty and the plugin will raise an exception,
 }
 
 ```
+
+## Weapons Config
+
+The weapons can be changed to your prefrence and the configs will be generated to the defaults
+and will be located where the plugin is and inside a directory named `configs/weapons`, each for each type of weapon.
 
 ## Setup for development
 
