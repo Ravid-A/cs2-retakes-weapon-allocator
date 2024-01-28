@@ -35,7 +35,7 @@ public class Allocator
     public static List<Weapon> PrimaryT = new()
     {
         new("weapon_ak47", "AK-47"),
-        new("weapon_sg553", "SG 553")
+        new("weapon_sg556", "SG 553")
     };
 
     public static List<Weapon> PrimaryCt = new()
