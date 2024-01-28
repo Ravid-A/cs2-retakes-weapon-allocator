@@ -12,12 +12,14 @@ public class Config
     public PrefixConfig Prefix { get; init; } = null!;
 
     public bool GiveArmor {get; init;} = true;
+    public string[] triggerWords {get; init;} = { "guns", "gun", "weapon", "weapons"};
 
     public Config()
     {
         DbConnection = new ConnectionConfig();
         Prefix = new PrefixConfig();
         GiveArmor = true;
+        triggerWords = new string[] { "guns", "gun", "weapon", "weapons"};
     }
 
     public bool IsValid()
