@@ -40,10 +40,7 @@ public class Core : BasePlugin
 
         if (hotReload)
         {
-            Utilities.GetPlayers().ForEach(player =>
-            {
-                AddPlayerToList(player, player.AuthorizedSteamID!);
-            });
+            Utilities.GetPlayers().ForEach(AddPlayerToList);
         }
     }
 

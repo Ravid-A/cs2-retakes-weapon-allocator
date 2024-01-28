@@ -1,25 +1,25 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesAllocator.Modules.Weapons;
 
 using static RetakesAllocator.Modules.Core;
+using static RetakesAllocator.Modules.Utils;
 
 namespace RetakesAllocator.Modules.Models;
 
 public class Player
 {
-    public CCSPlayerController player;
-
-    private SteamID _steamId;
+    public int playerIndex;
+    public CCSPlayerController player => Utilities.GetPlayerFromIndex(playerIndex);
 
     public readonly Allocator WeaponsAllocator;
 
-    public Player(CCSPlayerController player, SteamID steamId)
+    public Player(CCSPlayerController player)
     {
-        this.player = player;
-        _steamId = steamId;
-        WeaponsAllocator = new Allocator(player);
+        playerIndex = (int)player.Index;
+        WeaponsAllocator = new Allocator(this);
     }
 
     public static void SetupPlayers(List<Player> players)
@@ -69,7 +69,7 @@ public class Player
 
     public string GetSteamId2()
     {
-        return _steamId.SteamId2;
+        return player.AuthorizedSteamID!.SteamId2;
     }
 
     public string GetName()

@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using RetakesAllocator.Modules.Models;
 
 namespace RetakesAllocator.Modules.Weapons;
 
@@ -55,7 +56,9 @@ public class Allocator
         new("weapon_deagle", "Desert Eagle")
     };
 
-    private readonly CCSPlayerController _player;
+    private readonly Player _player;
+
+    private CCSPlayerController cCSPlayerController => _player.player;
 
     public int PrimaryWeaponT = 0;
     public int PrimaryWeaponCt = 0;
@@ -64,7 +67,7 @@ public class Allocator
     public GiveAwp GiveAwp = GiveAwp.Never;
     public bool ShouldGiveAwp = false;
 
-    public Allocator(CCSPlayerController player)
+    public Allocator(Player player)
     {
         _player = player;
     }
@@ -98,17 +101,17 @@ public class Allocator
 
     public void Allocate()
     {
-        if (_player == null || !_player.IsValid)
+        if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
         {
             return;
         }
 
-        if (!_player.PawnIsAlive)
+        if (!cCSPlayerController.PawnIsAlive)
         {
             return;
         }
 
-        if ((CsTeam)_player.TeamNum < CsTeam.Terrorist || (CsTeam)_player.TeamNum > CsTeam.CounterTerrorist)
+        if ((CsTeam)cCSPlayerController.TeamNum < CsTeam.Terrorist || (CsTeam)cCSPlayerController.TeamNum > CsTeam.CounterTerrorist)
         {
             return;
         }
@@ -120,7 +123,7 @@ public class Allocator
         }
         else
         {
-            if ((CsTeam)_player.TeamNum == CsTeam.Terrorist)
+            if ((CsTeam)cCSPlayerController.TeamNum == CsTeam.Terrorist)
             {
                 primary = PrimaryT[PrimaryWeaponT].Item;
             }
@@ -132,14 +135,14 @@ public class Allocator
 
         string secondary = Pistols[SecondaryWeapon].Item;
 
-        _player.GiveNamedItem(primary);
-        _player.GiveNamedItem(secondary);
-        _player.GiveNamedItem(CsItem.Knife);
+        cCSPlayerController.GiveNamedItem(primary);
+        cCSPlayerController.GiveNamedItem(secondary);
+        cCSPlayerController.GiveNamedItem(CsItem.Knife);
 
         CsItem grenade = SelectGrenade();
-        _player.GiveNamedItem(grenade);
+        cCSPlayerController.GiveNamedItem(grenade);
 
-        if (_player.TeamNum == (byte)CsTeam.CounterTerrorist)
+        if (cCSPlayerController.TeamNum == (byte)CsTeam.CounterTerrorist)
         {
            GiveCtEquipment();
         }
@@ -166,7 +169,7 @@ public class Allocator
                 grenade = CsItem.SmokeGrenade;
                 break;
             case 3:
-                grenade = (CsTeam)_player.TeamNum == CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary;
+                grenade = (CsTeam)cCSPlayerController.TeamNum == CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary;
                 break;
         }
 
@@ -175,16 +178,16 @@ public class Allocator
 
     private void GiveCtEquipment()
     {
-        _player.GiveNamedItem(CsItem.KevlarHelmet); 
+        cCSPlayerController.GiveNamedItem(CsItem.KevlarHelmet); 
 
         if (
-            (CsTeam)_player.TeamNum == CsTeam.CounterTerrorist
-            && _player.PlayerPawn.IsValid
-            && _player.PlayerPawn.Value != null
-            && _player.PlayerPawn.Value.IsValid
-            && _player.PlayerPawn.Value.ItemServices != null
+            (CsTeam)cCSPlayerController.TeamNum == CsTeam.CounterTerrorist
+            && cCSPlayerController.PlayerPawn.IsValid
+            && cCSPlayerController.PlayerPawn.Value != null
+            && cCSPlayerController.PlayerPawn.Value.IsValid
+            && cCSPlayerController.PlayerPawn.Value.ItemServices != null
         ) {
-            var itemServices = new CCSPlayer_ItemServices(_player.PlayerPawn.Value.ItemServices.Handle)
+            var itemServices = new CCSPlayer_ItemServices(cCSPlayerController.PlayerPawn.Value.ItemServices.Handle)
             {
                 HasDefuser = true
             };
@@ -193,6 +196,6 @@ public class Allocator
 
     private void GiveArmor()
     {
-        _player.GiveNamedItem(CsItem.KevlarHelmet); 
+        cCSPlayerController.GiveNamedItem(CsItem.KevlarHelmet); 
     }
 }

@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Database;
 using Player = RetakesAllocator.Modules.Models.Player;
@@ -37,17 +36,9 @@ internal static class Utils
         commandInfo.ReplyToCommand(msg);
     }
 
-    public static Player FindPlayer(CCSPlayerController player)
+    public static Player FindPlayer(CCSPlayerController cCSPlayerController)
     {
-        foreach(var playerObj in Players)
-        {
-            if (playerObj.player == player)
-            {
-                return playerObj;
-            }
-        }
-
-        return null!;
+        return Players.Find(player => player.playerIndex == cCSPlayerController.Index)!;
     }
 
     public static void ServerCommand(string command, params object[] args)
@@ -55,9 +46,9 @@ internal static class Utils
         Server.ExecuteCommand(string.Format(command, args));
     }
 
-    public static void AddPlayerToList(CCSPlayerController player, SteamID steamId)
+    public static void AddPlayerToList(CCSPlayerController player)
     {
-        if (player == null || !player.IsValid || player.IsBot || steamId is null)
+        if (player == null || !player.IsValid || player.IsBot)
         {
             return;
         }
@@ -67,7 +58,7 @@ internal static class Utils
             return;
         }
 
-        var playerObj = new Player(player, steamId);
+        var playerObj = new Player(player);
 
         Players.Add(playerObj);
 
