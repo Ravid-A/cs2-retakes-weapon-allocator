@@ -14,6 +14,8 @@ public class Menu
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
 
+        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenCTPrimaryMenu(p));
+
         foreach (Weapon weapon in PrimaryT)
         {
             centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnTPrimarySelect);
@@ -48,6 +50,8 @@ public class Menu
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a CT Primary Weapon");
 
+        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenSecondaryMenu(p));
+
         foreach (Weapon weapon in PrimaryCt)
         {
             centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnCTPrimarySelect);
@@ -81,6 +85,8 @@ public class Menu
     private static void OpenSecondaryMenu(CCSPlayerController player)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a Secondary Weapon");
+
+        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenGiveAWPMenu(p));
 
         foreach (Weapon weapon in Pistols)
         {
