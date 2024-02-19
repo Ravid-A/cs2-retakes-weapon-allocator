@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
 using MySqlConnector;
 using static RetakesAllocator.Modules.Database;
 using static RetakesAllocator.Modules.Utils;
@@ -12,6 +13,7 @@ using RetakesAllocator.Modules.Weapons;
 
 namespace RetakesAllocator.Modules;
 
+[MinimumApiVersion(154)]
 public class Core : BasePlugin
 {
     public static Core Plugin = null!;
