@@ -57,7 +57,7 @@ public class Player
 
         try
         {
-            team = (CsTeam)player.TeamNum;
+            team = player.Team;
         } 
         catch
         {

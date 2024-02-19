@@ -111,7 +111,7 @@ public class Allocator
             return;
         }
 
-        if ((CsTeam)cCSPlayerController.TeamNum < CsTeam.Terrorist || (CsTeam)cCSPlayerController.TeamNum > CsTeam.CounterTerrorist)
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
         {
             return;
         }
@@ -123,7 +123,7 @@ public class Allocator
         }
         else
         {
-            if ((CsTeam)cCSPlayerController.TeamNum == CsTeam.Terrorist)
+            if (cCSPlayerController.Team == CsTeam.Terrorist)
             {
                 primary = PrimaryT[PrimaryWeaponT].Item;
             }
@@ -142,7 +142,7 @@ public class Allocator
         CsItem grenade = SelectGrenade();
         cCSPlayerController.GiveNamedItem(grenade);
 
-        if (cCSPlayerController.TeamNum == (byte)CsTeam.CounterTerrorist)
+        if (cCSPlayerController.Team == CsTeam.CounterTerrorist)
         {
            GiveCtEquipment();
         }
@@ -169,7 +169,7 @@ public class Allocator
                 grenade = CsItem.SmokeGrenade;
                 break;
             case 3:
-                grenade = (CsTeam)cCSPlayerController.TeamNum == CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary;
+                grenade = cCSPlayerController.Team == CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary;
                 break;
         }
 
@@ -181,7 +181,7 @@ public class Allocator
         cCSPlayerController.GiveNamedItem(CsItem.KevlarHelmet); 
 
         if (
-            (CsTeam)cCSPlayerController.TeamNum == CsTeam.CounterTerrorist
+            cCSPlayerController.Team == CsTeam.CounterTerrorist
             && cCSPlayerController.PlayerPawn.IsValid
             && cCSPlayerController.PlayerPawn.Value != null
             && cCSPlayerController.PlayerPawn.Value.IsValid
