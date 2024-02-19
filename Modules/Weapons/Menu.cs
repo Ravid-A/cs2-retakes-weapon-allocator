@@ -14,7 +14,10 @@ public class Menu
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
 
-        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenCTPrimaryMenu(p));
+        if(Core.Config.AddSkipOption)
+        {
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenCTPrimaryMenu(p));
+        }
 
         foreach (Weapon weapon in PrimaryT)
         {
@@ -50,7 +53,10 @@ public class Menu
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a CT Primary Weapon");
 
-        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenSecondaryMenu(p));
+        if(Core.Config.AddSkipOption)
+        {
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenSecondaryMenu(p));
+        }
 
         foreach (Weapon weapon in PrimaryCt)
         {
@@ -86,7 +92,10 @@ public class Menu
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a Secondary Weapon");
 
-        centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenGiveAWPMenu(p));
+        if(Core.Config.AddSkipOption)
+        {
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenGiveAWPMenu(p));
+        }
 
         foreach (Weapon weapon in Pistols)
         {

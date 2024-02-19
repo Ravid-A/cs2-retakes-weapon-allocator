@@ -13,6 +13,7 @@ public class Config
 
     public bool GiveArmor {get; init;} = true;
     public string[] triggerWords {get; init;} = { "guns", "gun", "weapon", "weapons"};
+    public bool AddSkipOption {get; init;} = true;
 
     public Config()
     {
