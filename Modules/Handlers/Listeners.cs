@@ -24,6 +24,7 @@ internal static class Listeners
 
     private static void OnMapStart(string map_name)
     {
+        RoundsCounter = 0;
         Players.Clear();
         Utilities.GetPlayers().ForEach(AddPlayerToList);
     }

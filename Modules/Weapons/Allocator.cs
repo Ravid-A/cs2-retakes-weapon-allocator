@@ -151,6 +151,38 @@ public class Allocator
             GiveArmor();
     }
 
+    public void AllocatePistolRound()
+    {
+        if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
+        {
+            return;
+        }
+
+        if (!cCSPlayerController.PawnIsAlive)
+        {
+            return;
+        }
+
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
+        {
+            return;
+        }
+
+
+        string secondary = Core.Config.PistolRound.GetWeaponByTeam(cCSPlayerController.Team);
+
+        cCSPlayerController.GiveNamedItem(secondary);
+        cCSPlayerController.GiveNamedItem(CsItem.Knife);
+
+        if (cCSPlayerController.Team == CsTeam.CounterTerrorist)
+        {
+           GiveCtEquipment();
+        }
+
+        if(Core.Config.GiveArmor)
+            cCSPlayerController.GiveNamedItem(CsItem.Kevlar); 
+    }
+
     private CsItem SelectGrenade()
     {
         var grenade = CsItem.HEGrenade;
@@ -178,8 +210,6 @@ public class Allocator
 
     private void GiveCtEquipment()
     {
-        cCSPlayerController.GiveNamedItem(CsItem.KevlarHelmet); 
-
         if (
             cCSPlayerController.Team == CsTeam.CounterTerrorist
             && cCSPlayerController.PlayerPawn.IsValid

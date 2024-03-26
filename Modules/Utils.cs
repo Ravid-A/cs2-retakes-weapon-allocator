@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Utils;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Database;
 using Player = RetakesAllocator.Modules.Models.Player;
@@ -15,6 +16,11 @@ internal static class Utils
     public static void PrintToChat(CCSPlayerController controller, string msg)
     {
         controller.PrintToChat(msg);
+    }
+
+    public static void PrintToChatAll(string msg)
+    {
+        Server.PrintToChatAll(msg);
     }
 
     public static void PrintToServer(string msg, ConsoleColor color = ConsoleColor.Cyan)
@@ -84,5 +90,24 @@ internal static class Utils
         Query(SQL_CheckForErrors, $"UPDATE `weapons` SET `t_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponT}', `ct_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponCt}', `secondary` = '{playerObj.WeaponsAllocator.SecondaryWeapon}', `give_awp` = '{(int)playerObj.WeaponsAllocator.GiveAwp}' WHERE `auth` = '{playerObj.GetSteamId2()}'");
 
         Players.Remove(playerObj);
+    }
+
+    public static int GetRoundsAmount()
+    {
+        IEnumerable<CTeam> team = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team");
+
+        if (team.Count() == 0)
+        {
+            return 0;
+        }
+
+        int rounds = 0;
+
+        foreach (var t in team)
+        {
+            rounds = t.Score;
+        }
+
+        return rounds;
     }
 }

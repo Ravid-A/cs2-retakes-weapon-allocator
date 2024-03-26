@@ -13,7 +13,7 @@ using RetakesAllocator.Modules.Weapons;
 
 namespace RetakesAllocator.Modules;
 
-[MinimumApiVersion(154)]
+[MinimumApiVersion(202)]
 public class Core : BasePlugin
 {
     public static Core Plugin = null!;
@@ -27,6 +27,7 @@ public class Core : BasePlugin
 
     public static Database Db = null!;
     public static List<Player> Players = new();
+    public static int RoundsCounter = 0;
 
     public override void Load(bool hotReload)
     {

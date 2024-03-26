@@ -4,14 +4,18 @@ using RetakesAllocator.Modules.Models;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Models.Player;
+using CounterStrikeSharp.API;
 
 namespace RetakesAllocator.Modules.Handlers;
 
 internal static class Events
 {
+    static bool IgnoreRoundEnd = false;
+
     public static void RegisterEvents()
     {
         Plugin.RegisterEventHandler<EventRoundPrestart>(OnRoundPreStart);
+        Plugin.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
         Plugin.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
     }
 
@@ -19,10 +23,26 @@ internal static class Events
     {
         if (GetGameRules().WarmupPeriod)
         {
+            IgnoreRoundEnd = true;
             return HookResult.Continue;
         }
 
+        // TODO: Add Vote Logic
+
         SetupPlayers(Players);
+
+        return HookResult.Continue;
+    }
+
+    private static HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
+    {
+        if (GetGameRules().WarmupPeriod || IgnoreRoundEnd)
+        {
+            IgnoreRoundEnd = false;
+            return HookResult.Continue;
+        }
+        
+        RoundsCounter++;
 
         return HookResult.Continue;
     }

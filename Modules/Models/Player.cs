@@ -94,6 +94,12 @@ public class Player
 
     private void Timer_GiveWeapons()
     {
+        if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
+        {
+            WeaponsAllocator.AllocatePistolRound();
+            return;
+        }
+
         WeaponsAllocator.Allocate();
     }
 }

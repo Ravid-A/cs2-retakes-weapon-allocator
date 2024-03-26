@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
 
 using static RetakesAllocator.Modules.Core;
@@ -10,6 +11,7 @@ public class Config
 { 
     public ConnectionConfig DbConnection { get; init; } = null!;
     public PrefixConfig Prefix { get; init; } = null!;
+    public PistolRoundConfig PistolRound { get; init; } = null!;
 
     public bool GiveArmor {get; init;} = true;
     public string[] triggerWords {get; init;} = { "guns", "gun", "weapon", "weapons"};
@@ -19,8 +21,10 @@ public class Config
     {
         DbConnection = new ConnectionConfig();
         Prefix = new PrefixConfig();
+        PistolRound = new PistolRoundConfig();
         GiveArmor = true;
         triggerWords = new string[] { "guns", "gun", "weapon", "weapons"};
+        AddSkipOption = true;
     }
 
     public bool IsValid()
@@ -56,6 +60,18 @@ public class PrefixConfig
 {
     public string Prefix { get; set; } = " [\x04Retakes\x01]";
     public string PrefixCon { get; set; } = "[RetakesAllocator]";
+}
+
+public class PistolRoundConfig
+{
+    public int RoundAmount { get; init; } = 2;
+    public string weapon_t { get; init; } = "weapon_glock";
+    public string weapon_ct { get; init; } = "weapon_usp_silencer";
+
+    public string GetWeaponByTeam(CsTeam team)
+    {
+        return (team == CsTeam.Terrorist) ? weapon_t : weapon_ct;
+    }
 }
 
 public static class Configs
