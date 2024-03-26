@@ -3,7 +3,6 @@ using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
 
 using static RetakesAllocator.Modules.Core;
-using static RetakesAllocator.Modules.Utils;
 
 namespace RetakesAllocator.Modules;
 

@@ -132,6 +132,7 @@ public class Core : BasePlugin
         }
 
         Weapons.Config.LoadConfig();
+        Votes.Config.LoadConfig();
 
         PrintToServer("Configs loaded");
     }
