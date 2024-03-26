@@ -10,24 +10,24 @@ namespace RetakesAllocator.Modules.Weapons;
 
 public class Menu
 {
-    public static void OpenTPrimaryMenu(CCSPlayerController player)
+    public static void OpenTPrimaryMenu(CCSPlayerController player, bool showNext = true)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
 
-        if(Core.Config.AddSkipOption)
+        if(Core.Config.AddSkipOption && showNext)
         {
             centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenCTPrimaryMenu(p));
         }
 
         foreach (Weapon weapon in PrimaryT)
         {
-            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnTPrimarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnTPrimarySelect(player, option, showNext));
         }
 
         MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
-    private static void OnTPrimarySelect(CCSPlayerController player, ChatMenuOption option)
+    private static void OnTPrimarySelect(CCSPlayerController player, ChatMenuOption option, bool showNext)
     {
         if (option == null)
         {
@@ -46,27 +46,33 @@ public class Menu
 
         player_obj.WeaponsAllocator.PrimaryWeaponT = GetWeaponIndex(option.Text, WeaponType.PrimaryT);
 
-        OpenCTPrimaryMenu(player);
+        if(showNext)
+        {
+            OpenCTPrimaryMenu(player);
+            return;
+        }
+
+        MenuManager.CloseActiveMenu(player);
     }
 
-    public static void OpenCTPrimaryMenu(CCSPlayerController player)
+    public static void OpenCTPrimaryMenu(CCSPlayerController player, bool showNext = true)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a CT Primary Weapon");
 
-        if(Core.Config.AddSkipOption)
+        if(Core.Config.AddSkipOption && showNext)
         {
             centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenSecondaryMenu(p));
         }
 
         foreach (Weapon weapon in PrimaryCt)
         {
-            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnCTPrimarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnCTPrimarySelect(player, option, showNext));
         }
 
         MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
-    private static void OnCTPrimarySelect(CCSPlayerController player, ChatMenuOption option)
+    private static void OnCTPrimarySelect(CCSPlayerController player, ChatMenuOption option, bool showNext)
     {
         if (option == null)
         {
@@ -85,27 +91,33 @@ public class Menu
 
         player_obj.WeaponsAllocator.PrimaryWeaponCt = GetWeaponIndex(option.Text, WeaponType.PrimaryCt);
 
-        OpenSecondaryMenu(player);
+        if(showNext)
+        {
+            OpenSecondaryMenu(player);
+            return;
+        }
+
+        MenuManager.CloseActiveMenu(player);
     }
 
-    private static void OpenSecondaryMenu(CCSPlayerController player)
+    public static void OpenSecondaryMenu(CCSPlayerController player, bool showNext = true)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a Secondary Weapon");
 
-        if(Core.Config.AddSkipOption)
+        if(Core.Config.AddSkipOption && showNext)
         {
             centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenGiveAWPMenu(p));
         }
 
         foreach (Weapon weapon in Pistols)
         {
-            centerHtmlMenu.AddMenuOption(weapon.DisplayName, OnSecondarySelect);
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnSecondarySelect(player, option, showNext));
         }
 
         MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
     }
 
-    private static void OnSecondarySelect(CCSPlayerController player, ChatMenuOption option)
+    private static void OnSecondarySelect(CCSPlayerController player, ChatMenuOption option, bool showNext = true)
     {
         if (option == null)
         {
@@ -124,10 +136,16 @@ public class Menu
 
         player_obj.WeaponsAllocator.SecondaryWeapon = GetWeaponIndex(option.Text, WeaponType.Secondary);
 
-        OpenGiveAWPMenu(player);
+        if(showNext)
+        {
+            OpenGiveAWPMenu(player);
+            return;
+        }
+
+        MenuManager.CloseActiveMenu(player);
     }
 
-    private static void OpenGiveAWPMenu(CCSPlayerController player)
+    public static void OpenGiveAWPMenu(CCSPlayerController player)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select when to give the AWP");
 
@@ -168,7 +186,6 @@ public class Menu
                 break;
         }
 
-        PrintToChat(player, $"{PREFIX} You have finished setting up your weapons!");
-        PrintToChat(player, $"{PREFIX} The weapons you have selected will be given to you at the start of the next round!");
+        MenuManager.CloseActiveMenu(player);
     }
 }
