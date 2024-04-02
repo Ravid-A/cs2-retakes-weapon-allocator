@@ -5,8 +5,8 @@ using CounterStrikeSharp.API.Modules.Admin;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Weapons.Menu;
-
-
+using static RetakesAllocator.Modules.Votes.Votes;
+using RetakesAllocator.Modules.Votes;
 
 namespace RetakesAllocator.Modules.Handlers;
 
@@ -171,5 +171,55 @@ internal static class Commands
 
         LoadConfigs(false);
         PrintToChat(player, $"{PREFIX} Configs reloaded.");
+    }
+
+    public static void OnVoteCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player == null)
+        {
+            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            return;
+        }
+
+        if (!player.IsValid)
+        {
+            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            return;
+        }
+
+        if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
+        {
+            ReplyToCommand(commandInfo, $"{PREFIX} You can't vote during the pistol rounds.");
+            return;
+        }
+
+        int userId = player.UserId!.Value;
+
+        string command = commandInfo.GetArg(0);
+        AsyncVoteManager voteManager = GetVote(command);
+
+        if (voteManager == null!)
+        {
+            ReplyToCommand(commandInfo, $"{PREFIX} Invalid vote command.");
+            return;
+        }
+
+        switch(voteManager.AddVote(userId))
+        {
+            case VoteResultEnum.Added:
+                PrintToChatAll($"{PREFIX} Player \x03{player.PlayerName}\x01 wants to {(voteManager.IsRunningVote() ? "cancel" : "")} {voteManager.vote.Description} rounds ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
+                break;
+            case VoteResultEnum.AlreadyAddedBefore:
+                voteManager.RemoveVote(userId);
+                PrintToChatAll($"{PREFIX} Player \x03{player.PlayerName}\x01 dont wants {(voteManager.IsRunningVote() ? "to cancel" : "")} {voteManager.vote.Description} rounds anymore ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
+                break;
+            default:
+                break;
+        }
+
+        if (voteManager.CheckVotes())
+        {
+            Votes_OnVoteReached(voteManager);
+        }
     }
 }

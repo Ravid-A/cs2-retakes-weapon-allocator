@@ -1,15 +1,23 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Core.Capabilities;
+
 using MySqlConnector;
+
+using RetakesAllocator.Modules.Models;
+using RetakesAllocator.Modules.Weapons;
+using RetakesAllocator.Modules.Votes;
+
+using static RetakesAllocator.Modules.RetakeCapability;
 using static RetakesAllocator.Modules.Database;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Configs;
 using static RetakesAllocator.Modules.Handlers.Commands;
 using static RetakesAllocator.Modules.Handlers.Events;
 using static RetakesAllocator.Modules.Handlers.Listeners;
-using RetakesAllocator.Modules.Models;
-using RetakesAllocator.Modules.Weapons;
+using static RetakesAllocator.Modules.Votes.Votes;
 
 namespace RetakesAllocator.Modules;
 
@@ -19,7 +27,7 @@ public class Core : BasePlugin
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "1.1.6";
+    public override string ModuleVersion => "1.2.0";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
@@ -28,10 +36,20 @@ public class Core : BasePlugin
     public static Database Db = null!;
     public static List<Player> Players = new();
     public static int RoundsCounter = 0;
+    public static AsyncVoteManager currentVote = null!;
+    public static ConVar mp_damage_headshot_only = null!;
 
     public override void Load(bool hotReload)
     {
         Plugin = this;
+
+        mp_damage_headshot_only = ConVar.Find("mp_damage_headshot_only")!;
+
+        if(mp_damage_headshot_only == null!)
+        {
+            ThrowError("Failed to find mp_damage_headshot_only");
+            return;
+        }
 
         LoadConfigs();
 
@@ -40,6 +58,8 @@ public class Core : BasePlugin
         RegisterCommands();
         RegisterEvents();
         RegisterListeners();
+
+        RetakeCapability_OnLoad();
 
         if (hotReload)
         {
@@ -50,8 +70,10 @@ public class Core : BasePlugin
     public override void Unload(bool hotReload)
     {
         UnRegisterCommands();
-
+        Votes_OnPluginUnload();
         Utilities.GetPlayers().ForEach(RemovePlayerFromList);
+
+        RetakeCapability_OnUnload();
     }
 
     public static CCSGameRules GetGameRules()

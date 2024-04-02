@@ -2,7 +2,7 @@ using System.Text.Json;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Configs;
-using static RetakesAllocator.Modules.Votes.Logic;
+using static RetakesAllocator.Modules.Votes.Votes;
 
 namespace RetakesAllocator.Modules.Votes;
 
@@ -25,15 +25,22 @@ public class Config
             return;
         }
 
-        WeaponVotes.Clear();
-
         var config = JsonSerializer.Deserialize<VotesConfig>(File.ReadAllText(configPath))!;
+
+        if(config.Votes.Count == 0)
+        {
+            CreateConfig(configPath, WeaponVotes);
+            return;
+        }
+
+        WeaponVotes.Clear();
 
         foreach (var vote in config.Votes)
         {
             WeaponVotes.Add(vote);
         }
 
+        Votes_OnConfigParsed();
     }
 
     private static void CreateConfig(string configPath, List<Vote> votes)
@@ -41,11 +48,15 @@ public class Config
         var config = new VotesConfig(votes);
 
         File.WriteAllText(configPath, JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
+
+        Votes_OnConfigParsed();
     }
 }
 
 class VotesConfig
 {
+    public int RequiredPrecentage { get; set; } = 60;
+    public int WeaponSelectionTime { get; set; } = 5;
     public List<Vote> Votes { get; set; } = new();
 
     public VotesConfig(List<Vote> votes)
@@ -54,5 +65,7 @@ class VotesConfig
         {
             Votes.Add(vote);
         }
+        RequiredPrecentage = 60;
+        WeaponSelectionTime = 5;
     }
 }

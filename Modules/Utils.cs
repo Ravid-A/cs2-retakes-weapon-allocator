@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Utils;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Database;
 using Player = RetakesAllocator.Modules.Models.Player;
@@ -109,5 +108,26 @@ internal static class Utils
         }
 
         return rounds;
+    }
+
+    public static CCSPlayerController[] ValidPlayers(bool considerBots = false)
+    {
+        //considerBots = true;
+        return Utilities.GetPlayers()
+        .Where(x => x.ReallyValid(considerBots))
+        .Where(x => !x.IsHLTV)
+        .Where(x => considerBots || !x.IsBot)
+        .ToArray();
+    }
+
+    public static bool ReallyValid(this CCSPlayerController? player, bool considerBots = false)
+    {
+        return player is not null && player.IsValid && player.Connected == PlayerConnectedState.PlayerConnected &&
+            (considerBots || (!player.IsBot && !player.IsHLTV));
+    }
+
+    public static int ValidPlayerCount(bool considerBots = false)
+    {
+        return ValidPlayers(considerBots).Length;
     }
 }

@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
 using RetakesAllocator.Modules.Models;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
@@ -10,6 +11,8 @@ namespace RetakesAllocator.Modules.Weapons;
 
 public class Menu
 {
+    private static Dictionary<CCSPlayerController, Timer> timers = new();
+
     public static void OpenTPrimaryMenu(CCSPlayerController player, bool showNext = true)
     {
         CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"{PREFIX} Select a T Primary Weapon");
@@ -185,6 +188,71 @@ public class Menu
                 player_obj.WeaponsAllocator.GiveAwp = GiveAwp.Always;
                 break;
         }
+
+        MenuManager.CloseActiveMenu(player);
+    }
+
+    public static void ShowWeaponSelectionMenu(CCSPlayerController player, List<string> weapons, int time)
+    {
+        CenterHtmlMenu centerHtmlMenu = new CenterHtmlMenu($"Select a weapon [{time} Seconds Left]");
+
+        foreach (string weapon in weapons)
+        {
+            centerHtmlMenu.AddMenuOption(weapon, OnWeaponSelect);
+        }
+
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
+        
+        timers.Clear();
+
+        Timer timer = Plugin.AddTimer(1f, () => Countdown(centerHtmlMenu, player, weapons, time));
+        timers.Add(player, timer);
+    }
+
+    private static void OnWeaponSelect(CCSPlayerController player, ChatMenuOption option)
+    {
+        if (option == null)
+        {
+            PrintToChat(player, $"{PREFIX} You did not select a weapon!");
+            return;
+        }
+
+        PrintToChat(player, $"{PREFIX} You selected {option.Text} as your weapon!");
+        player.GiveNamedItem("weapon_" + option.Text);
+
+        if (timers.ContainsKey(player))
+        {
+            Timer timer = timers[player];
+            timer.Kill();
+            timers.Remove(player);
+        }
+
+        MenuManager.CloseActiveMenu(player);
+    }
+
+    public static void Countdown(CenterHtmlMenu menu, CCSPlayerController player, List<string> weapons, int seconds)
+    {
+        menu.Title = $"Select a weapon [{--seconds} Seconds Left]";
+
+        if (seconds == 0)
+        {
+            GiveRandomWeapon(player, weapons);
+            return;
+        }
+        
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, menu);
+
+        Timer timer = Plugin.AddTimer(1f, () => Countdown(menu, player, weapons, seconds));
+        timers[player] = timer;
+    }
+
+    public static void GiveRandomWeapon(CCSPlayerController player, List<string> weapons)
+    {   
+        string weapon = weapons[new Random().Next(0, weapons.Count)];
+
+        PrintToChat(player, $"{PREFIX} You have'nt selected a weapon, giving you a random weapon!");
+        PrintToChat(player, $"{PREFIX} You received a {weapon}!");
+        player.GiveNamedItem("weapon_" + weapon);
 
         MenuManager.CloseActiveMenu(player);
     }

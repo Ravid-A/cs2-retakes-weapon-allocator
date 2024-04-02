@@ -1,10 +1,8 @@
 using CounterStrikeSharp.API.Core;
-using RetakesAllocator.Modules.Models;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Models.Player;
-using CounterStrikeSharp.API;
 
 namespace RetakesAllocator.Modules.Handlers;
 
@@ -27,9 +25,12 @@ internal static class Events
             return HookResult.Continue;
         }
 
-        // TODO: Add Vote Logic
-
         SetupPlayers(Players);
+
+        if(currentVote != null && currentVote.vote.OnlyHeadshots)
+        {
+            mp_damage_headshot_only.SetValue(true);
+        }
 
         return HookResult.Continue;
     }
@@ -43,6 +44,7 @@ internal static class Events
         }
         
         RoundsCounter++;
+        mp_damage_headshot_only.SetValue(false);
 
         return HookResult.Continue;
     }
