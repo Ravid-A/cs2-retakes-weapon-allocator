@@ -292,6 +292,7 @@ internal static class Commands
         Votes_OnVoteReached(voteManager);
     }
 
+    [RequiresPermissions(new string[] { "@css/root" })]
     private static void SkipPistolRoundCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player == null)
