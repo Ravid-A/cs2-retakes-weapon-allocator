@@ -1,12 +1,13 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Entities;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Weapons.Menu;
+using static RetakesAllocator.Modules.Votes.Votes;
+using RetakesAllocator.Modules.Votes;
 
 namespace RetakesAllocator.Modules.Handlers;
 
@@ -27,18 +28,20 @@ internal static class Listeners
         RoundsCounter = 0;
         Players.Clear();
         Utilities.GetPlayers().ForEach(AddPlayerToList);
+        Votes_OnMapStart();
     }
 
     private static void OnClientAuthorized(int playerSlot, SteamID steamID)
     {
-        CCSPlayerController player = Utilities.GetPlayerFromSlot(playerSlot);
+        CCSPlayerController player = Utilities.GetPlayerFromSlot(playerSlot)!;
         AddPlayerToList(player);
     }
 
     private static void OnClientDisconnect(int playerSlot)
     {
-        var player = Utilities.GetPlayerFromSlot(playerSlot);
+        var player = Utilities.GetPlayerFromSlot(playerSlot)!;
         RemovePlayerFromList(player);
+        Votes_OnPlayerDisconnect(player);
     }
 
     private static HookResult OnSay(CCSPlayerController? player, CommandInfo command)

@@ -1,18 +1,17 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesAllocator.Modules.Votes;
 using RetakesAllocator.Modules.Weapons;
 
 using static RetakesAllocator.Modules.Core;
-using static RetakesAllocator.Modules.Utils;
 
 namespace RetakesAllocator.Modules.Models;
 
 public class Player
 {
     public int playerIndex;
-    public CCSPlayerController player => Utilities.GetPlayerFromIndex(playerIndex);
+    public CCSPlayerController player => Utilities.GetPlayerFromIndex(playerIndex)!;
 
     public readonly Allocator WeaponsAllocator;
 
@@ -24,8 +23,8 @@ public class Player
 
     public static void SetupPlayers(List<Player> players)
     {
-        var giveAwpT = true;
-        var giveAwpCt = true;
+        List<Player> players_t = new();
+        List<Player> players_ct = new();
 
         foreach(var player in players)
         {
@@ -36,18 +35,28 @@ public class Player
 
             if (giveAwp)
             {
-                if (team == CsTeam.Terrorist && giveAwpT)
+                if (team == CsTeam.Terrorist )
                 {
-                    player.WeaponsAllocator.ShouldGiveAwp = true;
-                    giveAwpT = false;
+                    players_t.Add(player);
                 }
 
-                if (team == CsTeam.CounterTerrorist && giveAwpCt)
+                if (team == CsTeam.CounterTerrorist)
                 {
-                    player.WeaponsAllocator.ShouldGiveAwp = true;
-                    giveAwpCt = false;
+                    players_ct.Add(player);
                 }
             }
+        }
+
+        if(0 < players_t.Count)
+        {
+            Player player_t = Utils.GetRandomFromList(players_t);
+            player_t.WeaponsAllocator.ShouldGiveAwp = true;
+        }
+        
+        if(0 < players_ct.Count)
+        {  
+            Player player_ct = Utils.GetRandomFromList(players_ct);
+            player_ct.WeaponsAllocator.ShouldGiveAwp = true;
         }
     }
 
@@ -97,6 +106,33 @@ public class Player
         if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
         {
             WeaponsAllocator.AllocatePistolRound();
+            WeaponsAllocator.AllocateArmor(false);
+            return;
+        }
+
+        if(currentVote == null!)
+        {
+            WeaponsAllocator.Allocate();
+            WeaponsAllocator.AllocateNades();
+            WeaponsAllocator.AllocateArmor();
+            return;
+        }
+
+        Vote vote = currentVote.vote;
+
+        if(vote.GiveArmor)
+        {
+            WeaponsAllocator.AllocateArmor(vote.GiveHelmet);
+        }
+
+        if(vote.GiveNades)
+        {
+            WeaponsAllocator.AllocateNades();
+        }
+
+        if(vote.GiveWeapons)
+        {
+            WeaponsAllocator.AllocateVote(vote);
             return;
         }
 

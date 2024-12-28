@@ -3,6 +3,7 @@ using System.Text.Json;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Configs;
 using static RetakesAllocator.Modules.Weapons.Allocator;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 
 namespace RetakesAllocator.Modules.Weapons;
 
@@ -11,7 +12,9 @@ public class Config
     private const string weapons_directory = "weapons";
     private const string tprimary_path = "primary_t.json";
     private const string ctprimary_path = "primary_ct.json";
-    private const string pistols_path = "pistols.json";
+    private const string tpistols_path = "pistols_t.json";
+    private const string ctpistols_path = "pistols_ct.json";
+    private const string nades_path = "nades.json";
 
     public static void LoadConfig()
     {
@@ -19,7 +22,9 @@ public class Config
 
         LoadTPrimary();
         LoadCTPrimary();
-        LoadPistols();
+        LoadTPistols();
+        LoadCTPistols();
+        LoadNades();
     }
 
     private static void CreateWeaponsDirectory()
@@ -73,29 +78,71 @@ public class Config
         }
     }
 
-    private static void LoadPistols()
+    private static void LoadTPistols()
     {
-        string configPath = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory, weapons_directory, pistols_path);
+        string configPath = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory, weapons_directory, tpistols_path);
 
         if (!File.Exists(configPath))
         {
-            CreateConfig(configPath, Pistols);
+            CreateConfig(configPath, PistolsT);
             return;
         }
 
-        Pistols.Clear();
+        PistolsT.Clear();
 
         var config = JsonSerializer.Deserialize<WeaponsConfig>(File.ReadAllText(configPath))!;
 
         foreach (var weapon in config.Weapons)
         {
-            Pistols.Add(weapon);
+            PistolsT.Add(weapon);
         }
+    }
+    
+    private static void LoadCTPistols()
+    {
+        string configPath = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory, weapons_directory, ctpistols_path);
+
+        if (!File.Exists(configPath))
+        {
+            CreateConfig(configPath, PistolsCT);
+            return;
+        }
+
+        PistolsCT.Clear();
+
+        var config = JsonSerializer.Deserialize<WeaponsConfig>(File.ReadAllText(configPath))!;
+
+        foreach (var weapon in config.Weapons)
+        {
+            PistolsCT.Add(weapon);
+        }
+    }
+
+    private static void LoadNades()
+    {
+        string configPath = Path.Combine(Plugin.ModuleDirectory, ConfigDirectory, weapons_directory, nades_path);
+
+        if (!File.Exists(configPath))
+        {
+            CreateNadesConfig(configPath);
+            return;
+        }
+
+        var config = JsonSerializer.Deserialize<NadesConfig>(File.ReadAllText(configPath))!;
+
+        Core.NadesConfig = config;
     }
 
     private static void CreateConfig(string configPath, List<Weapon> weapons)
     {
         var config = new WeaponsConfig(weapons);
+
+        File.WriteAllText(configPath, JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    private static void CreateNadesConfig(string configPath)
+    {
+        var config = new NadesConfig();
 
         File.WriteAllText(configPath, JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
     }
@@ -110,6 +157,101 @@ class WeaponsConfig
         foreach (Weapon weapon in weapons)
         {
             Weapons.Add(weapon);
+        }
+    }
+}
+
+public class NadesConfig
+{
+    public Nades CTNades { get; set; } = new();
+    public Nades TNades { get; set; } = new();
+
+    public NadesConfig(Nades ctNades, Nades tnNades)
+    {
+        CTNades = ctNades;
+        TNades = tnNades;
+    }
+
+    public NadesConfig()
+    {
+        CTNades = new Nades()
+        {
+            Flashbangs = 2,
+            Smokes = 1,
+            Molotovs = 1,
+            HeGrenades = 1
+        };
+
+        TNades = new Nades()
+        {
+            Flashbangs = 1,
+            Smokes = 1,
+            Molotovs = 1,
+            HeGrenades = 1
+        };
+    }
+}
+
+public class Nades
+{
+    public int Flashbangs { get; set; } = 0;
+    public int Smokes { get; set; } = 0;
+    public int Molotovs { get; set; } = 0;
+    public int HeGrenades { get; set; } = 0;
+
+    public Nades()
+    {
+    }
+
+    public Nades(Nades nades)
+    {
+        Flashbangs = nades.Flashbangs;
+        Smokes = nades.Smokes;
+        Molotovs = nades.Molotovs;
+        HeGrenades = nades.HeGrenades;
+    }
+
+    public bool HasNades()
+    {
+        return Flashbangs > 0 || Smokes > 0 || Molotovs > 0 || HeGrenades > 0;
+    }
+
+    public bool HasFlashbangs()
+    {
+        return Flashbangs > 0;
+    }
+
+    public bool HasSmokes()
+    {
+        return Smokes > 0;
+    }
+
+    public bool HasMolotovs()
+    {
+        return Molotovs > 0;
+    }
+
+    public bool HasHeGrenades()
+    {
+        return HeGrenades > 0;
+    }
+
+    public void RemoveNade(CsItem nade)
+    {
+        switch (nade)
+        {
+            case CsItem.Flashbang:
+                Flashbangs--;
+                break;
+            case CsItem.Smoke:
+                Smokes--;
+                break;
+            case CsItem.Molotov or CsItem.Incendiary:
+                Molotovs--;
+                break;
+            case CsItem.HEGrenade:
+                HeGrenades--;
+                break;
         }
     }
 }

@@ -1,37 +1,56 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Cvars;
+
 using MySqlConnector;
+
+using RetakesAllocator.Modules.Models;
+using RetakesAllocator.Modules.Weapons;
+using RetakesAllocator.Modules.Votes;
+
+using static RetakesAllocator.Modules.RetakeCapability;
 using static RetakesAllocator.Modules.Database;
 using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Configs;
 using static RetakesAllocator.Modules.Handlers.Commands;
 using static RetakesAllocator.Modules.Handlers.Events;
 using static RetakesAllocator.Modules.Handlers.Listeners;
-using RetakesAllocator.Modules.Models;
-using RetakesAllocator.Modules.Weapons;
+using static RetakesAllocator.Modules.Votes.Votes;
+using static RetakesAllocator.Modules.Weapons.Allocator;
 
 namespace RetakesAllocator.Modules;
 
-[MinimumApiVersion(202)]
+[MinimumApiVersion(215)]
 public class Core : BasePlugin
 {
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "1.1.6";
+    public override string ModuleVersion => "1.2.0";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
     public static Config Config = null!;
+    public static NadesConfig NadesConfig = null!;
 
     public static Database Db = null!;
     public static List<Player> Players = new();
     public static int RoundsCounter = 0;
+    public static AsyncVoteManager currentVote = null!;
+    public static ConVar mp_damage_headshot_only = null!;
 
     public override void Load(bool hotReload)
     {
         Plugin = this;
+
+        mp_damage_headshot_only = ConVar.Find("mp_damage_headshot_only")!;
+
+        if(mp_damage_headshot_only == null!)
+        {
+            ThrowError("Failed to find mp_damage_headshot_only");
+            return;
+        }
 
         LoadConfigs();
 
@@ -40,6 +59,8 @@ public class Core : BasePlugin
         RegisterCommands();
         RegisterEvents();
         RegisterListeners();
+
+        RetakeCapability_OnLoad();
 
         if (hotReload)
         {
@@ -50,8 +71,10 @@ public class Core : BasePlugin
     public override void Unload(bool hotReload)
     {
         UnRegisterCommands();
-
+        Votes_OnPluginUnload();
         Utilities.GetPlayers().ForEach(RemovePlayerFromList);
+
+        RetakeCapability_OnUnload();
     }
 
     public static CCSGameRules GetGameRules()
@@ -97,14 +120,16 @@ public class Core : BasePlugin
             {
                 var tPrimary = reader.GetInt32("t_primary");
                 var ctPrimary = reader.GetInt32("ct_primary");
-                var secondary = reader.GetInt32("secondary");
+                var tsecondary = reader.GetInt32("t_secondary");
+                var ctSecondary = reader.GetInt32("ct_secondary");
                 var giveAwp = (GiveAwp)reader.GetInt32("give_awp");
 
                 Player player = Players[data];
 
-                player.WeaponsAllocator.PrimaryWeaponT = tPrimary;
-                player.WeaponsAllocator.PrimaryWeaponCt = ctPrimary;
-                player.WeaponsAllocator.SecondaryWeapon = secondary;
+                player.WeaponsAllocator.PrimaryWeaponT = tPrimary > PrimaryT.Count ? 0 : tPrimary;
+                player.WeaponsAllocator.PrimaryWeaponCt = ctPrimary > PrimaryCt.Count ? 0 : ctPrimary;
+                player.WeaponsAllocator.SecondaryWeaponT = tsecondary > PistolsT.Count ? 0 : tsecondary;
+                player.WeaponsAllocator.SecondaryWeaponCt = ctSecondary > PistolsCT.Count ? 0 : ctSecondary;
                 player.WeaponsAllocator.GiveAwp = giveAwp;
             }
         }
@@ -112,7 +137,7 @@ public class Core : BasePlugin
         {
             Player player = Players[data];
 
-            Query(SQL_CheckForErrors, $"INSERT INTO `weapons` (`auth`, `name`, `t_primary`, `ct_primary`, `secondary`, `give_awp`) VALUES ('{player.GetSteamId2()}', '{EscapeString(player.GetName())}' , '0', '0', '0', '0')");
+            Query(SQL_CheckForErrors, $"INSERT INTO `weapons` (`auth`, `name`) VALUES ('{player.GetSteamId2()}', '{EscapeString(player.GetName())}')");
         }
     }
 
@@ -129,6 +154,8 @@ public class Core : BasePlugin
                 ThrowError("Invalid config, please check your config file.");
                 return;
             }
+
+            Votes.Config.LoadConfig();
         }
 
         Weapons.Config.LoadConfig();

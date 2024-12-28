@@ -2,6 +2,10 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using RetakesAllocator.Modules.Models;
+using RetakesAllocator.Modules.Votes;
+
+using static RetakesAllocator.Modules.Weapons.Menu;
+using static RetakesAllocator.Modules.Votes.Votes;
 
 namespace RetakesAllocator.Modules.Weapons;
 
@@ -30,7 +34,8 @@ public class Allocator
     {
         PrimaryT,
         PrimaryCt,
-        Secondary
+        SecondaryT,
+        SecondaryCt
     };
 
     public static List<Weapon> PrimaryT = new()
@@ -46,15 +51,21 @@ public class Allocator
         new("weapon_aug", "AUG")
     };
 
-    public static List<Weapon> Pistols = new()
+    public static List<Weapon> PistolsT = new()
     {
         new("weapon_glock", "Glock-18"),
+        new("weapon_p250", "P250"),
+    };
+
+    public static List<Weapon> PistolsCT = new()
+    {
         new("weapon_usp_silencer", "USP-S"),
         new("weapon_p250", "P250"),
-        new("weapon_tec9", "Tec-9"),
-        new("weapon_fiveseven", "Five-Seven"),
-        new("weapon_deagle", "Desert Eagle")
+        new("weapon_hkp2000", "P2000")
     };
+
+    public static Nades CTNades = new();
+    public static Nades TNades = new();
 
     private readonly Player _player;
 
@@ -62,7 +73,8 @@ public class Allocator
 
     public int PrimaryWeaponT = 0;
     public int PrimaryWeaponCt = 0;
-    public int SecondaryWeapon = 0;
+    public int SecondaryWeaponT = 0;
+    public int SecondaryWeaponCt = 0;
 
     public GiveAwp GiveAwp = GiveAwp.Never;
     public bool ShouldGiveAwp = false;
@@ -70,6 +82,12 @@ public class Allocator
     public Allocator(Player player)
     {
         _player = player;
+    }
+
+    public static void ResetNades()
+    {
+        CTNades = new Nades(Core.NadesConfig.CTNades);
+        TNades = new Nades(Core.NadesConfig.TNades);
     }
 
     public static int GetWeaponIndex(string weapon, WeaponType type)
@@ -80,8 +98,10 @@ public class Allocator
                 return PrimaryT.FindIndex(w => w.DisplayName == weapon);
             case WeaponType.PrimaryCt:
                 return PrimaryCt.FindIndex(w => w.DisplayName == weapon);
-            case WeaponType.Secondary:
-                return Pistols.FindIndex(w => w.DisplayName == weapon);
+            case WeaponType.SecondaryT:
+                return PistolsT.FindIndex(w => w.DisplayName == weapon);
+            case WeaponType.SecondaryCt:
+                return PistolsCT.FindIndex(w => w.DisplayName == weapon);
         }
 
         return -1;
@@ -97,6 +117,101 @@ public class Allocator
         };
 
         return giveAwp;
+    }
+
+    public void AllocateNades()
+    {
+        if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
+        {
+            return;
+        }
+
+        if (!cCSPlayerController.PawnIsAlive)
+        {
+            return;
+        }
+
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
+        {
+            return;
+        }
+
+        if((cCSPlayerController.Team == CsTeam.Terrorist && !TNades.HasNades()) || (cCSPlayerController.Team == CsTeam.CounterTerrorist && !CTNades.HasNades()))
+        {
+            return;
+        }
+
+        Nades nades = cCSPlayerController.Team == CsTeam.Terrorist ? TNades : CTNades;
+
+        CsItem grenade;
+        do{
+            grenade = SelectGrenade();
+        }
+        while(!CheckIfNadeAvailable(nades, grenade));
+
+        nades.RemoveNade(grenade);
+
+        cCSPlayerController.GiveNamedItem(grenade);
+    }
+
+    public bool CheckIfNadeAvailable(Nades nades, CsItem nade)
+    {
+        if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
+        {
+            return false;
+        }
+
+        if (!cCSPlayerController.PawnIsAlive)
+        {
+            return false;
+        }
+
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
+        {
+            return false;
+        }
+
+        switch(nade)
+        {
+            case CsItem.Flashbang:
+            {
+                return nades.HasFlashbangs();
+            }
+            case CsItem.Molotov or CsItem.Incendiary:
+            {
+                return nades.HasMolotovs();
+            }
+            case CsItem.HEGrenade:
+            {
+                return nades.HasHeGrenades();
+            }
+            case CsItem.SmokeGrenade:
+            {
+                return nades.HasSmokes();
+            }
+        }
+
+        return false;
+    }
+
+    public void AllocateArmor(bool give_full = true)
+    {
+        if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
+        {
+            return;
+        }
+
+        if (!cCSPlayerController.PawnIsAlive)
+        {
+            return;
+        }
+
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
+        {
+            return;
+        }
+
+        cCSPlayerController.GiveNamedItem(give_full ? CsItem.KevlarHelmet : CsItem.Kevlar);
     }
 
     public void Allocate()
@@ -133,22 +248,32 @@ public class Allocator
             }
         }
 
-        string secondary = Pistols[SecondaryWeapon].Item;
+        string secondary;
+
+        if (ShouldGiveAwp)
+        {
+            secondary = "weapon_deagle";
+        }
+        else
+        {
+            if (cCSPlayerController.Team == CsTeam.Terrorist)
+            {
+                secondary = PistolsT[SecondaryWeaponT].Item;
+            }
+            else
+            {
+                secondary = PistolsCT[SecondaryWeaponCt].Item;
+            }
+        }
 
         cCSPlayerController.GiveNamedItem(primary);
         cCSPlayerController.GiveNamedItem(secondary);
         cCSPlayerController.GiveNamedItem(CsItem.Knife);
 
-        CsItem grenade = SelectGrenade();
-        cCSPlayerController.GiveNamedItem(grenade);
-
         if (cCSPlayerController.Team == CsTeam.CounterTerrorist)
         {
            GiveCtEquipment();
         }
-
-        if(Core.Config.GiveArmor)
-            GiveArmor();
     }
 
     public void AllocatePistolRound()
@@ -168,7 +293,6 @@ public class Allocator
             return;
         }
 
-
         string secondary = Core.Config.PistolRound.GetWeaponByTeam(cCSPlayerController.Team);
 
         cCSPlayerController.GiveNamedItem(secondary);
@@ -178,9 +302,41 @@ public class Allocator
         {
            GiveCtEquipment();
         }
+    }
 
-        if(Core.Config.GiveArmor)
-            cCSPlayerController.GiveNamedItem(CsItem.Kevlar); 
+    public void AllocateVote(Vote vote)
+    {
+         if (_player == null || cCSPlayerController == null || !_player.player.IsValid)
+        {
+            return;
+        }
+
+        if (!cCSPlayerController.PawnIsAlive)
+        {
+            return;
+        }
+
+        if (cCSPlayerController.Team < CsTeam.Terrorist || cCSPlayerController.Team > CsTeam.CounterTerrorist)
+        {
+            return;
+        }
+
+        List<string> weapons = cCSPlayerController.Team == CsTeam.Terrorist ? vote.weapons_t : vote.weapons_ct;
+
+        if(weapons.Count > 1)
+        {
+            ShowWeaponSelectionMenu(cCSPlayerController, weapons, WeaponSelectionTime);
+        } else {
+            cCSPlayerController.GiveNamedItem("weapon_" + weapons.First());
+        }
+
+        if(vote.GiveKnife)
+            cCSPlayerController.GiveNamedItem(CsItem.Knife);
+
+        if (cCSPlayerController.Team == CsTeam.CounterTerrorist)
+        {
+           GiveCtEquipment();
+        }
     }
 
     private CsItem SelectGrenade()
@@ -222,10 +378,5 @@ public class Allocator
                 HasDefuser = true
             };
         }
-    }
-
-    private void GiveArmor()
-    {
-        cCSPlayerController.GiveNamedItem(CsItem.KevlarHelmet); 
     }
 }

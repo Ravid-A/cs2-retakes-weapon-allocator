@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Utils;
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Database;
 using Player = RetakesAllocator.Modules.Models.Player;
@@ -87,7 +86,7 @@ internal static class Utils
             return;
         }
 
-        Query(SQL_CheckForErrors, $"UPDATE `weapons` SET `t_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponT}', `ct_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponCt}', `secondary` = '{playerObj.WeaponsAllocator.SecondaryWeapon}', `give_awp` = '{(int)playerObj.WeaponsAllocator.GiveAwp}' WHERE `auth` = '{playerObj.GetSteamId2()}'");
+        Query(SQL_CheckForErrors, $"UPDATE `weapons` SET `t_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponT}', `ct_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponCt}', `t_secondary` = '{playerObj.WeaponsAllocator.SecondaryWeaponT}', `ct_secondary` = '{playerObj.WeaponsAllocator.SecondaryWeaponCt}' ,`give_awp` = '{(int)playerObj.WeaponsAllocator.GiveAwp}' WHERE `auth` = '{playerObj.GetSteamId2()}'");
 
         Players.Remove(playerObj);
     }
@@ -110,4 +109,31 @@ internal static class Utils
 
         return rounds;
     }
+
+    public static CCSPlayerController[] ValidPlayers(bool considerBots = false)
+    {
+        //considerBots = true;
+        return Utilities.GetPlayers()
+        .Where(x => x.ReallyValid(considerBots))
+        .Where(x => !x.IsHLTV)
+        .Where(x => considerBots || !x.IsBot)
+        .ToArray();
+    }
+
+    public static bool ReallyValid(this CCSPlayerController? player, bool considerBots = false)
+    {
+        return player is not null && player.IsValid && player.Connected == PlayerConnectedState.PlayerConnected &&
+            (considerBots || (!player.IsBot && !player.IsHLTV));
+    }
+
+    public static int ValidPlayerCount(bool considerBots = false)
+    {
+        return ValidPlayers(considerBots).Length;
+    }
+
+    public static T GetRandomFromList<T>(this List<T> list)
+    {
+        int index = new Random().Next(list.Count);
+        return list[index];
+    }   
 }

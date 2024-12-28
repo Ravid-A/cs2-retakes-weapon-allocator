@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.202" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.232" />
+    <PackageReference Include="RetakesPluginShared" Version="2.0.0" />
   </ItemGroup>
 </Project>
