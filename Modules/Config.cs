@@ -58,7 +58,7 @@ public class ConnectionConfig
             && Host != string.Empty
             && User != string.Empty
             && Password != string.Empty
-            && 0 < Port && Port < 65535;
+            && 0 < Port && Port <= 65535;
     }
 
     public string BuildConnectionString()
