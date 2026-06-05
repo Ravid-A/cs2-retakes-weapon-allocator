@@ -2,7 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using static RetakesAllocator.Modules.Core;
-using static RetakesAllocator.Modules.Database;
+using RetakesAllocator.Modules.Weapons;
 using Player = RetakesAllocator.Modules.Models.Player;
 
 namespace RetakesAllocator.Modules;
@@ -58,21 +58,71 @@ internal static class Utils
             return;
         }
 
-        if(FindPlayer(player) != null!)
+        if (FindPlayer(player) != null!)
+        {
+            return;
+        }
+
+        // Steam authorization may not be complete yet (e.g. during map start or
+        // hot reload). Without it we can't resolve the SteamID, so defer adding
+        // the player until OnClientAuthorized fires for them.
+        if (player.AuthorizedSteamID == null)
         {
             return;
         }
 
         var playerObj = new Player(player);
-
         Players.Add(playerObj);
 
-        var index = Players.IndexOf(playerObj);
+        // Read CounterStrikeSharp-bound values on the game thread before going async.
+        var auth = playerObj.GetSteamId2();
+        var name = playerObj.GetName();
 
-        Query(SQL_FetchUser_CB, $"SELECT * FROM `weapons` WHERE `auth` = '{playerObj.GetSteamId2()}'", index);
+        Task.Run(async () =>
+        {
+            try
+            {
+                var pref = await Store.GetUserAsync(auth);
+
+                if (pref == null)
+                {
+                    await Store.CreateUserAsync(auth, name);
+                }
+                else
+                {
+                    // Apply to the player on the game thread. Skip if they
+                    // disconnected while the DB load was in flight.
+                    Server.NextFrame(() =>
+                    {
+                        if (!Players.Contains(playerObj))
+                        {
+                            return;
+                        }
+
+                        ApplyPreferences(playerObj, pref);
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                Server.NextFrame(() =>
+                    PrintToServer($"Database error loading {auth}: {e.Message}", ConsoleColor.Red));
+            }
+        });
     }
 
-    public static void RemovePlayerFromList(CCSPlayerController player)
+    private static void ApplyPreferences(Player playerObj, WeaponPreference pref)
+    {
+        var allocator = playerObj.WeaponsAllocator;
+
+        allocator.PrimaryWeaponT = pref.TPrimary > Allocator.PrimaryT.Count ? 0 : pref.TPrimary;
+        allocator.PrimaryWeaponCt = pref.CtPrimary > Allocator.PrimaryCt.Count ? 0 : pref.CtPrimary;
+        allocator.SecondaryWeaponT = pref.TSecondary > Allocator.PistolsT.Count ? 0 : pref.TSecondary;
+        allocator.SecondaryWeaponCt = pref.CtSecondary > Allocator.PistolsCT.Count ? 0 : pref.CtSecondary;
+        allocator.GiveAwp = (GiveAwp)pref.GiveAwp;
+    }
+
+    public static void RemovePlayerFromList(CCSPlayerController player, bool flush = false)
     {
         if (player == null || !player.IsValid || player.IsBot)
         {
@@ -86,9 +136,45 @@ internal static class Utils
             return;
         }
 
-        Query(SQL_CheckForErrors, $"UPDATE `weapons` SET `t_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponT}', `ct_primary` = '{playerObj.WeaponsAllocator.PrimaryWeaponCt}', `t_secondary` = '{playerObj.WeaponsAllocator.SecondaryWeaponT}', `ct_secondary` = '{playerObj.WeaponsAllocator.SecondaryWeaponCt}' ,`give_awp` = '{(int)playerObj.WeaponsAllocator.GiveAwp}' WHERE `auth` = '{playerObj.GetSteamId2()}'");
+        // Snapshot all values on the game thread before going async.
+        var pref = new WeaponPreference
+        {
+            Auth = playerObj.GetSteamId2(),
+            TPrimary = playerObj.WeaponsAllocator.PrimaryWeaponT,
+            CtPrimary = playerObj.WeaponsAllocator.PrimaryWeaponCt,
+            TSecondary = playerObj.WeaponsAllocator.SecondaryWeaponT,
+            CtSecondary = playerObj.WeaponsAllocator.SecondaryWeaponCt,
+            GiveAwp = (int)playerObj.WeaponsAllocator.GiveAwp,
+        };
 
         Players.Remove(playerObj);
+
+        if (flush)
+        {
+            // Plugin unload path: block so the save completes before teardown.
+            try
+            {
+                Store.SaveUserAsync(pref).GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red);
+            }
+            return;
+        }
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                await Store.SaveUserAsync(pref);
+            }
+            catch (Exception e)
+            {
+                Server.NextFrame(() =>
+                    PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red));
+            }
+        });
     }
 
     public static int GetRoundsAmount()

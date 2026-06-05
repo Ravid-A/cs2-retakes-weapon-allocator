@@ -1,6 +1,5 @@
 using System.Text.Json;
 using CounterStrikeSharp.API.Modules.Utils;
-using MySqlConnector;
 
 using static RetakesAllocator.Modules.Core;
 
@@ -28,31 +27,53 @@ public class Config
 
     public bool IsValid()
     {
-        return DbConnection.Database != string.Empty && DbConnection.Host != string.Empty && DbConnection.User != string.Empty && DbConnection.Password != string.Empty && 0 < DbConnection.Port && DbConnection.Port < 65535;
-    }
-
-    public string BuildConnectionString()
-    {
-        var builder = new MySqlConnectionStringBuilder
-        {
-            Database = DbConnection.Database,
-            UserID = DbConnection.User,
-            Password = DbConnection.Password,
-            Server = DbConnection.Host,
-            Port = DbConnection.Port,
-        };
-
-        return builder.ConnectionString;
+        return DbConnection.IsValid();
     }
 }
 
 public class ConnectionConfig
 {
+    /// <summary>"mysql" (default, MySQL/MariaDB) or "sqlite".</summary>
+    public string Provider { get; init; } = "mysql";
+
     public string Host { get; init; } = string.Empty;
     public string Database { get; init; } = string.Empty;
     public string User { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
     public uint Port { get; init; } = 3306;
+
+    /// <summary>SQLite database file (used only when Provider == "sqlite"). Relative paths resolve against the plugin's module directory.</summary>
+    public string SqlitePath { get; init; } = "weapons.db";
+
+    public bool IsSqlite => string.Equals(Provider, "sqlite", StringComparison.OrdinalIgnoreCase);
+
+    public bool IsValid()
+    {
+        if (IsSqlite)
+        {
+            return SqlitePath != string.Empty;
+        }
+
+        return Database != string.Empty
+            && Host != string.Empty
+            && User != string.Empty
+            && Password != string.Empty
+            && 0 < Port && Port <= 65535;
+    }
+
+    public string BuildConnectionString()
+    {
+        var builder = new MySqlConnector.MySqlConnectionStringBuilder
+        {
+            Database = Database,
+            UserID = User,
+            Password = Password,
+            Server = Host,
+            Port = Port,
+        };
+
+        return builder.ConnectionString;
+    }
 }
 
 public class PrefixConfig
