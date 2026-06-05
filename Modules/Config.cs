@@ -1,6 +1,5 @@
 using System.Text.Json;
 using CounterStrikeSharp.API.Modules.Utils;
-using MySqlConnector;
 
 using static RetakesAllocator.Modules.Core;
 
@@ -29,20 +28,6 @@ public class Config
     public bool IsValid()
     {
         return DbConnection.IsValid();
-    }
-
-    public string BuildConnectionString()
-    {
-        var builder = new MySqlConnectionStringBuilder
-        {
-            Database = DbConnection.Database,
-            UserID = DbConnection.User,
-            Password = DbConnection.Password,
-            Server = DbConnection.Host,
-            Port = DbConnection.Port,
-        };
-
-        return builder.ConnectionString;
     }
 }
 
