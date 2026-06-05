@@ -82,8 +82,17 @@ internal static class Utils
                 }
                 else
                 {
-                    // Apply to the player on the game thread.
-                    Server.NextFrame(() => ApplyPreferences(playerObj, pref));
+                    // Apply to the player on the game thread. Skip if they
+                    // disconnected while the DB load was in flight.
+                    Server.NextFrame(() =>
+                    {
+                        if (!Players.Contains(playerObj))
+                        {
+                            return;
+                        }
+
+                        ApplyPreferences(playerObj, pref);
+                    });
                 }
             }
             catch (Exception e)
