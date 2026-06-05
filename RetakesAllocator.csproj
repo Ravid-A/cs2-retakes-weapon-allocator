@@ -14,7 +14,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="1.0.232" />
     <PackageReference Include="RetakesPluginShared" Version="2.0.0" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
   </ItemGroup>
 </Project>
