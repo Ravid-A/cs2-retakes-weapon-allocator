@@ -10,18 +10,24 @@ This plugin is made to run alongside B3none's retakes implementation: https://gi
 
 The config file will be generated automaticly by the plugin and will be located where the plugin is and inside a directory named `configs`.
 
-The DBConnection will be generated empty and the plugin will raise an exception, make sure to update it or update the one provided with the release.
+The DbConnection will be generated empty and the plugin will raise an exception, make sure to update it or update the one provided with the release.
 
 ### Example Config
 
+The `Provider` field selects the database engine: `"mysql"` (MySQL/MariaDB, the default) or `"sqlite"` (a local file, no server required).
+
+**MySQL / MariaDB:**
+
 ```
 {
-  "DBConnection": {
+  "DbConnection": {
+    "Provider": "mysql",
     "Host": "<HOST>",
     "Database": "<DB>",
     "User": "<USER>",
     "Password": "<PASSWORD>",
-    "Port": 3306
+    "Port": 3306,
+    "SqlitePath": "weapons.db"
   },
   "PREFIX": {
     "PREFIX": " \u0004[Retakes]\u0001",
@@ -36,6 +42,17 @@ The DBConnection will be generated empty and the plugin will raise an exception,
   ]
 }
 
+```
+
+**SQLite** (only `Provider` and `SqlitePath` matter; the path is relative to the plugin's directory unless absolute):
+
+```
+{
+  "DbConnection": {
+    "Provider": "sqlite",
+    "SqlitePath": "weapons.db"
+  }
+}
 ```
 
 ## Weapons Config
