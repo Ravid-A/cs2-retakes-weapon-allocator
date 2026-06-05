@@ -76,15 +76,15 @@ public class ConnectionConfig
             && 0 < Port && Port < 65535;
     }
 
-    public string BuildConnectionStringFor(ConnectionConfig config)
+    public string BuildConnectionString()
     {
         var builder = new MySqlConnector.MySqlConnectionStringBuilder
         {
-            Database = config.Database,
-            UserID = config.User,
-            Password = config.Password,
-            Server = config.Host,
-            Port = config.Port,
+            Database = Database,
+            UserID = User,
+            Password = Password,
+            Server = Host,
+            Port = Port,
         };
 
         return builder.ConnectionString;
