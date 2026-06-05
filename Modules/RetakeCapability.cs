@@ -31,12 +31,8 @@ public class RetakeCapability
         }
 
         var sender = new PluginCapability<IRetakesPluginEventSender>("retakes_plugin:event_sender").Get();
-        if (sender is null)
-        {
-            throw new Exception("Couldn't load retakes plugin event sender capability");
-        }
 
-        RetakesPluginEventSender = sender;
+        RetakesPluginEventSender = sender ?? throw new Exception("Couldn't load retakes plugin event sender capability");
         return sender;
     }
 
