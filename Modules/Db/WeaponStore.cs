@@ -35,8 +35,11 @@ public class WeaponStore
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
         return await conn.QuerySingleOrDefaultAsync<WeaponPreference>(
-            "SELECT auth, name, t_primary, ct_primary, t_secondary, ct_secondary, give_awp " +
-            "FROM weapons WHERE auth = @auth",
+            """
+            SELECT auth, name, t_primary, ct_primary, t_secondary, ct_secondary, give_awp
+            FROM weapons
+            WHERE auth = @auth
+            """,
             new { auth });
     }
 
@@ -46,7 +49,10 @@ public class WeaponStore
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
         await conn.ExecuteAsync(
-            "INSERT INTO weapons (auth, name) VALUES (@auth, @name)",
+            """
+            INSERT INTO weapons (auth, name)
+            VALUES (@auth, @name)
+            """,
             new { auth, name });
     }
 
@@ -56,10 +62,15 @@ public class WeaponStore
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
         await conn.ExecuteAsync(
-            "UPDATE weapons SET " +
-            "t_primary = @TPrimary, ct_primary = @CtPrimary, " +
-            "t_secondary = @TSecondary, ct_secondary = @CtSecondary, " +
-            "give_awp = @GiveAwp WHERE auth = @Auth",
+            """
+            UPDATE weapons
+            SET t_primary = @TPrimary,
+                ct_primary = @CtPrimary,
+                t_secondary = @TSecondary,
+                ct_secondary = @CtSecondary,
+                give_awp = @GiveAwp
+            WHERE auth = @Auth
+            """,
             pref);
     }
 }
