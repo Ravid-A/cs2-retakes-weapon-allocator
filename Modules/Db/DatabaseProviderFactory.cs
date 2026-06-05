@@ -22,6 +22,6 @@ public static class DatabaseProviderFactory
             return new SqliteProvider(builder.ConnectionString);
         }
 
-        return new MySqlProvider(config.BuildConnectionStringFor(config));
+        return new MySqlProvider(config.BuildConnectionString());
     }
 }
