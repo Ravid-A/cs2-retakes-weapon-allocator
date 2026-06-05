@@ -1,5 +1,5 @@
 using System.IO;
-using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 
 namespace RetakesAllocator.Modules;
 
@@ -12,16 +12,13 @@ public static class DatabaseProviderFactory
     /// <param name="baseDirectory">Directory that relative SQLite paths resolve against (the plugin module directory at runtime).</param>
     public static IDatabaseProvider Create(ConnectionConfig config, string baseDirectory)
     {
-        if (config.IsSqlite)
-        {
-            var path = Path.IsPathRooted(config.SqlitePath)
-                ? config.SqlitePath
-                : Path.Combine(baseDirectory, config.SqlitePath);
+        if (!config.IsSqlite) return new MySqlProvider(config.BuildConnectionString());
+        var path = Path.IsPathRooted(config.SqlitePath)
+            ? config.SqlitePath
+            : Path.Combine(baseDirectory, config.SqlitePath);
 
-            var builder = new SqliteConnectionStringBuilder { DataSource = path };
-            return new SqliteProvider(builder.ConnectionString);
-        }
+        var connectionString = $"Data Source={path}";
+        return new SqliteProvider(connectionString);
 
-        return new MySqlProvider(config.BuildConnectionString());
     }
 }
