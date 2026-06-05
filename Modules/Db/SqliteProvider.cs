@@ -1,5 +1,5 @@
 using System.Data.Common;
-using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 
 namespace RetakesAllocator.Modules;
 
@@ -12,7 +12,7 @@ public class SqliteProvider : IDatabaseProvider
         _connectionString = connectionString;
     }
 
-    public DbConnection CreateConnection() => new SqliteConnection(_connectionString);
+    public DbConnection CreateConnection() => new SQLiteConnection(_connectionString);
 
     public string CreateTableSql =>
         """
