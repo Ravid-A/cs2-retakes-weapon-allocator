@@ -63,6 +63,14 @@ internal static class Utils
             return;
         }
 
+        // Steam authorization may not be complete yet (e.g. during map start or
+        // hot reload). Without it we can't resolve the SteamID, so defer adding
+        // the player until OnClientAuthorized fires for them.
+        if (player.AuthorizedSteamID == null)
+        {
+            return;
+        }
+
         var playerObj = new Player(player);
         Players.Add(playerObj);
 
