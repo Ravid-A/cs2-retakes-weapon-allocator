@@ -75,6 +75,11 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
     public override void Unload(bool hotReload)
     {
+        // _loaded is static, so it survives an unload/reload cycle within the same
+        // process. Reset it here so the next Load's "register votes once" assumption
+        // holds and OnConfigParsed doesn't register them early on the next load.
+        _loaded = false;
+
         UnRegisterCommands();
         Votes_OnPluginUnload();
         Utilities.GetPlayers().ForEach(p => RemovePlayerFromList(p, flush: true));
@@ -114,7 +119,9 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     public void OnConfigParsed(RetakesAllocatorConfig config)
     {
         // OnConfigParsed runs before Load on first parse, and again on every
-        // file-watch hot reload. Plugin may not be set yet on the first call.
+        // file-watch hot reload. Plugin may not be set yet on the first call, and
+        // on a hot reload it may still point at the previous instance until Load
+        // re-sets it, so we (re)assign it here before any Plugin.AddCommand runs.
         Plugin = this;
         Config = config;
 
