@@ -27,6 +27,20 @@ public class WeaponStore
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
         await conn.ExecuteAsync(_provider.CreateTableSql);
+        await AddColumnIfMissing(conn, "t_pistol_round");
+        await AddColumnIfMissing(conn, "ct_pistol_round");
+    }
+
+    private static async Task AddColumnIfMissing(System.Data.Common.DbConnection conn, string column)
+    {
+        try
+        {
+            await conn.ExecuteAsync($"ALTER TABLE weapons ADD COLUMN {column} INTEGER NOT NULL DEFAULT 0");
+        }
+        catch
+        {
+            // Column already exists. CREATE TABLE handles fresh installs; this keeps old DBs working.
+        }
     }
 
     /// <summary>Returns the stored preferences for a SteamID, or null if none exist.</summary>
@@ -36,7 +50,7 @@ public class WeaponStore
         await conn.OpenAsync();
         return await conn.QuerySingleOrDefaultAsync<WeaponPreference>(
             """
-            SELECT auth, name, t_primary, ct_primary, t_secondary, ct_secondary, give_awp
+            SELECT auth, name, t_primary, ct_primary, t_secondary, ct_secondary, t_pistol_round, ct_pistol_round, give_awp
             FROM weapons
             WHERE auth = @auth
             """,
@@ -68,6 +82,8 @@ public class WeaponStore
                 ct_primary = @CtPrimary,
                 t_secondary = @TSecondary,
                 ct_secondary = @CtSecondary,
+                t_pistol_round = @TPistolRound,
+                ct_pistol_round = @CtPistolRound,
                 give_awp = @GiveAwp
             WHERE auth = @Auth
             """,
