@@ -56,12 +56,13 @@ This is the full default config, generated on first load:
     "PrefixCon": "[RetakesAllocator]"
   },
   "PistolRound": {
-    "RoundAmount": 2,
+    "RoundAmount": 4,
     "WeaponT": "weapon_glock",
     "WeaponCt": "weapon_usp_silencer"
   },
   "TriggerWords": [ "guns", "gun", "weapon", "weapons" ],
-  "AddSkipOption": true,
+  "AddSkipOption": false,
+  "AwpPermission": "",
   "Weapons": {
     "PrimaryT": [
       { "Item": "weapon_ak47", "DisplayName": "AK-47" },
@@ -130,9 +131,12 @@ For **MySQL**, set `"Provider": "mysql"` and fill in the connection fields; for
 Selectable weapons, grenade kits, and weapon-vote definitions all live in the single
 config file above:
 
-- **`Weapons`** — the four selectable lists (`PrimaryT`, `PrimaryCt`, `PistolsT`,
-  `PistolsCt`). Each entry is an `Item` (the `weapon_*` class name) and the
+- **`Weapons`** — the six selectable lists (`PistolsT`, `PistolsCT`, `PrimaryT`, `PrimaryCT`,
+`SecondaryT`, `SecondaryCT`,). Each entry is an `Item` (the `weapon_*` class name) and the
   `DisplayName` shown in the in-game menu.
+- **`AwpPermission`** — permission needed to see/select AWP options and receive an
+  AWP. The default is `empty`; set the permission `@VIP` for VIP Players, or
+  leave it empty to allow everyone.
 - **`Nades`** — per-team grenade kits (`CtNades` / `TNades`): how many of each
   grenade a player is given.
 - **`Votes`** — each vote defines a chat command (`css_<Command>`), the weapons it
