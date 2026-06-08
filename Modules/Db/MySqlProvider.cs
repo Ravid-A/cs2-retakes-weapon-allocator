@@ -24,6 +24,8 @@ public class MySqlProvider : IDatabaseProvider
             `ct_primary` INT NOT NULL DEFAULT 0,
             `t_secondary` INT NOT NULL DEFAULT 0,
             `ct_secondary` INT NOT NULL DEFAULT 0,
+            `t_pistol_round` INT NOT NULL DEFAULT 0,
+            `ct_pistol_round` INT NOT NULL DEFAULT 0,
             `give_awp` INT NOT NULL DEFAULT 0,
             PRIMARY KEY (`id`),
             UNIQUE (`auth`)
