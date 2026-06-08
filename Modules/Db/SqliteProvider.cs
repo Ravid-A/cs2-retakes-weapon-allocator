@@ -24,6 +24,8 @@ public class SqliteProvider : IDatabaseProvider
             ct_primary INTEGER NOT NULL DEFAULT 0,
             t_secondary INTEGER NOT NULL DEFAULT 0,
             ct_secondary INTEGER NOT NULL DEFAULT 0,
+            t_pistol_round INTEGER NOT NULL DEFAULT 0,
+            ct_pistol_round INTEGER NOT NULL DEFAULT 0,
             give_awp INTEGER NOT NULL DEFAULT 0
         );
         """;
