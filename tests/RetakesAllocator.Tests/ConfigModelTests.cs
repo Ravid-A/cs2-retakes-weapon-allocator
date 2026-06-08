@@ -4,6 +4,7 @@ using Xunit;
 
 namespace RetakesAllocator.Tests;
 
+[Collection("StaticState")]
 public class ConfigModelTests
 {
     [Fact]

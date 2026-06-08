@@ -7,10 +7,11 @@ using Player = RetakesAllocator.Modules.Models.Player;
 
 namespace RetakesAllocator.Modules;
 
-internal static class Utils
+public static class Utils
 {
-    public static string PREFIX { get; set; } = Core.Config.Prefix.Prefix;
-    public static string PREFIX_CON { get; set; } = Core.Config.Prefix.PrefixCon;
+    // Populated by ConfigApplier.Apply once the config is parsed.
+    public static string PREFIX { get; set; } = string.Empty;
+    public static string PREFIX_CON { get; set; } = string.Empty;
 
     public static void PrintToChat(CCSPlayerController controller, string msg)
     {
