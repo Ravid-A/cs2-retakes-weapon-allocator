@@ -1,35 +1,36 @@
+using RetakesAllocator.Modules.Models;
 using static RetakesAllocator.Modules.Core;
 
 namespace RetakesAllocator.Modules.Votes;
 
 public class AsyncVoteManager
 {
-    private List<int> votes = new();
-    public int VoteCount => votes.Count;
+    private List<int> _votes = new();
+    public int VoteCount => _votes.Count;
     public int RequiredVotes => _voteValidator.RequiredVotes;
     private readonly AsyncVoteValidator _voteValidator;
-    public string Command => vote.Command;
-    public Vote vote { get; set; } = null!;
+    public string Command => Vote.Command;
+    public Vote Vote { get; set; } = null!;
 
     public AsyncVoteManager(Vote vote)
     {
         _voteValidator = new AsyncVoteValidator();
-        this.vote = vote;
+        Vote = vote;
     }
 
     public void OnMapStart()
     {
-        votes.Clear();
+        _votes.Clear();
     }
 
     public VoteResultEnum AddVote(int userId)
     {
         VoteResultEnum? result = null;
-        if (votes.IndexOf(userId) != -1)
+        if (_votes.IndexOf(userId) != -1)
             result = VoteResultEnum.AlreadyAddedBefore;
         else
         {
-            votes.Add(userId);
+            _votes.Add(userId);
             result = VoteResultEnum.Added;
         }
 
@@ -38,9 +39,9 @@ public class AsyncVoteManager
 
     public bool CheckVotes()
     {
-        if (_voteValidator.CheckVotes(votes.Count))
+        if (_voteValidator.CheckVotes(_votes.Count))
         {
-            votes.Clear();
+            _votes.Clear();
             return true;
         }
 
@@ -49,18 +50,18 @@ public class AsyncVoteManager
 
     public bool IsRunningVote()
     {
-        return currentVote != null! && Command == currentVote.Command;
+        return CurrentVote != null! && Command == CurrentVote.Command;
     }
 
     public void RemoveVote(int userId)
     {
-        var index = votes.IndexOf(userId);
+        var index = _votes.IndexOf(userId);
         if (index > -1)
-            votes.RemoveAt(index);
+            _votes.RemoveAt(index);
     }
 
     public void ClearVotes()
     {
-        votes.Clear();
+        _votes.Clear();
     }
 }

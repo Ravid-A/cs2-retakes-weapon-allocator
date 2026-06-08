@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using Microsoft.Extensions.Logging;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
@@ -9,7 +10,7 @@ namespace RetakesAllocator.Modules.Handlers;
 
 internal static class Events
 {
-    static bool IgnoreRoundEnd = false;
+    static bool _ignoreRoundEnd = false;
 
     public static void RegisterEvents()
     {
@@ -22,14 +23,14 @@ internal static class Events
     {
         if (GetGameRules().WarmupPeriod)
         {
-            IgnoreRoundEnd = true;
+            _ignoreRoundEnd = true;
             return HookResult.Continue;
         }
 
         SetupPlayers(Players);
         ResetNades();
 
-        if(currentVote != null && currentVote.vote.OnlyHeadshots)
+        if(CurrentVote != null && CurrentVote.Vote.OnlyHeadshots)
         {
             mp_damage_headshot_only.SetValue(true);
         }
@@ -39,12 +40,12 @@ internal static class Events
 
     private static HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
-        if (GetGameRules().WarmupPeriod || IgnoreRoundEnd)
+        if (GetGameRules().WarmupPeriod || _ignoreRoundEnd)
         {
-            IgnoreRoundEnd = false;
+            _ignoreRoundEnd = false;
             return HookResult.Continue;
         }
-        
+
         RoundsCounter++;
         mp_damage_headshot_only.SetValue(false);
 
@@ -62,7 +63,7 @@ internal static class Events
 
         if (playerController == null! || !playerController.IsValid)
         {
-            PrintToServer("OnPlayerSpawn: playerController is null or invalid");
+            Plugin.Logger.LogDebug("Skipping spawn allocation: player controller is null or invalid");
             return HookResult.Continue;
         }
 
@@ -70,11 +71,9 @@ internal static class Events
 
         if (player == null! || !player.IsValid())
         {
-            PrintToServer("OnPlayerSpawn: player is null or invalid");
+            Plugin.Logger.LogDebug("Skipping spawn allocation: player is not tracked or invalid");
             return HookResult.Continue;
         }
-
-        PrintToServer("OnPlayerSpawn");
 
         player.CreateSpawnDelay();
 

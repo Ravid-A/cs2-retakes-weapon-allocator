@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using RetakesAllocator.Modules;
+using RetakesAllocator.Modules.Config;
 using RetakesAllocator.Modules.Weapons;
+using RetakesAllocator.Modules.Models;
 using RetakesAllocator.Modules.Votes;
 using Xunit;
+
 using VotesClass = RetakesAllocator.Modules.Votes.Votes;
 
 namespace RetakesAllocator.Tests;
@@ -39,10 +42,10 @@ public class ConfigApplierTests : IDisposable
         _savedPistolsCT = new List<Weapon>(Allocator.PistolsCT);
         _savedVotes = new List<Vote>(VotesClass.WeaponVotes);
         _savedWeaponSelectionTime = VotesClass.WeaponSelectionTime;
-        _savedRequired = VotesClass.RequiredPrecentage;
+        _savedRequired = VotesClass.RequiredPercentage;
         _savedNades = Core.NadesConfig;
-        _savedPrefix = Utils.PREFIX;
-        _savedPrefixCon = Utils.PREFIX_CON;
+        _savedPrefix = Utils.Prefix;
+        _savedPrefixCon = Utils.PrefixCon;
     }
 
     public void Dispose()
@@ -60,11 +63,11 @@ public class ConfigApplierTests : IDisposable
         VotesClass.WeaponVotes.Clear();
         VotesClass.WeaponVotes.AddRange(_savedVotes);
         VotesClass.WeaponSelectionTime = _savedWeaponSelectionTime;
-        VotesClass.RequiredPrecentage = _savedRequired;
+        VotesClass.RequiredPercentage = _savedRequired;
 
         Core.NadesConfig = _savedNades;
-        Utils.PREFIX = _savedPrefix;
-        Utils.PREFIX_CON = _savedPrefixCon;
+        Utils.Prefix = _savedPrefix;
+        Utils.PrefixCon = _savedPrefixCon;
     }
 
     [Fact]
@@ -82,7 +85,7 @@ public class ConfigApplierTests : IDisposable
             },
             Nades = new NadesConfig
             {
-                CTNades = new Nades { Flashbangs = 9 },
+                CtNades = new Nades { Flashbangs = 9 },
                 TNades = new Nades { Flashbangs = 8 },
             },
             Votes = new VotesSection
@@ -95,8 +98,8 @@ public class ConfigApplierTests : IDisposable
 
         ConfigApplier.Apply(config);
 
-        Assert.Equal("[P]", Utils.PREFIX);
-        Assert.Equal("[C]", Utils.PREFIX_CON);
+        Assert.Equal("[P]", Utils.Prefix);
+        Assert.Equal("[C]", Utils.PrefixCon);
 
         Assert.Single(Allocator.PrimaryT);
         Assert.Equal("weapon_ak47", Allocator.PrimaryT[0].Item);
@@ -104,10 +107,10 @@ public class ConfigApplierTests : IDisposable
         Assert.Single(Allocator.PistolsT);
         Assert.Single(Allocator.PistolsCT);
 
-        Assert.Equal(9, Core.NadesConfig.CTNades.Flashbangs);
+        Assert.Equal(9, Core.NadesConfig.CtNades.Flashbangs);
         Assert.Equal(8, Core.NadesConfig.TNades.Flashbangs);
 
-        Assert.Equal(42, VotesClass.RequiredPrecentage);
+        Assert.Equal(42, VotesClass.RequiredPercentage);
         Assert.Equal(7, VotesClass.WeaponSelectionTime);
         Assert.Single(VotesClass.WeaponVotes);
         Assert.Equal("xx", VotesClass.WeaponVotes[0].Command);

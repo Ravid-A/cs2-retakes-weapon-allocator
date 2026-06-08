@@ -1,7 +1,7 @@
 using RetakesAllocator.Modules.Weapons;
 using VotesClass = RetakesAllocator.Modules.Votes.Votes;
 
-namespace RetakesAllocator.Modules;
+namespace RetakesAllocator.Modules.Config;
 
 /// <summary>
 /// Copies a parsed <see cref="RetakesAllocatorConfig"/> into the static state the
@@ -13,8 +13,8 @@ public static class ConfigApplier
 {
     public static void Apply(RetakesAllocatorConfig config)
     {
-        Utils.PREFIX = config.Prefix.Prefix;
-        Utils.PREFIX_CON = config.Prefix.PrefixCon;
+        Utils.Prefix = config.Prefix.Prefix;
+        Utils.PrefixCon = config.Prefix.PrefixCon;
 
         Core.NadesConfig = config.Nades;
 
@@ -25,7 +25,7 @@ public static class ConfigApplier
 
         ReplaceContents(VotesClass.WeaponVotes, config.Votes.Votes);
         VotesClass.WeaponSelectionTime = config.Votes.WeaponSelectionTime;
-        VotesClass.RequiredPrecentage = config.Votes.RequiredPercentage;
+        VotesClass.RequiredPercentage = config.Votes.RequiredPercentage;
     }
 
     private static void ReplaceContents<T>(List<T> target, List<T> source)

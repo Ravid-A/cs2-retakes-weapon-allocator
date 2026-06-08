@@ -2,9 +2,10 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Cvars;
+using Microsoft.Extensions.Logging;
 
+using RetakesAllocator.Modules.Config;
 using RetakesAllocator.Modules.Models;
-using RetakesAllocator.Modules.Weapons;
 using RetakesAllocator.Modules.Votes;
 
 using static RetakesAllocator.Modules.RetakeCapability;
@@ -13,11 +14,10 @@ using static RetakesAllocator.Modules.Handlers.Commands;
 using static RetakesAllocator.Modules.Handlers.Events;
 using static RetakesAllocator.Modules.Handlers.Listeners;
 using static RetakesAllocator.Modules.Votes.Votes;
-using static RetakesAllocator.Modules.Weapons.Allocator;
 
 namespace RetakesAllocator.Modules;
 
-[MinimumApiVersion(215)]
+[MinimumApiVersion(360)]
 public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 {
     public static Core Plugin = null!;
@@ -39,7 +39,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     public static WeaponStore Store = null!;
     public static List<Player> Players = new();
     public static int RoundsCounter = 0;
-    public static AsyncVoteManager currentVote = null!;
+    public static AsyncVoteManager CurrentVote = null!;
     public static ConVar mp_damage_headshot_only = null!;
 
     public override void Load(bool hotReload)
@@ -50,7 +50,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         if(mp_damage_headshot_only == null!)
         {
-            ThrowError("Failed to find mp_damage_headshot_only");
+            Plugin.Logger.LogError("Failed to find the mp_damage_headshot_only convar; headshot-only rounds will not work");
             return;
         }
 
@@ -94,7 +94,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         if(gameRules == null!)
         {
-            ThrowError("Failed to get game rules");
+            Plugin.Logger.LogError("Failed to resolve the game rules entity");
             return null!;
         }
 
@@ -108,11 +108,11 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
             var provider = DatabaseProviderFactory.Create(Config.DbConnection, Plugin.ModuleDirectory);
             Store = new WeaponStore(provider);
             Store.InitializeAsync().GetAwaiter().GetResult();
-            PrintToServer("Connected to database");
+            Plugin.Logger.LogInformation("Connected to the {Provider} database", Config.DbConnection.Provider);
         }
         catch (Exception e)
         {
-            ThrowError($"Failed to connect to database: {e.Message}");
+            Plugin.Logger.LogError(e, "Failed to connect to the {Provider} database; check the DbConnection section of the config", Config.DbConnection.Provider);
         }
     }
 
@@ -127,7 +127,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         if (!Config.IsValid())
         {
-            ThrowError("Invalid config, please check your config file.");
+            Plugin.Logger.LogError("Invalid configuration; check the DbConnection section of the config file");
             return;
         }
 
@@ -151,6 +151,6 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     {
         ConfigApplier.Apply(Config);
         Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
-        PrintToServer("Config re-applied");
+        Plugin.Logger.LogInformation("Configuration reloaded and applied");
     }
 }

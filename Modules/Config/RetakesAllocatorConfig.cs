@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
+using RetakesAllocator.Modules.Models;
 using RetakesAllocator.Modules.Weapons;
 using RetakesAllocator.Modules.Votes;
 using VotesClass = RetakesAllocator.Modules.Votes.Votes;
 
-namespace RetakesAllocator.Modules;
+namespace RetakesAllocator.Modules.Config;
 
 /// <summary>
 /// Single consolidated plugin config, loaded and saved by CounterStrikeSharp's
@@ -20,9 +22,6 @@ public class RetakesAllocatorConfig : BasePluginConfig
 
     [JsonPropertyName("PistolRound")]
     public PistolRoundConfig PistolRound { get; set; } = new();
-
-    [JsonPropertyName("GiveArmor")]
-    public bool GiveArmor { get; set; } = true;
 
     [JsonPropertyName("TriggerWords")]
     public string[] TriggerWords { get; set; } = { "guns", "gun", "weapon", "weapons" };
@@ -46,27 +45,104 @@ public class RetakesAllocatorConfig : BasePluginConfig
 public class WeaponsSection
 {
     [JsonPropertyName("PrimaryT")]
-    public List<Weapon> PrimaryT { get; set; } = new(Allocator.PrimaryT);
+    public List<Weapon> PrimaryT { get; set; } = [..Allocator.PrimaryT];
 
     [JsonPropertyName("PrimaryCt")]
-    public List<Weapon> PrimaryCt { get; set; } = new(Allocator.PrimaryCt);
+    public List<Weapon> PrimaryCt { get; set; } = [..Allocator.PrimaryCt];
 
     [JsonPropertyName("PistolsT")]
-    public List<Weapon> PistolsT { get; set; } = new(Allocator.PistolsT);
+    public List<Weapon> PistolsT { get; set; } = [..Allocator.PistolsT];
 
     [JsonPropertyName("PistolsCt")]
-    public List<Weapon> PistolsCt { get; set; } = new(Allocator.PistolsCT);
+    public List<Weapon> PistolsCt { get; set; } = [..Allocator.PistolsCT];
 }
 
 /// <summary>Vote definitions plus the vote tuning values. Defaults mirror Votes' canonical values.</summary>
 public class VotesSection
 {
     [JsonPropertyName("RequiredPercentage")]
-    public int RequiredPercentage { get; set; } = VotesClass.RequiredPrecentage;
+    public int RequiredPercentage { get; set; } = VotesClass.RequiredPercentage;
 
     [JsonPropertyName("WeaponSelectionTime")]
     public int WeaponSelectionTime { get; set; } = VotesClass.WeaponSelectionTime;
 
     [JsonPropertyName("Votes")]
-    public List<Vote> Votes { get; set; } = new(VotesClass.WeaponVotes);
+    public List<Vote> Votes { get; set; } = [..VotesClass.WeaponVotes];
+}
+
+public class ConnectionConfig
+{
+    /// <summary>"mysql" (MySQL/MariaDB) or "sqlite" (default).</summary>
+    public string Provider { get; init; } = "sqlite";
+
+    public string Host { get; init; } = string.Empty;
+    public string Database { get; init; } = string.Empty;
+    public string User { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public uint Port { get; init; } = 3306;
+
+    /// <summary>SQLite database file (used only when Provider == "sqlite"). Relative paths resolve against the plugin's module directory.</summary>
+    public string SqlitePath { get; init; } = "weapons.db";
+
+    public bool IsSqlite() => string.Equals(Provider, "sqlite", StringComparison.OrdinalIgnoreCase);
+
+    public bool IsValid()
+    {
+        if (IsSqlite())
+        {
+            return SqlitePath != string.Empty;
+        }
+
+        return Database != string.Empty
+               && Host != string.Empty
+               && User != string.Empty
+               && Password != string.Empty
+               && Port is > 0 and <= 65535;
+    }
+
+    public string BuildConnectionString()
+    {
+        var builder = new MySqlConnector.MySqlConnectionStringBuilder
+        {
+            Database = Database,
+            UserID = User,
+            Password = Password,
+            Server = Host,
+            Port = Port,
+        };
+
+        return builder.ConnectionString;
+    }
+}
+
+public class PrefixConfig
+{
+    public string Prefix { get; set; } = " [\x04Retakes\x01]";
+    public string PrefixCon { get; set; } = "[RetakesAllocator]";
+}
+
+public class PistolRoundConfig
+{
+    public int RoundAmount { get; init; } = 2;
+    public string WeaponT { get; init; } = "weapon_glock";
+    public string WeaponCt { get; init; } = "weapon_usp_silencer";
+}
+
+public class NadesConfig
+{
+    public Nades CtNades { get; set; } = new Nades()
+    {
+        Flashbangs = 2,
+        Smokes = 1,
+        Molotovs = 1,
+        HeGrenades = 1
+    };
+    
+    public Nades TNades { get; set; } = new Nades()
+    {
+        Flashbangs = 1,
+        Smokes = 1,
+        Molotovs = 1,
+        HeGrenades = 1
+    };
 }

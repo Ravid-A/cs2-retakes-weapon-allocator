@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesAllocator.Modules.Votes;
 using RetakesAllocator.Modules.Weapons;
 
 using static RetakesAllocator.Modules.Core;
@@ -10,21 +9,21 @@ namespace RetakesAllocator.Modules.Models;
 
 public class Player
 {
-    public int playerIndex;
-    public CCSPlayerController player => Utilities.GetPlayerFromIndex(playerIndex)!;
+    public int PlayerIndex;
+    public CCSPlayerController Controller => Utilities.GetPlayerFromIndex(PlayerIndex)!;
 
     public readonly Allocator WeaponsAllocator;
 
     public Player(CCSPlayerController player)
     {
-        playerIndex = (int)player.Index;
+        PlayerIndex = (int)player.Index;
         WeaponsAllocator = new Allocator(this);
     }
 
     public static void SetupPlayers(List<Player> players)
     {
-        List<Player> players_t = new();
-        List<Player> players_ct = new();
+        List<Player> playersT = new();
+        List<Player> playersCt = new();
 
         foreach(var player in players)
         {
@@ -37,26 +36,26 @@ public class Player
             {
                 if (team == CsTeam.Terrorist )
                 {
-                    players_t.Add(player);
+                    playersT.Add(player);
                 }
 
                 if (team == CsTeam.CounterTerrorist)
                 {
-                    players_ct.Add(player);
+                    playersCt.Add(player);
                 }
             }
         }
 
-        if(0 < players_t.Count)
+        if(0 < playersT.Count)
         {
-            Player player_t = Utils.GetRandomFromList(players_t);
-            player_t.WeaponsAllocator.ShouldGiveAwp = true;
+            Player playerT = Utils.GetRandomFromList(playersT);
+            playerT.WeaponsAllocator.ShouldGiveAwp = true;
         }
-        
-        if(0 < players_ct.Count)
-        {  
-            Player player_ct = Utils.GetRandomFromList(players_ct);
-            player_ct.WeaponsAllocator.ShouldGiveAwp = true;
+
+        if(0 < playersCt.Count)
+        {
+            Player playerCt = Utils.GetRandomFromList(playersCt);
+            playerCt.WeaponsAllocator.ShouldGiveAwp = true;
         }
     }
 
@@ -66,8 +65,8 @@ public class Player
 
         try
         {
-            team = player.Team;
-        } 
+            team = Controller.Team;
+        }
         catch
         {
             team = CsTeam.None;
@@ -78,22 +77,22 @@ public class Player
 
     public string GetSteamId2()
     {
-        return player.AuthorizedSteamID!.SteamId2;
+        return Controller.AuthorizedSteamID!.SteamId2;
     }
 
     public string GetName()
     {
-        if (player == null! || !player.IsValid)
+        if (Controller == null! || !Controller.IsValid)
         {
             return string.Empty;
         }
 
-        return player.PlayerName;
+        return Controller.PlayerName;
     }
 
     public bool IsValid()
     {
-        return !(player == null! || !player.IsValid);
+        return !(Controller == null! || !Controller.IsValid);
     }
 
     public void CreateSpawnDelay()
@@ -110,7 +109,7 @@ public class Player
             return;
         }
 
-        if(currentVote == null!)
+        if(CurrentVote == null!)
         {
             WeaponsAllocator.Allocate();
             WeaponsAllocator.AllocateNades();
@@ -118,7 +117,7 @@ public class Player
             return;
         }
 
-        Vote vote = currentVote.vote;
+        var vote = CurrentVote.Vote;
 
         if(vote.GiveArmor)
         {

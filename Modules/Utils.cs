@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using Microsoft.Extensions.Logging;
 using static RetakesAllocator.Modules.Core;
 using RetakesAllocator.Modules.Weapons;
 using Player = RetakesAllocator.Modules.Models.Player;
@@ -10,8 +11,8 @@ namespace RetakesAllocator.Modules;
 public static class Utils
 {
     // Populated by ConfigApplier.Apply once the config is parsed.
-    public static string PREFIX { get; set; } = string.Empty;
-    public static string PREFIX_CON { get; set; } = string.Empty;
+    public static string Prefix { get; set; } = string.Empty;
+    public static string PrefixCon { get; set; } = string.Empty;
 
     public static void PrintToChat(CCSPlayerController controller, string msg)
     {
@@ -23,28 +24,14 @@ public static class Utils
         Server.PrintToChatAll(msg);
     }
 
-    public static void PrintToServer(string msg, ConsoleColor color = ConsoleColor.Cyan)
-    {
-        Console.ForegroundColor = color;
-
-        msg = $"{PREFIX_CON} {msg}";
-        Console.WriteLine(msg);
-        Console.ResetColor();
-    }
-
-    public static void ThrowError(string msg)
-    {
-        throw new Exception(msg);
-    }
-
     public static void ReplyToCommand(CommandInfo commandInfo, string msg)
     {
         commandInfo.ReplyToCommand(msg);
     }
 
-    public static Player FindPlayer(CCSPlayerController cCSPlayerController)
+    public static Player FindPlayer(CCSPlayerController controller)
     {
-        return Players.Find(player => player.playerIndex == cCSPlayerController.Index)!;
+        return Players.Find(player => player.PlayerIndex == controller.Index)!;
     }
 
     public static void ServerCommand(string command, params object[] args)
@@ -106,8 +93,7 @@ public static class Utils
             }
             catch (Exception e)
             {
-                Server.NextFrame(() =>
-                    PrintToServer($"Database error loading {auth}: {e.Message}", ConsoleColor.Red));
+                Plugin.Logger.LogError(e, "Failed to load weapon preferences for {SteamId}", auth);
             }
         });
     }
@@ -159,7 +145,7 @@ public static class Utils
             }
             catch (Exception e)
             {
-                PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red);
+                Plugin.Logger.LogError(e, "Failed to save weapon preferences for {SteamId}", pref.Auth);
             }
             return;
         }
@@ -172,8 +158,7 @@ public static class Utils
             }
             catch (Exception e)
             {
-                Server.NextFrame(() =>
-                    PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red));
+                Plugin.Logger.LogError(e, "Failed to save weapon preferences for {SteamId}", pref.Auth);
             }
         });
     }

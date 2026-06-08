@@ -43,13 +43,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
         
@@ -57,7 +57,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -68,13 +68,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -82,7 +82,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -93,13 +93,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -107,7 +107,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -118,13 +118,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -132,7 +132,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -143,13 +143,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -157,7 +157,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -168,13 +168,13 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -182,7 +182,7 @@ internal static class Commands
 
         if (playerObj == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
@@ -194,37 +194,37 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
         ReloadConfig();
-        PrintToChat(player, $"{PREFIX} Configs reloaded.");
+        PrintToChat(player, $"{Prefix} Configs reloaded.");
     }
 
     public static void OnVoteCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
         if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} You can't vote during the pistol rounds.");
+            ReplyToCommand(commandInfo, $"{Prefix} You can't vote during the pistol rounds.");
             return;
         }
 
@@ -235,18 +235,18 @@ internal static class Commands
 
         if (voteManager == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} Invalid vote command.");
+            ReplyToCommand(commandInfo, $"{Prefix} Invalid vote command.");
             return;
         }
 
         switch(voteManager.AddVote(userId))
         {
             case VoteResultEnum.Added:
-                PrintToChatAll($"{PREFIX} Player \x03{player.PlayerName}\x01 wants to {(voteManager.IsRunningVote() ? "cancel" : "")} {voteManager.vote.Description} rounds ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
+                PrintToChatAll($"{Prefix} Player \x03{player.PlayerName}\x01 wants to {(voteManager.IsRunningVote() ? "cancel" : "")} {voteManager.Vote.Description} rounds ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
                 break;
             case VoteResultEnum.AlreadyAddedBefore:
                 voteManager.RemoveVote(userId);
-                PrintToChatAll($"{PREFIX} Player \x03{player.PlayerName}\x01 dont wants {(voteManager.IsRunningVote() ? "to cancel" : "")} {voteManager.vote.Description} rounds anymore ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
+                PrintToChatAll($"{Prefix} Player \x03{player.PlayerName}\x01 dont wants {(voteManager.IsRunningVote() ? "to cancel" : "")} {voteManager.Vote.Description} rounds anymore ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
                 break;
             default:
                 break;
@@ -263,19 +263,19 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
         if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} You can't vote during the pistol rounds.");
+            ReplyToCommand(commandInfo, $"{Prefix} You can't vote during the pistol rounds.");
             return;
         }
 
@@ -284,11 +284,11 @@ internal static class Commands
 
         if (voteManager == null!)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} Invalid vote command.");
+            ReplyToCommand(commandInfo, $"{Prefix} Invalid vote command.");
             return;
         }
 
-        PrintToChatAll($"{PREFIX} ADMIN: Forced {voteManager.vote.Description} rounds.");
+        PrintToChatAll($"{Prefix} ADMIN: Forced {voteManager.Vote.Description} rounds.");
         Votes_OnVoteReached(voteManager);
     }
 
@@ -297,23 +297,23 @@ internal static class Commands
     {
         if (player == null)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
         if (!player.IsValid)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
         if(RoundsCounter >= Core.Config.PistolRound.RoundAmount)
         {
-            ReplyToCommand(commandInfo, $"{PREFIX} You can't skip the pistol rounds when there is no pistol rounds.");
+            ReplyToCommand(commandInfo, $"{Prefix} You can't skip the pistol rounds when there is no pistol rounds.");
             return;
         }
 
-        PrintToChatAll($"{PREFIX} ADMIN: Skipped the pistol rounds.");
+        PrintToChatAll($"{Prefix} ADMIN: Skipped the pistol rounds.");
         RoundsCounter = Core.Config.PistolRound.RoundAmount + 1;
     }
 }

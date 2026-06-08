@@ -1,5 +1,6 @@
 using System.Text.Json;
 using RetakesAllocator.Modules;
+using RetakesAllocator.Modules.Config;
 using Xunit;
 
 namespace RetakesAllocator.Tests;
@@ -12,8 +13,7 @@ public class ConfigModelTests
     {
         var config = new RetakesAllocatorConfig();
 
-        Assert.Equal("mysql", config.DbConnection.Provider);
-        Assert.True(config.GiveArmor);
+        Assert.Equal("sqlite", config.DbConnection.Provider);
         Assert.True(config.AddSkipOption);
         Assert.Equal(new[] { "guns", "gun", "weapon", "weapons" }, config.TriggerWords);
 
@@ -25,7 +25,7 @@ public class ConfigModelTests
         Assert.Equal(3, config.Weapons.PistolsCt.Count);
 
         // Nades defaults.
-        Assert.Equal(2, config.Nades.CTNades.Flashbangs);
+        Assert.Equal(2, config.Nades.CtNades.Flashbangs);
         Assert.Equal(1, config.Nades.TNades.Flashbangs);
 
         // Votes defaults.
@@ -54,7 +54,7 @@ public class ConfigModelTests
         foreach (var section in new[]
         {
             "\"ConfigVersion\"", "\"DbConnection\"", "\"Prefix\"", "\"PistolRound\"",
-            "\"GiveArmor\"", "\"TriggerWords\"", "\"AddSkipOption\"",
+            "\"TriggerWords\"", "\"AddSkipOption\"",
             "\"Weapons\"", "\"Nades\"", "\"Votes\"",
         })
         {

@@ -23,7 +23,7 @@ internal static class Listeners
         Plugin.AddCommandListener("say_team", OnSay);
     }  
 
-    private static void OnMapStart(string map_name)
+    private static void OnMapStart(string mapName)
     {
         RoundsCounter = 0;
         Players.Clear();
@@ -61,7 +61,7 @@ internal static class Listeners
 
         if (playerObj == null!)
         {
-            ReplyToCommand(command, $"{PREFIX} This command can only be executed by a valid player.");
+            ReplyToCommand(command, $"{Prefix} This command can only be executed by a valid player.");
             return HookResult.Continue;
         }
 
