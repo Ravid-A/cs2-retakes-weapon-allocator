@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>RetakesAllocator</RootNamespace>
+      <OutputPath>$(SolutionDir)build\addons\counterstrikesharp\plugins\RetakesAllocator\</OutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 

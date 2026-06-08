@@ -92,7 +92,7 @@ internal static class Utils
                 {
                     // Apply to the player on the game thread. Skip if they
                     // disconnected while the DB load was in flight.
-                    Server.NextFrame(() =>
+                    await Server.NextFrameAsync(() =>
                     {
                         if (!Players.Contains(playerObj))
                         {
@@ -105,7 +105,7 @@ internal static class Utils
             }
             catch (Exception e)
             {
-                Server.NextFrame(() =>
+                await Server.NextFrameAsync(() =>
                     PrintToServer($"Database error loading {auth}: {e.Message}", ConsoleColor.Red));
             }
         });
@@ -124,7 +124,7 @@ internal static class Utils
 
     public static void RemovePlayerFromList(CCSPlayerController player, bool flush = false)
     {
-        if (player == null || !player.IsValid || player.IsBot)
+        if (!player.IsValid || player.IsBot)
         {
             return;
         }
@@ -158,7 +158,7 @@ internal static class Utils
             }
             catch (Exception e)
             {
-                PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red);
+                Server.NextFrame(() => PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red));
             }
             return;
         }
@@ -171,7 +171,7 @@ internal static class Utils
             }
             catch (Exception e)
             {
-                Server.NextFrame(() =>
+                await Server.NextFrameAsync(() =>
                     PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red));
             }
         });
@@ -179,16 +179,17 @@ internal static class Utils
 
     public static int GetRoundsAmount()
     {
-        IEnumerable<CTeam> team = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team");
+        var team = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team");
 
-        if (team.Count() == 0)
+        var cTeams = team.ToList();
+        if (cTeams.Count == 0)
         {
             return 0;
         }
 
-        int rounds = 0;
+        var rounds = 0;
 
-        foreach (var t in team)
+        foreach (var t in cTeams)
         {
             rounds = t.Score;
         }
@@ -196,7 +197,7 @@ internal static class Utils
         return rounds;
     }
 
-    public static CCSPlayerController[] ValidPlayers(bool considerBots = false)
+    private static CCSPlayerController[] ValidPlayers(bool considerBots = false)
     {
         //considerBots = true;
         return Utilities.GetPlayers()
@@ -206,7 +207,7 @@ internal static class Utils
         .ToArray();
     }
 
-    public static bool ReallyValid(this CCSPlayerController? player, bool considerBots = false)
+    private static bool ReallyValid(this CCSPlayerController? player, bool considerBots = false)
     {
         return player is not null && player.IsValid && player.Connected == PlayerConnectedState.PlayerConnected &&
             (considerBots || (!player.IsBot && !player.IsHLTV));
@@ -219,7 +220,7 @@ internal static class Utils
 
     public static T GetRandomFromList<T>(this List<T> list)
     {
-        int index = new Random().Next(list.Count);
+        var index = new Random().Next(list.Count);
         return list[index];
     }   
 }
