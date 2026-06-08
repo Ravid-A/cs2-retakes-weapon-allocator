@@ -61,7 +61,7 @@ internal static class Commands
             return;
         }
 
-        OpenTPrimaryMenu(player);
+        OpenPistolRoundTMenu(player);
     }
 
     private static void CTGunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
