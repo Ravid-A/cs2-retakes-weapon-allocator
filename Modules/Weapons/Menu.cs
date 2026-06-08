@@ -52,9 +52,85 @@ public class Menu
         {"ssg08", "SSG 08"}
     };
 
+    public static void OpenPistolRoundTMenu(CCSPlayerController player)
+    {
+        var centerHtmlMenu = new CenterHtmlMenu("[ T ] Pistol Round", Plugin);
+
+        if(Core.Config.AddSkipOption)
+        {
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenPistolRoundCTMenu(p));
+        }
+
+        foreach (var weapon in PistolsT)
+        {
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnPistolRoundTSelect(player, option));
+        }
+
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
+    }
+
+    private static void OnPistolRoundTSelect(CCSPlayerController player, ChatMenuOption? option)
+    {
+        if (option == null)
+        {
+            PrintToChat(player, $"{Prefix} You did not select a weapon!");
+            return;
+        }
+
+        var playerObj = FindPlayer(player);
+
+        if (playerObj == null!)
+        {
+            return;
+        }
+
+        PrintToChat(player, $"{Prefix} You selected {option.Text} as T Pistol Round!");
+        playerObj.WeaponsAllocator.PistolRoundWeaponT = GetWeaponIndex(option.Text, WeaponType.PistolRoundT);
+
+        OpenPistolRoundCTMenu(player);
+    }
+
+    public static void OpenPistolRoundCTMenu(CCSPlayerController player)
+    {
+        var centerHtmlMenu = new CenterHtmlMenu("[ CT ] Pistol Round", Plugin);
+
+        if(Core.Config.AddSkipOption)
+        {
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenTPrimaryMenu(p));
+        }
+
+        foreach (var weapon in PistolsCT)
+        {
+            centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnPistolRoundCTSelect(player, option));
+        }
+
+        MenuManager.OpenCenterHtmlMenu(Plugin, player, centerHtmlMenu);
+    }
+
+    private static void OnPistolRoundCTSelect(CCSPlayerController player, ChatMenuOption? option)
+    {
+        if (option == null)
+        {
+            PrintToChat(player, $"{Prefix} You did not select a weapon!");
+            return;
+        }
+
+        var playerObj = FindPlayer(player);
+
+        if (playerObj == null!)
+        {
+            return;
+        }
+
+        PrintToChat(player, $"{Prefix} You selected {option.Text} as CT Pistol Round!");
+        playerObj.WeaponsAllocator.PistolRoundWeaponCt = GetWeaponIndex(option.Text, WeaponType.PistolRoundCt);
+
+        OpenTPrimaryMenu(player);
+    }
+
     public static void OpenTPrimaryMenu(CCSPlayerController player, bool showNext = true)
     {
-        var centerHtmlMenu = new CenterHtmlMenu($"{Prefix} Select a T Primary Weapon", Plugin);
+        var centerHtmlMenu = new CenterHtmlMenu("[ T ] Primary Weapon", Plugin);
 
         if(Core.Config.AddSkipOption && showNext)
         {
@@ -63,6 +139,11 @@ public class Menu
 
         foreach (var weapon in PrimaryT)
         {
+            if (!HasAwpAccess(player) && weapon.Item.Equals("weapon_awp", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnTPrimarySelect(player, option, showNext));
         }
 
@@ -99,7 +180,7 @@ public class Menu
 
     public static void OpenCTPrimaryMenu(CCSPlayerController player, bool showNext = true)
     {
-        var centerHtmlMenu = new CenterHtmlMenu($"{Prefix} Select a CT Primary Weapon", Plugin);
+        var centerHtmlMenu = new CenterHtmlMenu("[ CT ] Primary Weapon", Plugin);
 
         if(Core.Config.AddSkipOption && showNext)
         {
@@ -108,6 +189,11 @@ public class Menu
 
         foreach (var weapon in PrimaryCt)
         {
+            if (!HasAwpAccess(player) && weapon.Item.Equals("weapon_awp", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             centerHtmlMenu.AddMenuOption(weapon.DisplayName, (CCSPlayerController player, ChatMenuOption option) => OnCTPrimarySelect(player, option, showNext));
         }
 
@@ -144,7 +230,7 @@ public class Menu
 
     public static void OpenSecondaryTMenu(CCSPlayerController player, bool showNext = true)
     {
-        var centerHtmlMenu = new CenterHtmlMenu($"{Prefix} Select a T Secondary Weapon", Plugin);
+        var centerHtmlMenu = new CenterHtmlMenu("[ T ] Secondary Weapon", Plugin);
 
         if(Core.Config.AddSkipOption && showNext)
         {
@@ -189,11 +275,11 @@ public class Menu
 
     public static void OpenSecondaryCTMenu(CCSPlayerController player, bool showNext = true)
     {
-        var centerHtmlMenu = new CenterHtmlMenu($"{Prefix} Select a CT Secondary Weapon", Plugin);
+        var centerHtmlMenu = new CenterHtmlMenu("[ CT ] Secondary Weapon", Plugin);
 
         if(Core.Config.AddSkipOption && showNext)
         {
-            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenGiveAWPMenu(p));
+            centerHtmlMenu.AddMenuOption("SKIP", (p, _) => OpenAwpMenuIfAllowed(p));
         }
 
         foreach (var weapon in PistolsCT)
@@ -225,6 +311,17 @@ public class Menu
 
         if(showNext)
         {
+            OpenAwpMenuIfAllowed(player);
+            return;
+        }
+
+        MenuManager.CloseActiveMenu(player);
+    }
+
+    private static void OpenAwpMenuIfAllowed(CCSPlayerController player)
+    {
+        if (HasAwpAccess(player))
+        {
             OpenGiveAWPMenu(player);
             return;
         }
@@ -234,7 +331,14 @@ public class Menu
 
     public static void OpenGiveAWPMenu(CCSPlayerController player)
     {
-        var centerHtmlMenu = new CenterHtmlMenu($"{Prefix} Select when to give the AWP", Plugin);
+        if (!HasAwpAccess(player))
+        {
+            PrintToChat(player, $"{Prefix} The AWP menu is for VIP players only.");
+            MenuManager.CloseActiveMenu(player);
+            return;
+        }
+
+        var centerHtmlMenu = new CenterHtmlMenu("When To Get AWP", Plugin);
 
         centerHtmlMenu.AddMenuOption("Never", OnGiveAWPSelect);
         centerHtmlMenu.AddMenuOption("Sometimes", OnGiveAWPSelect);
