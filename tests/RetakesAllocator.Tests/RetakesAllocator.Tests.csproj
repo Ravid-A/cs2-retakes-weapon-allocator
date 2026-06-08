@@ -4,7 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Test-only project: never packed, published, or built as part of a solution/
+         release build (it is also excluded from build in RetakesAllocator.sln).
+         It is compiled only when the tests are run explicitly, e.g.
+         `dotnet test tests/RetakesAllocator.Tests/RetakesAllocator.Tests.csproj`. -->
     <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

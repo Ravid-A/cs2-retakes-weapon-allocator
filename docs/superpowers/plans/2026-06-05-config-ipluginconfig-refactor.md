@@ -1023,6 +1023,71 @@ git commit -m "docs: document the consolidated IPluginConfig config file"
 
 ---
 
+## Task 7: Replace custom `PrintToServer` with `BasePlugin.Logger`
+
+The plugin currently logs through a hand-rolled `Utils.PrintToServer` that writes to
+`Console.WriteLine` with a manual `PrefixCon` prefix and an ANSI `ConsoleColor`. This
+bypasses CounterStrikeSharp's logging pipeline (no log levels, no category, no
+timestamps, not routed to CSS's log files/sinks, and not filterable). Replace it with
+CounterStrikeSharp's built-in `Logger` (a `Microsoft.Extensions.Logging.ILogger`
+exposed as `BasePlugin.Logger`) and write structured, level-appropriate logs.
+
+**Why:** standard `ILogger` gives proper levels (`Information`/`Warning`/`Error`/`Debug`),
+structured message templates (`"Database error loading {Auth}"`), and integration with
+the host's logging configuration — instead of unconditional colored `Console` writes.
+
+**Files:**
+- Modify: `Modules/Utils.cs` — remove `PrintToServer` (and its `ConsoleColor` plumbing).
+- Modify: `Modules/Core.cs`, `Modules/Handlers/Events.cs`, and the `Utils.cs` DB
+  callbacks — the current call sites (see list below).
+
+**Call sites to migrate:**
+- `Core.cs` — "Connected to database" (Information), "Config re-applied" (Information).
+- `Utils.cs` — the three `Database error …` messages (Error, with the exception:
+  `Logger.LogError(e, "Database error saving {Auth}", pref.Auth)`).
+- `Events.cs` — the three `OnPlayerSpawn…` lines are debug noise: drop them or demote
+  to `LogDebug`/`LogTrace`.
+
+- [ ] **Step 1: Expose the logger to the static call sites**
+
+`Logger` is an instance member of `BasePlugin`. Most callers are static, so surface it
+through the existing static `Core.Plugin`, e.g. a `Core.Logger => Plugin.Logger`
+shortcut (or pass `ILogger` where a class is testable). Keep the off-thread DB
+callbacks in mind: `ILogger` calls are thread-safe, but anything touching game state
+must still marshal back via `Server.NextFrame` as today.
+
+- [ ] **Step 2: Replace each call site with a level-appropriate, structured log**
+
+Use message templates with named placeholders (not string interpolation) so structured
+logging works:
+
+```csharp
+// before
+PrintToServer($"Database error saving {pref.Auth}: {e.Message}", ConsoleColor.Red);
+// after
+Core.Logger.LogError(e, "Database error saving {Auth}", pref.Auth);
+```
+
+Map: status/lifecycle → `LogInformation`; recoverable problems → `LogWarning`;
+exceptions/failures → `LogError(exception, template, args)`; verbose tracing →
+`LogDebug`. Audit `ThrowError` too — consider `LogCritical` before throwing where it
+aids diagnosis.
+
+- [ ] **Step 3: Remove `PrintToServer` and verify**
+
+Delete `Utils.PrintToServer` once no call sites remain. `git grep -n PrintToServer`
+should return nothing. Run `dotnet build RetakesAllocator.csproj` and
+`dotnet test …` (the logging change is verified by build + reasoning; no unit test
+hosts the CSS logger).
+
+- [ ] **Step 4: Commit**
+
+```bash
+git commit -m "refactor(logging): use BasePlugin.Logger instead of custom PrintToServer"
+```
+
+---
+
 ## Self-Review
 
 **1. Spec coverage** — "replace the config logic to use BasePluginConfig and IPluginConfig instead of files and json reads," decisions: all three subsystems consolidated with labeled JSON sections; reload via CSS hot reload + an explicit command.

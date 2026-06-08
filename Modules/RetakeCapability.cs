@@ -55,9 +55,9 @@ public class RetakeCapability
 
         string mode = "normal mode";
 
-        if(currentVote != null!)
+        if(CurrentVote != null!)
         {
-            mode = currentVote.vote.Description + " mode";
+            mode = CurrentVote.Vote.Description + " mode";
         }
 
         if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
@@ -65,6 +65,6 @@ public class RetakeCapability
             mode = $"pistol rounds, {Core.Config.PistolRound.RoundAmount - RoundsCounter} rounds left";
         }
 
-        PrintToChatAll($"{PREFIX} Retake {mode}.");
+        PrintToChatAll($"{Prefix} Retake {mode}.");
     }
 }

@@ -5,12 +5,12 @@ namespace RetakesAllocator.Modules.Votes;
 
 public class AsyncVoteValidator
 {
-    private float VotePercentage = 0F;
-    public int RequiredVotes { get => (int)Math.Round(ValidPlayerCount() * VotePercentage); }
+    private float _votePercentage;
+    public int RequiredVotes { get => (int)Math.Round(ValidPlayerCount() * _votePercentage); }
 
     public AsyncVoteValidator()
     {
-        VotePercentage = RequiredPrecentage / 100F;
+        _votePercentage = RequiredPercentage / 100F;
     }
 
     public bool CheckVotes(int numberOfVotes)

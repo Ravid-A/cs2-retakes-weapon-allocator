@@ -2,24 +2,23 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Cvars;
+using Microsoft.Extensions.Logging;
 
+using RetakesAllocator.Modules.Config;
 using RetakesAllocator.Modules.Models;
-using RetakesAllocator.Modules.Weapons;
 using RetakesAllocator.Modules.Votes;
 
 using static RetakesAllocator.Modules.RetakeCapability;
 using static RetakesAllocator.Modules.Utils;
-using static RetakesAllocator.Modules.Configs;
 using static RetakesAllocator.Modules.Handlers.Commands;
 using static RetakesAllocator.Modules.Handlers.Events;
 using static RetakesAllocator.Modules.Handlers.Listeners;
 using static RetakesAllocator.Modules.Votes.Votes;
-using static RetakesAllocator.Modules.Weapons.Allocator;
 
 namespace RetakesAllocator.Modules;
 
-[MinimumApiVersion(215)]
-public class Core : BasePlugin
+[MinimumApiVersion(360)]
+public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 {
     public static Core Plugin = null!;
 
@@ -28,13 +27,19 @@ public class Core : BasePlugin
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
-    public static Config Config = null!;
+    public static RetakesAllocatorConfig Config = null!;
+
+    // Required by IPluginConfig. Implemented explicitly so it does not collide with
+    // the static Config field above; OnConfigParsed is what actually stores the config.
+    RetakesAllocatorConfig IPluginConfig<RetakesAllocatorConfig>.Config { get; set; } = new();
+
+    private static bool _loaded;
     public static NadesConfig NadesConfig = null!;
 
     public static WeaponStore Store = null!;
     public static List<Player> Players = new();
     public static int RoundsCounter = 0;
-    public static AsyncVoteManager currentVote = null!;
+    public static AsyncVoteManager CurrentVote = null!;
     public static ConVar mp_damage_headshot_only = null!;
 
     public override void Load(bool hotReload)
@@ -45,19 +50,22 @@ public class Core : BasePlugin
 
         if(mp_damage_headshot_only == null!)
         {
-            ThrowError("Failed to find mp_damage_headshot_only");
+            Plugin.Logger.LogError("Failed to find the mp_damage_headshot_only convar; headshot-only rounds will not work");
             return;
         }
 
-        LoadConfigs();
-
+        // Config is already loaded and applied by OnConfigParsed (called before Load).
         InitializeDatabase();
 
         RegisterCommands();
         RegisterEvents();
         RegisterListeners();
 
+        Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+
         RetakeCapability_OnLoad();
+
+        _loaded = true;
 
         if (hotReload)
         {
@@ -67,6 +75,11 @@ public class Core : BasePlugin
 
     public override void Unload(bool hotReload)
     {
+        // _loaded is static, so it survives an unload/reload cycle within the same
+        // process. Reset it here so the next Load's "register votes once" assumption
+        // holds and OnConfigParsed doesn't register them early on the next load.
+        _loaded = false;
+
         UnRegisterCommands();
         Votes_OnPluginUnload();
         Utilities.GetPlayers().ForEach(p => RemovePlayerFromList(p, flush: true));
@@ -81,7 +94,7 @@ public class Core : BasePlugin
 
         if(gameRules == null!)
         {
-            ThrowError("Failed to get game rules");
+            Plugin.Logger.LogError("Failed to resolve the game rules entity");
             return null!;
         }
 
@@ -95,33 +108,49 @@ public class Core : BasePlugin
             var provider = DatabaseProviderFactory.Create(Config.DbConnection, Plugin.ModuleDirectory);
             Store = new WeaponStore(provider);
             Store.InitializeAsync().GetAwaiter().GetResult();
-            PrintToServer("Connected to database");
+            Plugin.Logger.LogInformation("Connected to the {Provider} database", Config.DbConnection.Provider);
         }
         catch (Exception e)
         {
-            ThrowError($"Failed to connect to database: {e.Message}");
+            Plugin.Logger.LogError(e, "Failed to connect to the {Provider} database; check the DbConnection section of the config", Config.DbConnection.Provider);
         }
     }
 
-    public static void LoadConfigs(bool fullReload = true)
+    public void OnConfigParsed(RetakesAllocatorConfig config)
     {
-        CreateConfigsDirectory();
+        // OnConfigParsed runs before Load on first parse, and again on every
+        // file-watch hot reload. Plugin may not be set yet on the first call, and
+        // on a hot reload it may still point at the previous instance until Load
+        // re-sets it, so we (re)assign it here before any Plugin.AddCommand runs.
+        Plugin = this;
+        Config = config;
 
-        if(fullReload)
+        if (!Config.IsValid())
         {
-            Config = LoadConfig();
-
-            if (!Config.IsValid())
-            {
-                ThrowError("Invalid config, please check your config file.");
-                return;
-            }
-
-            Votes.Config.LoadConfig();
+            Plugin.Logger.LogError("Invalid configuration; check the DbConnection section of the config file");
+            return;
         }
 
-        Weapons.Config.LoadConfig();
+        ConfigApplier.Apply(Config);
 
-        PrintToServer("Configs loaded");
+        // On the initial parse, Load registers the vote commands once. On a hot
+        // reload (after Load), re-register them to reflect any vote changes.
+        if (_loaded)
+        {
+            Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+        }
+    }
+
+    /// <summary>
+    /// Re-applies the in-memory config and re-registers vote commands. Edits to the
+    /// config file on disk are picked up automatically by CounterStrikeSharp's
+    /// file-watch hot reload (which calls OnConfigParsed); this method re-applies the
+    /// already-parsed config on demand (used by the reload command).
+    /// </summary>
+    public static void ReloadConfig()
+    {
+        ConfigApplier.Apply(Config);
+        Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+        Plugin.Logger.LogInformation("Configuration reloaded and applied");
     }
 }

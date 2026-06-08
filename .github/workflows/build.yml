@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -28,3 +29,70 @@ jobs:
 
       - name: Test
         run: dotnet test tests/RetakesAllocator.Tests/RetakesAllocator.Tests.csproj -c Release
+
+      - name: Upload plugin build
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-build
+          path: build/
+          if-no-files-found: error
+
+  release:
+    name: Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download plugin build
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-build
+          path: build
+
+      - name: Package plugin
+        run: |
+          cd build
+          zip -r "../RetakesAllocator-${{ github.ref_name }}.zip" addons
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: RetakesAllocator ${{ github.ref_name }}
+          files: RetakesAllocator-${{ github.ref_name }}.zip
+          generate_release_notes: true
+          body: |
+            ## RetakesAllocator ${{ github.ref_name }}
+
+            Weapons allocator plugin for CS2 retakes, written in C# (.NET 8) for
+            CounterStrikeSharp. Designed to run alongside
+            [b3none's cs2-retakes](https://github.com/b3none/cs2-retakes).
+
+            ### Requirements
+            - **CounterStrikeSharp** v1.0.360 or newer (Minimum API version **360**) with Metamod:Source
+            - **[b3none/cs2-retakes](https://github.com/b3none/cs2-retakes)** installed and running
+            - A database — **MySQL/MariaDB** *or* **SQLite** (a local file, no server required)
+
+            ### Installation
+            1. Download `RetakesAllocator-${{ github.ref_name }}.zip` from the assets below.
+            2. Extract it into your server's `game/csgo/` directory. The archive places the
+               plugin at `addons/counterstrikesharp/plugins/RetakesAllocator/`.
+            3. Restart the server (or run `css_plugins load RetakesAllocator`). On first load
+               the config is generated automatically at
+               `addons/counterstrikesharp/configs/plugins/RetakesAllocator/RetakesAllocator.json`.
+            4. Fill in the `DbConnection` section (MySQL credentials, or set
+               `"Provider": "sqlite"`), then reload the plugin.
+
+            ### Configuration
+            All settings — database, chat prefix, pistol round, selectable weapons, grenade
+            kits, and weapon votes — live in the single CounterStrikeSharp-managed config
+            file above. See the
+            [README](https://github.com/Ravid-A/CS2_Retakes_WeaponsAllocator/blob/main/README.md)
+            for the full schema and examples. Edits are applied live via CounterStrikeSharp's
+            config hot reload, or on demand with `css_weapons_reload` (requires `@css/root`).
+
+            ---
+
+            ### What's changed

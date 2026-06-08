@@ -1,5 +1,6 @@
 using Xunit;
 using RetakesAllocator.Modules;
+using RetakesAllocator.Modules.Config;
 
 namespace RetakesAllocator.Tests;
 

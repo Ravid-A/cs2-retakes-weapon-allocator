@@ -6,13 +6,9 @@
     <Nullable>enable</Nullable>
     <RootNamespace>RetakesAllocator</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutputPath>$(SolutionDir)build\addons\counterstrikesharp\plugins\RetakesAllocator\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="MySqlConnector">
-       <HintPath>MySqlConnector.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="tests\**" />
@@ -21,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.232" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.360" />
+    <PackageReference Include="MySqlConnector" Version="2.6.0" />
     <PackageReference Include="RetakesPluginShared" Version="2.0.0" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
