@@ -65,7 +65,7 @@ internal static class Listeners
             return HookResult.Continue;
         }
 
-        OpenTPrimaryMenu(player);
+        OpenPistolRoundTMenu(player);
 
         return HookResult.Continue;
     }
