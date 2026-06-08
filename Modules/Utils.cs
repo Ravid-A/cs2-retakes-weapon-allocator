@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Admin;
 using Microsoft.Extensions.Logging;
 using static RetakesAllocator.Modules.Core;
 using RetakesAllocator.Modules.Weapons;
@@ -32,6 +33,24 @@ public static class Utils
     public static Player FindPlayer(CCSPlayerController controller)
     {
         return Players.Find(player => player.PlayerIndex == controller.Index)!;
+    }
+
+    public static bool HasAwpAccess(CCSPlayerController player)
+    {
+        var permission = Core.Config.AwpPermission.Trim();
+
+        if (permission.Length == 0)
+        {
+            return true;
+        }
+
+        if (!permission.StartsWith('@'))
+        {
+            permission = $"@{permission}";
+        }
+
+        return AdminManager.PlayerHasPermissions(player, permission)
+               || AdminManager.GetPlayerAdminData(player.AuthorizedSteamID) != null;
     }
 
     public static void ServerCommand(string command, params object[] args)
@@ -102,11 +121,18 @@ public static class Utils
     {
         var allocator = playerObj.WeaponsAllocator;
 
-        allocator.PrimaryWeaponT = pref.TPrimary > Allocator.PrimaryT.Count ? 0 : pref.TPrimary;
-        allocator.PrimaryWeaponCt = pref.CtPrimary > Allocator.PrimaryCt.Count ? 0 : pref.CtPrimary;
-        allocator.SecondaryWeaponT = pref.TSecondary > Allocator.PistolsT.Count ? 0 : pref.TSecondary;
-        allocator.SecondaryWeaponCt = pref.CtSecondary > Allocator.PistolsCT.Count ? 0 : pref.CtSecondary;
+        allocator.PrimaryWeaponT = SafeWeaponIndex(pref.TPrimary, Allocator.PrimaryT.Count);
+        allocator.PrimaryWeaponCt = SafeWeaponIndex(pref.CtPrimary, Allocator.PrimaryCt.Count);
+        allocator.SecondaryWeaponT = SafeWeaponIndex(pref.TSecondary, Allocator.PistolsT.Count);
+        allocator.SecondaryWeaponCt = SafeWeaponIndex(pref.CtSecondary, Allocator.PistolsCT.Count);
+        allocator.PistolRoundWeaponT = SafeWeaponIndex(pref.TPistolRound, Allocator.PistolsT.Count);
+        allocator.PistolRoundWeaponCt = SafeWeaponIndex(pref.CtPistolRound, Allocator.PistolsCT.Count);
         allocator.GiveAwp = (GiveAwp)pref.GiveAwp;
+    }
+
+    private static int SafeWeaponIndex(int index, int count)
+    {
+        return index < 0 || index >= count ? 0 : index;
     }
 
     public static void RemovePlayerFromList(CCSPlayerController player, bool flush = false)
@@ -131,6 +157,8 @@ public static class Utils
             CtPrimary = playerObj.WeaponsAllocator.PrimaryWeaponCt,
             TSecondary = playerObj.WeaponsAllocator.SecondaryWeaponT,
             CtSecondary = playerObj.WeaponsAllocator.SecondaryWeaponCt,
+            TPistolRound = playerObj.WeaponsAllocator.PistolRoundWeaponT,
+            CtPistolRound = playerObj.WeaponsAllocator.PistolRoundWeaponCt,
             GiveAwp = (int)playerObj.WeaponsAllocator.GiveAwp,
         };
 
