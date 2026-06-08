@@ -17,62 +17,54 @@ namespace RetakesAllocator.Tests;
 [Collection("StaticState")]
 public class ConfigApplierTests : IDisposable
 {
-    // Canonical weapon lists captured ONCE before any test runs, by reading the
-    // field initializers in Allocator. We use the hard-coded defaults here so the
-    // restore is independent of whatever state Allocator is in at class-load time.
-    private static readonly List<Weapon> _canonicalPrimaryT = new()
+    // Snapshots of the live static state taken BEFORE any test mutates it.
+    // Restoring from these snapshots is source-of-truth-agnostic: if the real
+    // defaults ever change, teardown automatically tracks them.
+    private readonly List<Weapon> _savedPrimaryT;
+    private readonly List<Weapon> _savedPrimaryCt;
+    private readonly List<Weapon> _savedPistolsT;
+    private readonly List<Weapon> _savedPistolsCT;
+    private readonly List<Vote> _savedVotes;
+    private readonly int _savedWeaponSelectionTime;
+    private readonly int _savedRequired;
+    private readonly NadesConfig _savedNades;
+    private readonly string _savedPrefix;
+    private readonly string _savedPrefixCon;
+
+    public ConfigApplierTests()
     {
-        new("weapon_ak47", "AK-47"),
-        new("weapon_sg556", "SG 553"),
-    };
-    private static readonly List<Weapon> _canonicalPrimaryCt = new()
-    {
-        new("weapon_m4a1", "M4A4"),
-        new("weapon_m4a1_silencer", "M4A1-S"),
-        new("weapon_aug", "AUG"),
-    };
-    private static readonly List<Weapon> _canonicalPistolsT = new()
-    {
-        new("weapon_glock", "Glock-18"),
-        new("weapon_p250", "P250"),
-    };
-    private static readonly List<Weapon> _canonicalPistolsCT = new()
-    {
-        new("weapon_usp_silencer", "USP-S"),
-        new("weapon_p250", "P250"),
-        new("weapon_hkp2000", "P2000"),
-    };
-    private static readonly List<Vote> _canonicalVotes = new()
-    {
-        new("vp", "pistol only", new() { "glock" }, new() { "usp_silencer" }, false, true, true, true, false),
-        new("vph", "pistol only with headshots only", new() { "glock" }, new() { "usp_silencer" }, true, true),
-        new("vhs", "headshots only", new(), new(), true, false),
-        new("vawp", "awp only", new() { "awp" }, new() { "awp" }, false, true),
-        new("vrifles", "rifle only", new() { "ak47", "galilar" }, new() { "m4a1", "m4a1_silencer" }, false, true),
-    };
-    private const int CanonicalRequiredPrecentage = 60;
-    private const int CanonicalWeaponSelectionTime = 5;
+        _savedPrimaryT = new List<Weapon>(Allocator.PrimaryT);
+        _savedPrimaryCt = new List<Weapon>(Allocator.PrimaryCt);
+        _savedPistolsT = new List<Weapon>(Allocator.PistolsT);
+        _savedPistolsCT = new List<Weapon>(Allocator.PistolsCT);
+        _savedVotes = new List<Vote>(VotesClass.WeaponVotes);
+        _savedWeaponSelectionTime = VotesClass.WeaponSelectionTime;
+        _savedRequired = VotesClass.RequiredPrecentage;
+        _savedNades = Core.NadesConfig;
+        _savedPrefix = Utils.PREFIX;
+        _savedPrefixCon = Utils.PREFIX_CON;
+    }
 
     public void Dispose()
     {
         // Restore weapon lists in-place so list instances are preserved.
         Allocator.PrimaryT.Clear();
-        Allocator.PrimaryT.AddRange(_canonicalPrimaryT);
+        Allocator.PrimaryT.AddRange(_savedPrimaryT);
         Allocator.PrimaryCt.Clear();
-        Allocator.PrimaryCt.AddRange(_canonicalPrimaryCt);
+        Allocator.PrimaryCt.AddRange(_savedPrimaryCt);
         Allocator.PistolsT.Clear();
-        Allocator.PistolsT.AddRange(_canonicalPistolsT);
+        Allocator.PistolsT.AddRange(_savedPistolsT);
         Allocator.PistolsCT.Clear();
-        Allocator.PistolsCT.AddRange(_canonicalPistolsCT);
+        Allocator.PistolsCT.AddRange(_savedPistolsCT);
 
         VotesClass.WeaponVotes.Clear();
-        VotesClass.WeaponVotes.AddRange(_canonicalVotes);
-        VotesClass.RequiredPrecentage = CanonicalRequiredPrecentage;
-        VotesClass.WeaponSelectionTime = CanonicalWeaponSelectionTime;
+        VotesClass.WeaponVotes.AddRange(_savedVotes);
+        VotesClass.WeaponSelectionTime = _savedWeaponSelectionTime;
+        VotesClass.RequiredPrecentage = _savedRequired;
 
-        Utils.PREFIX = string.Empty;
-        Utils.PREFIX_CON = string.Empty;
-        Core.NadesConfig = null!;
+        Core.NadesConfig = _savedNades;
+        Utils.PREFIX = _savedPrefix;
+        Utils.PREFIX_CON = _savedPrefixCon;
     }
 
     [Fact]
