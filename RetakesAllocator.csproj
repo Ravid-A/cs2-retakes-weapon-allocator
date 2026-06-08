@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>RetakesAllocator</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutputPath>$(SolutionDir)build\addons\counterstrikesharp\plugins\RetakesAllocator\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
