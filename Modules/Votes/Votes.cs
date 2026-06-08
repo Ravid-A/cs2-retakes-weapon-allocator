@@ -67,15 +67,38 @@ public class Votes
     {
         WeaponSelectionTime = weaponSelectionTime;
         RequiredPrecentage = requiredPrecentage;
-        
+
+        RegisterVoteCommands();
+    }
+
+    /// <summary>
+    /// (Re)registers a chat command per vote in <see cref="WeaponVotes"/>. Idempotent:
+    /// any previously registered vote commands are removed first, so this is safe to
+    /// call again on a config hot reload.
+    /// </summary>
+    public static void RegisterVoteCommands()
+    {
+        UnregisterVoteCommands();
+
         foreach (var vote in WeaponVotes)
         {
             Plugin.AddCommand($"css_{vote.Command}", vote.Description, OnVoteCommand);
             Plugin.AddCommand($"css_force{vote.Command}", $"force {vote.Description}", OnForceVoteCommand);
-            AsyncVoteManager voteManager = new(vote);
-
-            VoteManagers.Add(voteManager);
+            VoteManagers.Add(new AsyncVoteManager(vote));
         }
+    }
+
+    /// <summary>Removes every currently registered vote command and clears the managers.</summary>
+    public static void UnregisterVoteCommands()
+    {
+        foreach (var voteManager in VoteManagers)
+        {
+            var command = voteManager.vote.Command;
+            Plugin.RemoveCommand($"css_{command}", OnVoteCommand);
+            Plugin.RemoveCommand($"css_force{command}", OnForceVoteCommand);
+        }
+
+        VoteManagers.Clear();
     }
 
     public static void Votes_OnMapStart()
@@ -93,11 +116,7 @@ public class Votes
 
     public static void Votes_OnPluginUnload()
     {
-        foreach (var vote in WeaponVotes)
-        {
-            Plugin.RemoveCommand($"css_{vote.Command}", OnVoteCommand);
-            Plugin.RemoveCommand($"css_force{vote.Command}", OnForceVoteCommand);
-        }
+        UnregisterVoteCommands();
     }
 
     public static void Votes_OnVoteReached(AsyncVoteManager voteManager)
