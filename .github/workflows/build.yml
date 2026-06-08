@@ -71,7 +71,7 @@ jobs:
             [b3none's cs2-retakes](https://github.com/b3none/cs2-retakes).
 
             ### Requirements
-            - **CounterStrikeSharp** v1.0.232 or newer (Minimum API version **215**) with Metamod:Source
+            - **CounterStrikeSharp** v1.0.360 or newer (Minimum API version **360**) with Metamod:Source
             - **[b3none/cs2-retakes](https://github.com/b3none/cs2-retakes)** installed and running
             - A database — **MySQL/MariaDB** *or* **SQLite** (a local file, no server required)
 
