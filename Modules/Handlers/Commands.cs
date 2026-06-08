@@ -204,7 +204,7 @@ internal static class Commands
             return;
         }
 
-        LoadConfigs(false);
+        ReloadConfig();
         PrintToChat(player, $"{PREFIX} Configs reloaded.");
     }
 

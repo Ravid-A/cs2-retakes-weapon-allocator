@@ -9,7 +9,6 @@ using RetakesAllocator.Modules.Votes;
 
 using static RetakesAllocator.Modules.RetakeCapability;
 using static RetakesAllocator.Modules.Utils;
-using static RetakesAllocator.Modules.Configs;
 using static RetakesAllocator.Modules.Handlers.Commands;
 using static RetakesAllocator.Modules.Handlers.Events;
 using static RetakesAllocator.Modules.Handlers.Listeners;
@@ -19,7 +18,7 @@ using static RetakesAllocator.Modules.Weapons.Allocator;
 namespace RetakesAllocator.Modules;
 
 [MinimumApiVersion(215)]
-public class Core : BasePlugin
+public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 {
     public static Core Plugin = null!;
 
@@ -28,7 +27,13 @@ public class Core : BasePlugin
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
-    public static Config Config = null!;
+    public static RetakesAllocatorConfig Config = null!;
+
+    // Required by IPluginConfig. Implemented explicitly so it does not collide with
+    // the static Config field above; OnConfigParsed is what actually stores the config.
+    RetakesAllocatorConfig IPluginConfig<RetakesAllocatorConfig>.Config { get; set; } = new();
+
+    private static bool _loaded;
     public static NadesConfig NadesConfig = null!;
 
     public static WeaponStore Store = null!;
@@ -49,15 +54,18 @@ public class Core : BasePlugin
             return;
         }
 
-        LoadConfigs();
-
+        // Config is already loaded and applied by OnConfigParsed (called before Load).
         InitializeDatabase();
 
         RegisterCommands();
         RegisterEvents();
         RegisterListeners();
 
+        Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+
         RetakeCapability_OnLoad();
+
+        _loaded = true;
 
         if (hotReload)
         {
@@ -103,25 +111,39 @@ public class Core : BasePlugin
         }
     }
 
-    public static void LoadConfigs(bool fullReload = true)
+    public void OnConfigParsed(RetakesAllocatorConfig config)
     {
-        CreateConfigsDirectory();
+        // OnConfigParsed runs before Load on first parse, and again on every
+        // file-watch hot reload. Plugin may not be set yet on the first call.
+        Plugin = this;
+        Config = config;
 
-        if(fullReload)
+        if (!Config.IsValid())
         {
-            Config = LoadConfig();
-
-            if (!Config.IsValid())
-            {
-                ThrowError("Invalid config, please check your config file.");
-                return;
-            }
-
-            Votes.Config.LoadConfig();
+            ThrowError("Invalid config, please check your config file.");
+            return;
         }
 
-        Weapons.Config.LoadConfig();
+        ConfigApplier.Apply(Config);
 
-        PrintToServer("Configs loaded");
+        // On the initial parse, Load registers the vote commands once. On a hot
+        // reload (after Load), re-register them to reflect any vote changes.
+        if (_loaded)
+        {
+            Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+        }
+    }
+
+    /// <summary>
+    /// Re-applies the in-memory config and re-registers vote commands. Edits to the
+    /// config file on disk are picked up automatically by CounterStrikeSharp's
+    /// file-watch hot reload (which calls OnConfigParsed); this method re-applies the
+    /// already-parsed config on demand (used by the reload command).
+    /// </summary>
+    public static void ReloadConfig()
+    {
+        ConfigApplier.Apply(Config);
+        Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+        PrintToServer("Config re-applied");
     }
 }

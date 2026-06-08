@@ -54,7 +54,7 @@ internal static class Listeners
 
         var message = command.GetArg(1);
 
-        if(!Core.Config.triggerWords.Any(word => word.Equals(message)))
+        if(!Core.Config.TriggerWords.Any(word => word.Equals(message)))
             return HookResult.Continue;
 
         var playerObj = FindPlayer(player); 
