@@ -30,6 +30,8 @@ public class WeaponStoreTests
         Assert.Equal(0, result.CtPrimary);
         Assert.Equal(0, result.TSecondary);
         Assert.Equal(0, result.CtSecondary);
+        Assert.Equal(0, result.TPistolRound);
+        Assert.Equal(0, result.CtPistolRound);
         Assert.Equal(0, result.GiveAwp);
     }
 
@@ -46,6 +48,8 @@ public class WeaponStoreTests
             CtPrimary = 2,
             TSecondary = 1,
             CtSecondary = 2,
+            TPistolRound = 1,
+            CtPistolRound = 2,
             GiveAwp = 2,
         };
         await db.Store.SaveUserAsync(pref);
@@ -56,6 +60,8 @@ public class WeaponStoreTests
         Assert.Equal(2, result.CtPrimary);
         Assert.Equal(1, result.TSecondary);
         Assert.Equal(2, result.CtSecondary);
+        Assert.Equal(1, result.TPistolRound);
+        Assert.Equal(2, result.CtPistolRound);
         Assert.Equal(2, result.GiveAwp);
     }
 
