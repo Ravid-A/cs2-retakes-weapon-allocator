@@ -14,15 +14,16 @@ public class ConfigModelTests
         var config = new RetakesAllocatorConfig();
 
         Assert.Equal("sqlite", config.DbConnection.Provider);
-        Assert.True(config.AddSkipOption);
+        Assert.False(config.AddSkipOption);
+        Assert.Equal(string.Empty, config.AwpPermission);
         Assert.Equal(new[] { "guns", "gun", "weapon", "weapons" }, config.TriggerWords);
 
         // Weapon lists copied from the Allocator canonical defaults.
-        Assert.Equal(2, config.Weapons.PrimaryT.Count);
+        Assert.Equal(3, config.Weapons.PrimaryT.Count);
         Assert.Equal("weapon_ak47", config.Weapons.PrimaryT[0].Item);
-        Assert.Equal(3, config.Weapons.PrimaryCt.Count);
-        Assert.Equal(2, config.Weapons.PistolsT.Count);
-        Assert.Equal(3, config.Weapons.PistolsCt.Count);
+        Assert.Equal(4, config.Weapons.PrimaryCt.Count);
+        Assert.Equal(7, config.Weapons.PistolsT.Count);
+        Assert.Equal(8, config.Weapons.PistolsCt.Count);
 
         // Nades defaults.
         Assert.Equal(2, config.Nades.CtNades.Flashbangs);
@@ -54,7 +55,7 @@ public class ConfigModelTests
         foreach (var section in new[]
         {
             "\"ConfigVersion\"", "\"DbConnection\"", "\"Prefix\"", "\"PistolRound\"",
-            "\"TriggerWords\"", "\"AddSkipOption\"",
+            "\"TriggerWords\"", "\"AddSkipOption\"", "\"AwpPermission\"",
             "\"Weapons\"", "\"Nades\"", "\"Votes\"",
         })
         {

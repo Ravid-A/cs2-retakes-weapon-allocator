@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Admin;
 using Microsoft.Extensions.Logging;
 using static RetakesAllocator.Modules.Core;
 using RetakesAllocator.Modules.Weapons;
@@ -14,8 +15,21 @@ public static class Utils
     public static string Prefix { get; set; } = string.Empty;
     public static string PrefixCon { get; set; } = string.Empty;
 
-    public static void PrintToChat(CCSPlayerController controller, string msg)
+    /// <summary>
+    /// Chat trigger words, pre-hashed by <see cref="Config.ConfigApplier"/>. The say
+    /// listener runs for every chat message on the server, so this must be an O(1)
+    /// lookup rather than a LINQ scan over a string[].
+    /// </summary>
+    public static HashSet<string> TriggerWords { get; set; } =
+        new(StringComparer.OrdinalIgnoreCase) { "guns", "gun", "weapon", "weapons" };
+
+    public static void PrintToChat(CCSPlayerController? controller, string msg)
     {
+        if (controller is null || !controller.IsValid)
+        {
+            return;
+        }
+
         controller.PrintToChat(msg);
     }
 
@@ -29,9 +43,38 @@ public static class Utils
         commandInfo.ReplyToCommand(msg);
     }
 
-    public static Player FindPlayer(CCSPlayerController controller)
+    /// <summary>O(1) lookup of the tracked player for a controller, or null.</summary>
+    public static Player? FindPlayer(CCSPlayerController? controller)
     {
-        return Players.Find(player => player.PlayerIndex == controller.Index)!;
+        if (controller is null || !controller.IsValid)
+        {
+            return null;
+        }
+
+        return Players.GetValueOrDefault(controller.Slot);
+    }
+
+    public static bool HasAwpAccess(CCSPlayerController? player)
+    {
+        var permission = Core.Config.AwpPermission.Trim();
+
+        if (permission.Length == 0)
+        {
+            return true;
+        }
+
+        if (player is null || !player.IsValid)
+        {
+            return false;
+        }
+
+        if (!permission.StartsWith('@'))
+        {
+            permission = $"@{permission}";
+        }
+
+        return AdminManager.PlayerHasPermissions(player, permission)
+               || AdminManager.GetPlayerAdminData(player.AuthorizedSteamID) != null;
     }
 
     public static void ServerCommand(string command, params object[] args)
@@ -39,14 +82,14 @@ public static class Utils
         Server.ExecuteCommand(string.Format(command, args));
     }
 
-    public static void AddPlayerToList(CCSPlayerController player)
+    public static void AddPlayerToList(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid || player.IsBot)
+        if (player is null || !player.IsValid || player.IsBot || player.IsHLTV)
         {
             return;
         }
 
-        if (FindPlayer(player) != null!)
+        if (Players.ContainsKey(player.Slot))
         {
             return;
         }
@@ -60,36 +103,49 @@ public static class Utils
         }
 
         var playerObj = new Player(player);
-        Players.Add(playerObj);
+        Players[playerObj.Slot] = playerObj;
+
+        if (Store is null)
+        {
+            // The database failed to initialise; run with in-memory defaults.
+            return;
+        }
 
         // Read CounterStrikeSharp-bound values on the game thread before going async.
         var auth = playerObj.GetSteamId2();
         var name = playerObj.GetName();
 
+        if (auth.Length == 0)
+        {
+            return;
+        }
+
+        var slot = playerObj.Slot;
+        var store = Store;
+
         Task.Run(async () =>
         {
             try
             {
-                var pref = await Store.GetUserAsync(auth);
+                var pref = await store.GetUserAsync(auth);
 
                 if (pref == null)
                 {
-                    await Store.CreateUserAsync(auth, name);
+                    await store.CreateUserAsync(auth, name);
+                    return;
                 }
-                else
-                {
-                    // Apply to the player on the game thread. Skip if they
-                    // disconnected while the DB load was in flight.
-                    Server.NextFrame(() =>
-                    {
-                        if (!Players.Contains(playerObj))
-                        {
-                            return;
-                        }
 
-                        ApplyPreferences(playerObj, pref);
-                    });
-                }
+                // Apply to the player on the game thread. Skip if they
+                // disconnected while the DB load was in flight.
+                Server.NextFrame(() =>
+                {
+                    if (!Players.TryGetValue(slot, out var tracked) || !ReferenceEquals(tracked, playerObj))
+                    {
+                        return;
+                    }
+
+                    ApplyPreferences(playerObj, pref);
+                });
             }
             catch (Exception e)
             {
@@ -102,46 +158,82 @@ public static class Utils
     {
         var allocator = playerObj.WeaponsAllocator;
 
-        allocator.PrimaryWeaponT = pref.TPrimary > Allocator.PrimaryT.Count ? 0 : pref.TPrimary;
-        allocator.PrimaryWeaponCt = pref.CtPrimary > Allocator.PrimaryCt.Count ? 0 : pref.CtPrimary;
-        allocator.SecondaryWeaponT = pref.TSecondary > Allocator.PistolsT.Count ? 0 : pref.TSecondary;
-        allocator.SecondaryWeaponCt = pref.CtSecondary > Allocator.PistolsCT.Count ? 0 : pref.CtSecondary;
+        allocator.PrimaryWeaponT = SafeWeaponIndex(pref.TPrimary, Allocator.PrimaryT.Count);
+        allocator.PrimaryWeaponCt = SafeWeaponIndex(pref.CtPrimary, Allocator.PrimaryCt.Count);
+        allocator.SecondaryWeaponT = SafeWeaponIndex(pref.TSecondary, Allocator.PistolsT.Count);
+        allocator.SecondaryWeaponCt = SafeWeaponIndex(pref.CtSecondary, Allocator.PistolsCT.Count);
+        allocator.PistolRoundWeaponT = SafeWeaponIndex(pref.TPistolRound, Allocator.PistolsT.Count);
+        allocator.PistolRoundWeaponCt = SafeWeaponIndex(pref.CtPistolRound, Allocator.PistolsCT.Count);
         allocator.GiveAwp = (GiveAwp)pref.GiveAwp;
     }
 
-    public static void RemovePlayerFromList(CCSPlayerController player, bool flush = false)
+    private static int SafeWeaponIndex(int index, int count)
     {
-        if (player == null || !player.IsValid || player.IsBot)
+        return index < 0 || index >= count ? 0 : index;
+    }
+
+    public static void RemovePlayerFromList(CCSPlayerController? player, bool flush = false)
+    {
+        if (player is null || player.IsBot || player.IsHLTV)
         {
             return;
         }
 
-        var playerObj = FindPlayer(player);
+        // Deliberately not gated on IsValid: on disconnect the controller may already
+        // be torn down and we still want the tracked entry (and its preferences) gone.
+        if (!Players.TryGetValue(player.Slot, out var playerObj))
+        {
+            return;
+        }
 
-        if (playerObj == null!)
+        RemoveTrackedPlayer(playerObj, flush);
+    }
+
+    /// <summary>
+    /// Drops a tracked player and persists their preferences. <paramref name="flush"/>
+    /// blocks on the write (used by the plugin unload path); otherwise it is fire and
+    /// forget on the thread pool so the game thread never waits on the database.
+    /// </summary>
+    public static void RemoveTrackedPlayer(Player playerObj, bool flush = false)
+    {
+        Players.Remove(playerObj.Slot);
+
+        if (Store is null)
         {
             return;
         }
 
         // Snapshot all values on the game thread before going async.
+        var auth = playerObj.GetSteamId2();
+
+        if (auth.Length == 0)
+        {
+            // Never authorized (or already gone) — nothing we can key a row on.
+            return;
+        }
+
+        var allocator = playerObj.WeaponsAllocator;
         var pref = new WeaponPreference
         {
-            Auth = playerObj.GetSteamId2(),
-            TPrimary = playerObj.WeaponsAllocator.PrimaryWeaponT,
-            CtPrimary = playerObj.WeaponsAllocator.PrimaryWeaponCt,
-            TSecondary = playerObj.WeaponsAllocator.SecondaryWeaponT,
-            CtSecondary = playerObj.WeaponsAllocator.SecondaryWeaponCt,
-            GiveAwp = (int)playerObj.WeaponsAllocator.GiveAwp,
+            Auth = auth,
+            Name = playerObj.GetName(),
+            TPrimary = allocator.PrimaryWeaponT,
+            CtPrimary = allocator.PrimaryWeaponCt,
+            TSecondary = allocator.SecondaryWeaponT,
+            CtSecondary = allocator.SecondaryWeaponCt,
+            TPistolRound = allocator.PistolRoundWeaponT,
+            CtPistolRound = allocator.PistolRoundWeaponCt,
+            GiveAwp = (int)allocator.GiveAwp,
         };
 
-        Players.Remove(playerObj);
+        var store = Store;
 
         if (flush)
         {
             // Plugin unload path: block so the save completes before teardown.
             try
             {
-                Store.SaveUserAsync(pref).GetAwaiter().GetResult();
+                store.SaveUserAsync(pref).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -154,7 +246,7 @@ public static class Utils
         {
             try
             {
-                await Store.SaveUserAsync(pref);
+                await store.SaveUserAsync(pref);
             }
             catch (Exception e)
             {
@@ -163,28 +255,8 @@ public static class Utils
         });
     }
 
-    public static int GetRoundsAmount()
-    {
-        IEnumerable<CTeam> team = Utilities.FindAllEntitiesByDesignerName<CTeam>("cs_team");
-
-        if (team.Count() == 0)
-        {
-            return 0;
-        }
-
-        int rounds = 0;
-
-        foreach (var t in team)
-        {
-            rounds = t.Score;
-        }
-
-        return rounds;
-    }
-
     public static CCSPlayerController[] ValidPlayers(bool considerBots = false)
     {
-        //considerBots = true;
         return Utilities.GetPlayers()
         .Where(x => x.ReallyValid(considerBots))
         .Where(x => !x.IsHLTV)
@@ -198,14 +270,30 @@ public static class Utils
             (considerBots || (!player.IsBot && !player.IsHLTV));
     }
 
+    /// <summary>
+    /// Counts connected players without building the intermediate list/array that
+    /// <see cref="ValidPlayers"/> allocates — this is read repeatedly per vote message.
+    /// </summary>
     public static int ValidPlayerCount(bool considerBots = false)
     {
-        return ValidPlayers(considerBots).Length;
+        var count = 0;
+        var maxPlayers = Server.MaxPlayers;
+
+        for (var slot = 0; slot < maxPlayers; slot++)
+        {
+            var controller = Utilities.GetPlayerFromSlot(slot);
+
+            if (controller.ReallyValid(considerBots))
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public static T GetRandomFromList<T>(this List<T> list)
     {
-        int index = new Random().Next(list.Count);
-        return list[index];
-    }   
+        return list[Random.Shared.Next(list.Count)];
+    }
 }

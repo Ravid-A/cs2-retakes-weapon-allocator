@@ -12,5 +12,7 @@ public class WeaponPreference
     public int CtPrimary { get; set; }
     public int TSecondary { get; set; }
     public int CtSecondary { get; set; }
+    public int TPistolRound { get; set; }
+    public int CtPistolRound { get; set; }
     public int GiveAwp { get; set; }
 }

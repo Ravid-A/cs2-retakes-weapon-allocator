@@ -7,6 +7,7 @@ using static RetakesAllocator.Modules.Utils;
 using static RetakesAllocator.Modules.Weapons.Menu;
 using static RetakesAllocator.Modules.Votes.Votes;
 using RetakesAllocator.Modules.Votes;
+using Player = RetakesAllocator.Modules.Models.Player;
 
 namespace RetakesAllocator.Modules.Handlers;
 
@@ -37,215 +38,142 @@ internal static class Commands
         Plugin.RemoveCommand("css_awp", AwpCommand);
 
         Plugin.RemoveCommand("css_weapons_reload", ReloadCommand);
+        // Was missing before: leaving it registered meant a second copy of the command
+        // after every plugin reload.
+        Plugin.RemoveCommand("css_skip_pistol", SkipPistolRoundCommand);
+    }
+
+    /// <summary>
+    /// Shared guard for the player-facing commands: the caller must be a valid,
+    /// tracked player. Returns null (after replying) when they are not.
+    /// </summary>
+    private static Player? RequirePlayer(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player is null || !player.IsValid)
+        {
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
+            return null;
+        }
+
+        var playerObj = FindPlayer(player);
+
+        if (playerObj is null)
+        {
+            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
+            return null;
+        }
+
+        return playerObj;
     }
 
     private static void GunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-        
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenTPrimaryMenu(player);
+        OpenPistolRoundTMenu(player!);
     }
 
     private static void CTGunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenCTPrimaryMenu(player, false);
+        OpenCTPrimaryMenu(player!, false);
     }
 
     private static void TGunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenTPrimaryMenu(player, false);
+        OpenTPrimaryMenu(player!, false);
     }
 
     private static void PistolsTCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenSecondaryTMenu(player, false);
+        OpenSecondaryTMenu(player!, false);
     }
 
     private static void PistolsCTCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenSecondaryCTMenu(player, false);
+        OpenSecondaryCTMenu(player!, false);
     }
 
     private static void AwpCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenGiveAWPMenu(player);
+        OpenGiveAWPMenu(player!);
     }
 
     [RequiresPermissions(new string[] { "@css/root" })]
     private static void ReloadCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
+        if (player is not null && !player.IsValid)
         {
             ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
         ReloadConfig();
-        PrintToChat(player, $"{Prefix} Configs reloaded.");
+        ReplyToCommand(commandInfo, $"{Prefix} Configs reloaded.");
     }
 
     public static void OnVoteCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
+        if (RoundsCounter < Core.Config.PistolRound.RoundAmount)
         {
             ReplyToCommand(commandInfo, $"{Prefix} You can't vote during the pistol rounds.");
             return;
         }
 
-        int userId = player.UserId!.Value;
+        var userId = player!.UserId;
 
-        string command = commandInfo.GetArg(0);
-        AsyncVoteManager voteManager = GetVote(command);
+        if (userId is null)
+        {
+            return;
+        }
 
-        if (voteManager == null!)
+        var voteManager = GetVote(commandInfo.GetArg(0));
+
+        if (voteManager is null)
         {
             ReplyToCommand(commandInfo, $"{Prefix} Invalid vote command.");
             return;
         }
 
-        switch(voteManager.AddVote(userId))
+        switch (voteManager.AddVote(userId.Value))
         {
             case VoteResultEnum.Added:
                 PrintToChatAll($"{Prefix} Player \x03{player.PlayerName}\x01 wants to {(voteManager.IsRunningVote() ? "cancel" : "")} {voteManager.Vote.Description} rounds ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
                 break;
             case VoteResultEnum.AlreadyAddedBefore:
-                voteManager.RemoveVote(userId);
+                voteManager.RemoveVote(userId.Value);
                 PrintToChatAll($"{Prefix} Player \x03{player.PlayerName}\x01 dont wants {(voteManager.IsRunningVote() ? "to cancel" : "")} {voteManager.Vote.Description} rounds anymore ({voteManager.VoteCount} voted, {voteManager.RequiredVotes} needed).");
                 break;
             default:
@@ -261,28 +189,20 @@ internal static class Commands
     [RequiresPermissions(new string[] { "@css/root" })]
     public static void OnForceVoteCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
+        if (RequirePlayer(player, commandInfo) is null)
         {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
             return;
         }
 
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        if(RoundsCounter < Core.Config.PistolRound.RoundAmount)
+        if (RoundsCounter < Core.Config.PistolRound.RoundAmount)
         {
             ReplyToCommand(commandInfo, $"{Prefix} You can't vote during the pistol rounds.");
             return;
         }
 
-        string command = commandInfo.GetArg(0);
-        AsyncVoteManager voteManager = GetVote(command);
+        var voteManager = GetVote(commandInfo.GetArg(0));
 
-        if (voteManager == null!)
+        if (voteManager is null)
         {
             ReplyToCommand(commandInfo, $"{Prefix} Invalid vote command.");
             return;
@@ -295,19 +215,7 @@ internal static class Commands
     [RequiresPermissions(new string[] { "@css/root" })]
     private static void SkipPistolRoundCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        if(RoundsCounter >= Core.Config.PistolRound.RoundAmount)
+        if (RoundsCounter >= Core.Config.PistolRound.RoundAmount)
         {
             ReplyToCommand(commandInfo, $"{Prefix} You can't skip the pistol rounds when there is no pistol rounds.");
             return;

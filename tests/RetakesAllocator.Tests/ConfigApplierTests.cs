@@ -33,6 +33,7 @@ public class ConfigApplierTests : IDisposable
     private readonly NadesConfig _savedNades;
     private readonly string _savedPrefix;
     private readonly string _savedPrefixCon;
+    private readonly HashSet<string> _savedTriggerWords;
 
     public ConfigApplierTests()
     {
@@ -46,6 +47,7 @@ public class ConfigApplierTests : IDisposable
         _savedNades = Core.NadesConfig;
         _savedPrefix = Utils.Prefix;
         _savedPrefixCon = Utils.PrefixCon;
+        _savedTriggerWords = Utils.TriggerWords;
     }
 
     public void Dispose()
@@ -68,6 +70,7 @@ public class ConfigApplierTests : IDisposable
         Core.NadesConfig = _savedNades;
         Utils.Prefix = _savedPrefix;
         Utils.PrefixCon = _savedPrefixCon;
+        Utils.TriggerWords = _savedTriggerWords;
     }
 
     [Fact]
@@ -131,5 +134,23 @@ public class ConfigApplierTests : IDisposable
 
         // Same List<Weapon> object is reused, not replaced (other code holds this reference).
         Assert.Same(before, Allocator.PrimaryT);
+    }
+
+    [Fact]
+    public void Apply_BuildsACaseInsensitiveTriggerWordSet()
+    {
+        ConfigApplier.Apply(new RetakesAllocatorConfig
+        {
+            TriggerWords = new[] { "guns", "  Weapons  ", "", "   " },
+        });
+
+        // Empty/whitespace entries are dropped and the rest are trimmed, so the say
+        // listener never has to normalise anything per chat message.
+        Assert.Equal(2, Utils.TriggerWords.Count);
+        Assert.Contains("guns", Utils.TriggerWords);
+        Assert.Contains("Weapons", Utils.TriggerWords);
+        Assert.Contains("GUNS", Utils.TriggerWords);
+        Assert.Contains("weapons", Utils.TriggerWords);
+        Assert.DoesNotContain("gun", Utils.TriggerWords);
     }
 }

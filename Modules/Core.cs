@@ -23,7 +23,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "2.0.0";
+    public override string ModuleVersion => "2.0.2";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
@@ -37,21 +37,35 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     public static NadesConfig NadesConfig = null!;
 
     public static WeaponStore Store = null!;
-    public static List<Player> Players = new();
+
+    /// <summary>
+    /// Tracked players keyed by <see cref="CCSPlayerController.Slot"/>. A dictionary
+    /// (instead of the old list + linear scan) keeps player lookups O(1); they happen
+    /// on every spawn, every chat message and every menu callback, so at 20+ slots the
+    /// scan was pure overhead.
+    /// </summary>
+    public static readonly Dictionary<int, Player> Players = new();
+
     public static int RoundsCounter = 0;
     public static AsyncVoteManager CurrentVote = null!;
-    public static ConVar mp_damage_headshot_only = null!;
+    public static ConVar? mp_damage_headshot_only;
+
+    // Resolving the game rules entity means walking the whole active entity list and
+    // reading every entity's designer name across the native boundary. That used to
+    // happen on every single player spawn; cache it for the lifetime of the map.
+    private static CCSGameRules? _gameRules;
 
     public override void Load(bool hotReload)
     {
         Plugin = this;
 
-        mp_damage_headshot_only = ConVar.Find("mp_damage_headshot_only")!;
+        mp_damage_headshot_only = ConVar.Find("mp_damage_headshot_only");
 
-        if(mp_damage_headshot_only == null!)
+        if (mp_damage_headshot_only is null)
         {
-            Plugin.Logger.LogError("Failed to find the mp_damage_headshot_only convar; headshot-only rounds will not work");
-            return;
+            // Not fatal: only headshot-only vote rounds depend on it. Previously this
+            // returned early and left the plugin loaded but with nothing registered.
+            Logger.LogWarning("Failed to find the mp_damage_headshot_only convar; headshot-only rounds will not work");
         }
 
         // Config is already loaded and applied by OnConfigParsed (called before Load).
@@ -69,6 +83,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         if (hotReload)
         {
+            InvalidateGameRules();
             Utilities.GetPlayers().ForEach(AddPlayerToList);
         }
     }
@@ -82,24 +97,60 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         UnRegisterCommands();
         Votes_OnPluginUnload();
-        Utilities.GetPlayers().ForEach(p => RemovePlayerFromList(p, flush: true));
+
+        // Iterate the tracked players rather than the live controller list: a player
+        // whose controller has already gone away still has preferences worth flushing.
+        foreach (var player in Players.Values.ToArray())
+        {
+            RemoveTrackedPlayer(player, flush: true);
+        }
+
+        Players.Clear();
+        InvalidateGameRules();
 
         RetakeCapability_OnUnload();
     }
 
-    public static CCSGameRules GetGameRules()
+    /// <summary>
+    /// The cached <c>cs_gamerules</c> entity, resolved lazily and re-resolved if the
+    /// cached handle goes stale. Null when it cannot be found (e.g. mid map change).
+    /// </summary>
+    public static CCSGameRules? GameRules
     {
-        var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-        var gameRules = gameRulesEntities.First().GameRules;
-
-        if(gameRules == null!)
+        get
         {
-            Plugin.Logger.LogError("Failed to resolve the game rules entity");
-            return null!;
-        }
+            if (_gameRules is not null && _gameRules.Handle != IntPtr.Zero)
+            {
+                return _gameRules;
+            }
 
-        return gameRules;
+            foreach (var proxy in Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules"))
+            {
+                if (proxy is null || !proxy.IsValid || proxy.GameRules is null)
+                {
+                    continue;
+                }
+
+                _gameRules = proxy.GameRules;
+                return _gameRules;
+            }
+
+            _gameRules = null;
+            return null;
+        }
     }
+
+    /// <summary>Drops the cached game rules pointer; called on map start/end.</summary>
+    public static void InvalidateGameRules()
+    {
+        _gameRules = null;
+    }
+
+    /// <summary>
+    /// True while the server is in warmup. Falls back to false when the game rules
+    /// entity cannot be resolved, so allocation keeps working instead of throwing.
+    /// </summary>
+    public static bool IsWarmup => GameRules?.WarmupPeriod ?? false;
 
     private static void InitializeDatabase()
     {

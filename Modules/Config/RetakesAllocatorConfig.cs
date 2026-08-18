@@ -27,7 +27,10 @@ public class RetakesAllocatorConfig : BasePluginConfig
     public string[] TriggerWords { get; set; } = { "guns", "gun", "weapon", "weapons" };
 
     [JsonPropertyName("AddSkipOption")]
-    public bool AddSkipOption { get; set; } = true;
+    public bool AddSkipOption { get; set; } = false;
+
+    [JsonPropertyName("AwpPermission")]
+    public string AwpPermission { get; set; } = string.Empty;
 
     [JsonPropertyName("Weapons")]
     public WeaponsSection Weapons { get; set; } = new();
@@ -123,7 +126,7 @@ public class PrefixConfig
 
 public class PistolRoundConfig
 {
-    public int RoundAmount { get; init; } = 2;
+    public int RoundAmount { get; init; } = 4;
     public string WeaponT { get; init; } = "weapon_glock";
     public string WeaponCt { get; init; } = "weapon_usp_silencer";
 }
