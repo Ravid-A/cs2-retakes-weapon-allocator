@@ -77,4 +77,71 @@ public class WeaponStoreTests
         Assert.NotNull(result);
         Assert.Equal("Robert'); DROP TABLE weapons;--", result!.Name);
     }
+
+    [Fact]
+    public async Task SaveUserAsync_InsertsRow_WhenTheUserWasNeverCreated()
+    {
+        using var db = new TempDb();
+
+        // No CreateUserAsync first: this is what happens when the join-time insert
+        // failed (database briefly unreachable). The old UPDATE-only statement matched
+        // zero rows and silently threw the player's preferences away.
+        await db.Store.SaveUserAsync(new WeaponPreference
+        {
+            Auth = "STEAM_1:0:444444",
+            Name = "Carol",
+            TPrimary = 2,
+            CtPrimary = 3,
+            GiveAwp = 1,
+        });
+
+        var result = await db.Store.GetUserAsync("STEAM_1:0:444444");
+
+        Assert.NotNull(result);
+        Assert.Equal(2, result!.TPrimary);
+        Assert.Equal(3, result.CtPrimary);
+        Assert.Equal(1, result.GiveAwp);
+    }
+
+    [Fact]
+    public async Task SaveUserAsync_KeepsTheStoredName_WhenUpdatingAnExistingRow()
+    {
+        using var db = new TempDb();
+        await db.Store.CreateUserAsync("STEAM_1:0:555555", "Dave");
+
+        await db.Store.SaveUserAsync(new WeaponPreference
+        {
+            Auth = "STEAM_1:0:555555",
+            Name = string.Empty,
+            TPrimary = 1,
+        });
+
+        var result = await db.Store.GetUserAsync("STEAM_1:0:555555");
+
+        Assert.NotNull(result);
+        Assert.Equal("Dave", result!.Name);
+        Assert.Equal(1, result.TPrimary);
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_IsIdempotent_AndDoesNotClobberPreferences()
+    {
+        using var db = new TempDb();
+        await db.Store.CreateUserAsync("STEAM_1:0:666666", "Erin");
+        await db.Store.SaveUserAsync(new WeaponPreference
+        {
+            Auth = "STEAM_1:0:666666",
+            Name = "Erin",
+            CtSecondary = 4,
+        });
+
+        // Two joins racing on the same SteamID must not throw or reset the row.
+        await db.Store.CreateUserAsync("STEAM_1:0:666666", "Erin");
+
+        var result = await db.Store.GetUserAsync("STEAM_1:0:666666");
+
+        Assert.NotNull(result);
+        Assert.Equal("Erin", result!.Name);
+        Assert.Equal(4, result.CtSecondary);
+    }
 }

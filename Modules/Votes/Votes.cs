@@ -24,12 +24,21 @@ public class Votes
     };
 
     private static readonly List<AsyncVoteManager> VoteManagers = [];
+
+    /// <summary>
+    /// Command name (with and without the "force" prefix) to vote manager. Built once
+    /// at registration so the vote commands are an O(1) lookup with no per-call string
+    /// allocations, and so a vote whose own name contains "force" still resolves.
+    /// </summary>
+    private static readonly Dictionary<string, AsyncVoteManager> VoteCommands =
+        new(StringComparer.OrdinalIgnoreCase);
+
     public static int RequiredPercentage = 60;
     public static int WeaponSelectionTime = 5;
 
-    public static AsyncVoteManager GetVote(string command)
+    public static AsyncVoteManager? GetVote(string command)
     {
-        return VoteManagers.Count == 0 ? null! : VoteManagers.FirstOrDefault(x => command.Replace("css_", "").Replace("force", "") == x.Vote.Command)!;
+        return VoteCommands.GetValueOrDefault(command);
     }
 
     public static void Votes_OnConfigParsed(int weaponSelectionTime, int requiredPercentage)
@@ -51,9 +60,14 @@ public class Votes
 
         foreach (var vote in WeaponVotes)
         {
+            var manager = new AsyncVoteManager(vote);
+
             Plugin.AddCommand($"css_{vote.Command}", vote.Description, OnVoteCommand);
             Plugin.AddCommand($"css_force{vote.Command}", $"force {vote.Description}", OnForceVoteCommand);
-            VoteManagers.Add(new AsyncVoteManager(vote));
+
+            VoteManagers.Add(manager);
+            VoteCommands[$"css_{vote.Command}"] = manager;
+            VoteCommands[$"css_force{vote.Command}"] = manager;
         }
     }
 
@@ -66,7 +80,14 @@ public class Votes
             Plugin.RemoveCommand($"css_force{command}", OnForceVoteCommand);
         }
 
+        // The active vote points at a manager that is about to be discarded.
+        if (CurrentVote != null!)
+        {
+            CurrentVote = null!;
+        }
+
         VoteManagers.Clear();
+        VoteCommands.Clear();
     }
 
     public static void Votes_OnMapStart()
@@ -86,11 +107,16 @@ public class Votes
 
     public static void Votes_OnVoteReached(AsyncVoteManager voteManager)
     {
-        string description = voteManager.Vote.Description;
-        description = description.Substring(0, 1).ToUpper() + description.Substring(1);
+        var description = voteManager.Vote.Description;
+
+        if (description.Length > 0)
+        {
+            description = char.ToUpperInvariant(description[0]) + description[1..];
+        }
+
         voteManager.ClearVotes();
 
-        if(CurrentVote != null! && voteManager.IsRunningVote())
+        if (CurrentVote != null! && voteManager.IsRunningVote())
         {
             CurrentVote = null!;
 
@@ -102,13 +128,20 @@ public class Votes
         PrintToChatAll($"{Prefix} {description} rounds will start next round!");
     }
 
-    public static void Votes_OnPlayerDisconnect(CCSPlayerController player)
+    public static void Votes_OnPlayerDisconnect(CCSPlayerController? player)
     {
-        var userId = player.UserId!.Value;
+        // The controller is frequently already torn down by the time the disconnect
+        // listener runs; dereferencing it here used to throw on every such disconnect.
+        var userId = player?.UserId;
 
-        foreach (AsyncVoteManager voteManager in VoteManagers)
+        if (userId is null)
         {
-            voteManager.RemoveVote(userId);
+            return;
+        }
+
+        foreach (var voteManager in VoteManagers)
+        {
+            voteManager.RemoveVote(userId.Value);
         }
     }
 }

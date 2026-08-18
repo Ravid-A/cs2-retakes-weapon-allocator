@@ -57,36 +57,23 @@ public class WeaponStore
             new { auth });
     }
 
-    /// <summary>Inserts a new user row with default (zeroed) preferences.</summary>
+    /// <summary>
+    /// Inserts a new user row with default (zeroed) preferences. A row already
+    /// existing for that auth is not an error — two joins racing on the same SteamID
+    /// used to surface as a logged exception.
+    /// </summary>
     public async Task CreateUserAsync(string auth, string name)
     {
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
-        await conn.ExecuteAsync(
-            """
-            INSERT INTO weapons (auth, name)
-            VALUES (@auth, @name)
-            """,
-            new { auth, name });
+        await conn.ExecuteAsync(_provider.InsertUserSql, new { auth, name });
     }
 
-    /// <summary>Persists the four weapon preference columns plus give_awp for an existing user.</summary>
+    /// <summary>Persists every weapon preference column, inserting the row if missing.</summary>
     public async Task SaveUserAsync(WeaponPreference pref)
     {
         await using var conn = _provider.CreateConnection();
         await conn.OpenAsync();
-        await conn.ExecuteAsync(
-            """
-            UPDATE weapons
-            SET t_primary = @TPrimary,
-                ct_primary = @CtPrimary,
-                t_secondary = @TSecondary,
-                ct_secondary = @CtSecondary,
-                t_pistol_round = @TPistolRound,
-                ct_pistol_round = @CtPistolRound,
-                give_awp = @GiveAwp
-            WHERE auth = @Auth
-            """,
-            pref);
+        await conn.ExecuteAsync(_provider.SaveUserSql, pref);
     }
 }

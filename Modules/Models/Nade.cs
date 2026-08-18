@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 
 namespace RetakesAllocator.Modules.Models;
 
@@ -53,7 +53,8 @@ public class Nades
             case CsItem.Flashbang:
                 Flashbangs--;
                 break;
-            case CsItem.Smoke:
+            // CsItem.Smoke and CsItem.SmokeGrenade are the same value.
+            case CsItem.SmokeGrenade:
                 Smokes--;
                 break;
             case CsItem.Molotov or CsItem.Incendiary:

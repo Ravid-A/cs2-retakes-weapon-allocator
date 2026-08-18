@@ -16,6 +16,18 @@ public static class ConfigApplier
         Utils.Prefix = config.Prefix.Prefix;
         Utils.PrefixCon = config.Prefix.PrefixCon;
 
+        // Pre-hashed so the say listener, which runs for every chat message on the
+        // server, does a single lookup instead of scanning a string[] per message.
+        Utils.TriggerWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var word in config.TriggerWords)
+        {
+            if (!string.IsNullOrWhiteSpace(word))
+            {
+                Utils.TriggerWords.Add(word.Trim());
+            }
+        }
+
         Core.NadesConfig = config.Nades;
 
         ReplaceContents(Allocator.PrimaryT, config.Weapons.PrimaryT);
