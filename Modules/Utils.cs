@@ -194,7 +194,7 @@ public static class Utils
 
     public static bool ReallyValid(this CCSPlayerController? player, bool considerBots = false)
     {
-        return player is not null && player.IsValid && player.Connected == PlayerConnectedState.PlayerConnected &&
+        return player is not null && player.IsValid && player.Connected == PlayerConnectedState.Connected &&
             (considerBots || (!player.IsBot && !player.IsHLTV));
     }
 

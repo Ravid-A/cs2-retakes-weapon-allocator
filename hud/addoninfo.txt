@@ -1,0 +1,9 @@
+"AddonInfo"
+{
+	// Panorama-only HUD kit — no map content. The layouts live under panorama/layout/custom_game and
+	// panorama/styles/custom_game (the include paths Valve added in the acfe24d588d2 update).
+	// If a UI-only addon won't mount on clients on its own, bundle these two panorama folders into the
+	// map addon you're testing on instead — the compiled .vxml_c / .vcss_c just need to be present on
+	// the client for custom_hud_layout to point at them.
+	"title"	"HUD Kit"
+}

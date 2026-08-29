@@ -18,14 +18,6 @@ public enum GiveAwp
 
 public class Allocator(Player player)
 {
-    public enum WeaponType
-    {
-        PrimaryT,
-        PrimaryCt,
-        SecondaryT,
-        SecondaryCt
-    };
-
     public static List<Weapon> PrimaryT = new()
     {
         new Weapon("weapon_ak47", "AK-47"),
@@ -69,23 +61,6 @@ public class Allocator(Player player)
     {
         _ctNades = new Nades(Core.NadesConfig.CtNades);
         _nades = new Nades(Core.NadesConfig.TNades);
-    }
-
-    public static int GetWeaponIndex(string weapon, WeaponType type)
-    {
-        switch(type)
-        {
-            case WeaponType.PrimaryT:
-                return PrimaryT.FindIndex(w => w.DisplayName == weapon);
-            case WeaponType.PrimaryCt:
-                return PrimaryCt.FindIndex(w => w.DisplayName == weapon);
-            case WeaponType.SecondaryT:
-                return PistolsT.FindIndex(w => w.DisplayName == weapon);
-            case WeaponType.SecondaryCt:
-                return PistolsCT.FindIndex(w => w.DisplayName == weapon);
-        }
-
-        return -1;
     }
 
     public bool SetupGiveAwp()

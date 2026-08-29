@@ -5,9 +5,9 @@ using CounterStrikeSharp.API.Modules.Entities;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
-using static RetakesAllocator.Modules.Weapons.Menu;
 using static RetakesAllocator.Modules.Votes.Votes;
 using RetakesAllocator.Modules.Votes;
+using RetakesAllocator.Modules.Weapons;
 
 namespace RetakesAllocator.Modules.Handlers;
 
@@ -42,6 +42,7 @@ internal static class Listeners
         var player = Utilities.GetPlayerFromSlot(playerSlot)!;
         RemovePlayerFromList(player);
         Votes_OnPlayerDisconnect(player);
+        LoadoutPanel.OnPlayerDisconnect(playerSlot);
     }
 
     private static HookResult OnSay(CCSPlayerController? player, CommandInfo command)
@@ -65,7 +66,7 @@ internal static class Listeners
             return HookResult.Continue;
         }
 
-        OpenTPrimaryMenu(player);
+        LoadoutPanel.Open(player);
 
         return HookResult.Continue;
     }

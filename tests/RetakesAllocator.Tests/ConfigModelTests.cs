@@ -14,7 +14,6 @@ public class ConfigModelTests
         var config = new RetakesAllocatorConfig();
 
         Assert.Equal("sqlite", config.DbConnection.Provider);
-        Assert.True(config.AddSkipOption);
         Assert.Equal(new[] { "guns", "gun", "weapon", "weapons" }, config.TriggerWords);
 
         // Weapon lists copied from the Allocator canonical defaults.
@@ -54,7 +53,7 @@ public class ConfigModelTests
         foreach (var section in new[]
         {
             "\"ConfigVersion\"", "\"DbConnection\"", "\"Prefix\"", "\"PistolRound\"",
-            "\"TriggerWords\"", "\"AddSkipOption\"",
+            "\"TriggerWords\"",
             "\"Weapons\"", "\"Nades\"", "\"Votes\"",
         })
         {
