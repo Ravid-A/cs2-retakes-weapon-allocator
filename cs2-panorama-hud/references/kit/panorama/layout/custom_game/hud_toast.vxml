@@ -1,0 +1,36 @@
+<!--
+  hud_toast — up to 3 stacked notifications: round events, achievements, killstreaks, admin say.
+  Each toast reveals independently: SetHasClass toastN show (plays the brightness-flash), set its
+  text (tN / tNsub), and pick severity with class ok|warn|bad (recolours bar + icon). Remove `show`
+  to dismiss. Icon stays one shape (the severity class washes its colour).
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudToasts" class="kit-stack">
+		<Panel id="toast1" class="HudRoot kit-toast">
+			<Image class="kit-toast-ico" src="s2r://panorama/images/icons/ui/alert.vsvg" />
+			<Panel class="kit-toast-body">
+				<Label class="kit-toast-title" text="{s:t1}" />
+				<Label class="kit-toast-sub" text="{s:t1sub}" />
+			</Panel>
+		</Panel>
+		<Panel id="toast2" class="HudRoot kit-toast">
+			<Image class="kit-toast-ico" src="s2r://panorama/images/icons/ui/alert.vsvg" />
+			<Panel class="kit-toast-body">
+				<Label class="kit-toast-title" text="{s:t2}" />
+				<Label class="kit-toast-sub" text="{s:t2sub}" />
+			</Panel>
+		</Panel>
+		<Panel id="toast3" class="HudRoot kit-toast">
+			<Image class="kit-toast-ico" src="s2r://panorama/images/icons/ui/alert.vsvg" />
+			<Panel class="kit-toast-body">
+				<Label class="kit-toast-title" text="{s:t3}" />
+				<Label class="kit-toast-sub" text="{s:t3sub}" />
+			</Panel>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

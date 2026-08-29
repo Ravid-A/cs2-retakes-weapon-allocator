@@ -1,0 +1,23 @@
+<!--
+  hud_tracker — objective / mission checklist with progress. GENERIC (battle-pass missions, kreedz
+  splits, jailbreak day tasks, MMO quest). Drive: SetHasClass HudTracker show; set {s:title}/{s:tag} +
+  each objective {s:oN} label and {s:oNp} progress ("3/5" or "✓"). Toggle class `done` on an obj → fills
+  the checkbox + strikes the label. Hide a row with class `hidden`. Anchored top-right by default.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudTracker" class="HudRoot kit-panel kit-tracker anchor-tr pad-md">
+		<Panel class="kit-head">
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+		</Panel>
+		<Panel id="obj1" class="kit-obj done"><Panel class="kit-obj-check"><Image class="kit-obj-ic" src="s2r://panorama/images/icons/ui/check.vsvg" /></Panel><Label class="kit-obj-lbl" text="{s:o1}" /><Label class="kit-obj-prog" text="{s:o1p}" /></Panel>
+		<Panel id="obj2" class="kit-obj"><Panel class="kit-obj-check"><Image class="kit-obj-ic" src="s2r://panorama/images/icons/ui/check.vsvg" /></Panel><Label class="kit-obj-lbl" text="{s:o2}" /><Label class="kit-obj-prog" text="{s:o2p}" /></Panel>
+		<Panel id="obj3" class="kit-obj"><Panel class="kit-obj-check"><Image class="kit-obj-ic" src="s2r://panorama/images/icons/ui/check.vsvg" /></Panel><Label class="kit-obj-lbl" text="{s:o3}" /><Label class="kit-obj-prog" text="{s:o3p}" /></Panel>
+		<Panel id="obj4" class="kit-obj"><Panel class="kit-obj-check"><Image class="kit-obj-ic" src="s2r://panorama/images/icons/ui/check.vsvg" /></Panel><Label class="kit-obj-lbl" text="{s:o4}" /><Label class="kit-obj-prog" text="{s:o4p}" /></Panel>
+	</Panel>
+	</Panel>
+</root>

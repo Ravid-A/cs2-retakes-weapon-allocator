@@ -1,0 +1,32 @@
+<!--
+  hud_scoreboard — a compact custom table: scoreboard, top players, team overview, duel stats.
+  (Also a NEW capability, not a menu shape.) Server sets the title/tag + every cell as a dialog var
+  (r1 = name, r1k/r1d/r1a = stats, per row). Toggle `rN t` / `rN ct` for the team stripe colour and
+  `rN hl` to highlight the local player or MVP; `rN hidden` collapses an empty row.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudBoard" class="HudRoot kit-panel kit-board">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel class="kit-brow head">
+			<Label class="kit-bname" text="PLAYER" />
+			<Label class="kit-bstat" text="K" />
+			<Label class="kit-bstat" text="D" />
+			<Label class="kit-bstat" text="ADR" />
+		</Panel>
+		<Panel id="r1" class="kit-brow ct"><Panel class="kit-bsw" /><Label class="kit-bname" text="{s:r1}" /><Label class="kit-bstat hl" text="{s:r1k}" /><Label class="kit-bstat" text="{s:r1d}" /><Label class="kit-bstat" text="{s:r1a}" /></Panel>
+		<Panel id="r2" class="kit-brow ct"><Panel class="kit-bsw" /><Label class="kit-bname" text="{s:r2}" /><Label class="kit-bstat" text="{s:r2k}" /><Label class="kit-bstat" text="{s:r2d}" /><Label class="kit-bstat" text="{s:r2a}" /></Panel>
+		<Panel id="r3" class="kit-brow t"><Panel class="kit-bsw" /><Label class="kit-bname" text="{s:r3}" /><Label class="kit-bstat" text="{s:r3k}" /><Label class="kit-bstat" text="{s:r3d}" /><Label class="kit-bstat" text="{s:r3a}" /></Panel>
+		<Panel id="r4" class="kit-brow t"><Panel class="kit-bsw" /><Label class="kit-bname" text="{s:r4}" /><Label class="kit-bstat" text="{s:r4k}" /><Label class="kit-bstat" text="{s:r4d}" /><Label class="kit-bstat" text="{s:r4a}" /></Panel>
+		<Panel id="r5" class="kit-brow t"><Panel class="kit-bsw" /><Label class="kit-bname" text="{s:r5}" /><Label class="kit-bstat" text="{s:r5k}" /><Label class="kit-bstat" text="{s:r5d}" /><Label class="kit-bstat" text="{s:r5a}" /></Panel>
+	</Panel>
+	</Panel>
+</root>

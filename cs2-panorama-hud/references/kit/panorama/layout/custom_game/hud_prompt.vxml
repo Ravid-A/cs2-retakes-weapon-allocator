@@ -1,0 +1,17 @@
+<!--
+  hud_prompt — bottom-centre contextual interaction hint: "[E] Search body". GENERIC (TTT corpse
+  search, prophunt actions, door/button use, pickups). This is TTT's TargetID key-hint. Drive:
+  SetHasClass HudPrompt show when a target is in reach; set {s:key} (bind) + {s:text} (action). Remove
+  show when out of reach. Non-interactive (the actual key does the work). Anchored bottom-centre.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudPrompt" class="HudRoot kit-prompt anchor-bottom">
+		<Label class="kit-prompt-key" text="{s:key}" />
+		<Label class="kit-prompt-txt" text="{s:text}" />
+	</Panel>
+	</Panel>
+</root>

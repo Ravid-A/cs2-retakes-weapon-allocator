@@ -1,0 +1,40 @@
+<!--
+  hud_tabs — a tabbed shell: a tab bar across the top + a list body that swaps per tab. Unlocks the
+  multi-category UIs the flat menu can't do well: category shops (furien/ttt/mmo buy screens), admin
+  sections, settings groups, the mmo hub. Server sets the tab labels (tab1..tab5) + the body rows
+  (row1..row6 / row1v..), toggles `active` onto the clicked tab (SetHasClass), and re-fills the rows
+  for that tab. Clicks: tab1..tab5 switch tab, row1..row6 select an item.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudTabs" class="HudRoot kit-panel kit-tabs">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel class="kit-tabbar">
+			<Button id="tab1" class="kit-tab active"><Label class="kit-tab-lbl" text="{s:tab1}" /></Button>
+			<Button id="tab2" class="kit-tab"><Label class="kit-tab-lbl" text="{s:tab2}" /></Button>
+			<Button id="tab3" class="kit-tab"><Label class="kit-tab-lbl" text="{s:tab3}" /></Button>
+			<Button id="tab4" class="kit-tab"><Label class="kit-tab-lbl" text="{s:tab4}" /></Button>
+			<Button id="tab5" class="kit-tab"><Label class="kit-tab-lbl" text="{s:tab5}" /></Button>
+		</Panel>
+		<Button id="row1" class="kit-row"><Label class="kit-key" text="1" /><Label class="kit-label" text="{s:row1}" /><Label class="kit-value" text="{s:row1v}" /></Button>
+		<Button id="row2" class="kit-row"><Label class="kit-key" text="2" /><Label class="kit-label" text="{s:row2}" /><Label class="kit-value" text="{s:row2v}" /></Button>
+		<Button id="row3" class="kit-row"><Label class="kit-key" text="3" /><Label class="kit-label" text="{s:row3}" /><Label class="kit-value" text="{s:row3v}" /></Button>
+		<Button id="row4" class="kit-row"><Label class="kit-key" text="4" /><Label class="kit-label" text="{s:row4}" /><Label class="kit-value" text="{s:row4v}" /></Button>
+		<Button id="row5" class="kit-row"><Label class="kit-key" text="5" /><Label class="kit-label" text="{s:row5}" /><Label class="kit-value" text="{s:row5v}" /></Button>
+		<Button id="row6" class="kit-row"><Label class="kit-key" text="6" /><Label class="kit-label" text="{s:row6}" /><Label class="kit-value" text="{s:row6v}" /></Button>
+		<Panel id="pager" class="kit-pager">
+			<Button id="prev" class="kit-pager-btn"><Label class="kit-pager-lbl" text="‹ PREV" /></Button>
+			<Label class="kit-pager-info" text="{s:page}" />
+			<Button id="next" class="kit-pager-btn"><Label class="kit-pager-lbl" text="NEXT ›" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

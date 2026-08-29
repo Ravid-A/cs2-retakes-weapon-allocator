@@ -1,0 +1,19 @@
+<!--
+  hud_reveal — center announcement popup (role reveal, round banner, MVP, "BOMB PLANTED"). GENERIC.
+  Drive: set {s:title}/{s:sub}, pick tint via class t|d|i (red/blue/green — default accent), SetHasClass
+  HudReveal show to play the entrance (scale + brightness in). Remove show (or toggle off on a timer) to
+  dismiss. Centered. Frosted-glass background-blur + coloured title glow live in the vcss.
+  Icon binds {s:icon} (or leave the placeholder). Non-interactive — no buttons.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudReveal" class="HudRoot kit-reveal anchor-center">
+		<Image class="kit-reveal-ico" src="s2r://panorama/images/icons/ui/alert.vsvg" />
+		<Label class="kit-reveal-title" text="{s:title}" />
+		<Label class="kit-reveal-sub" text="{s:sub}" />
+	</Panel>
+	</Panel>
+</root>

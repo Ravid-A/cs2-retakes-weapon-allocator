@@ -1,0 +1,35 @@
+<!--
+  hud_list — the workhorse. A vertical option list: shop, vote, class/power select, admin
+  picker, settings, warp, inventory. The server fills row text via dialog variables
+  (title/tag, row1..row8, row1v..row8v), sets state via classes (SetHasClass rowN
+  selected|disabled|hidden), and hears clicks as button ids row1..row8. Nested menus:
+  on a click the server re-fills the same list with the next level + updates `title`.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudList" class="HudRoot kit-panel kit-list">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Button id="row1" class="kit-row"><Label class="kit-key" text="1" /><Label class="kit-label" text="{s:row1}" /><Label class="kit-value" text="{s:row1v}" /></Button>
+		<Button id="row2" class="kit-row"><Label class="kit-key" text="2" /><Label class="kit-label" text="{s:row2}" /><Label class="kit-value" text="{s:row2v}" /></Button>
+		<Button id="row3" class="kit-row"><Label class="kit-key" text="3" /><Label class="kit-label" text="{s:row3}" /><Label class="kit-value" text="{s:row3v}" /></Button>
+		<Button id="row4" class="kit-row"><Label class="kit-key" text="4" /><Label class="kit-label" text="{s:row4}" /><Label class="kit-value" text="{s:row4v}" /></Button>
+		<Button id="row5" class="kit-row"><Label class="kit-key" text="5" /><Label class="kit-label" text="{s:row5}" /><Label class="kit-value" text="{s:row5v}" /></Button>
+		<Button id="row6" class="kit-row"><Label class="kit-key" text="6" /><Label class="kit-label" text="{s:row6}" /><Label class="kit-value" text="{s:row6v}" /></Button>
+		<Button id="row7" class="kit-row"><Label class="kit-key" text="7" /><Label class="kit-label" text="{s:row7}" /><Label class="kit-value" text="{s:row7v}" /></Button>
+		<Button id="row8" class="kit-row"><Label class="kit-key" text="8" /><Label class="kit-label" text="{s:row8}" /><Label class="kit-value" text="{s:row8v}" /></Button>
+		<Panel id="pager" class="kit-pager">
+			<Button id="prev" class="kit-pager-btn"><Label class="kit-pager-lbl" text="‹ PREV" /></Button>
+			<Label class="kit-pager-info" text="{s:page}" />
+			<Button id="next" class="kit-pager-btn"><Label class="kit-pager-lbl" text="NEXT ›" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

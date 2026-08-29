@@ -1,0 +1,32 @@
+<!--
+  hud_grid — 2x3 tile picker: buy menu, inventory, weapon skins, cosmetics. (Not a MenuManager
+  shape — the menu API is a flat list — so this is a NEW capability on top.) Server sets each tile's
+  name/value (tile1/tile1v ..), toggles `tileN selected` for the owned/hovered tile and `tileN hidden`
+  to collapse unused cells. Clicks arrive as button ids tile1..tile6.
+  Per-item icons want a dialog var in the Image src (`src="{s:tile1_icon}"`) — verify that binds at
+  compile; if not, keep them text tiles.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudGrid" class="HudRoot kit-grid">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-title" text="{s:title}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel class="kit-grow">
+			<Button id="tile1" class="kit-tile selected"><Label class="kit-tile-name" text="{s:tile1}" /><Label class="kit-tile-val" text="{s:tile1v}" /></Button>
+			<Button id="tile2" class="kit-tile"><Label class="kit-tile-name" text="{s:tile2}" /><Label class="kit-tile-val" text="{s:tile2v}" /></Button>
+			<Button id="tile3" class="kit-tile"><Label class="kit-tile-name" text="{s:tile3}" /><Label class="kit-tile-val" text="{s:tile3v}" /></Button>
+		</Panel>
+		<Panel class="kit-grow">
+			<Button id="tile4" class="kit-tile"><Label class="kit-tile-name" text="{s:tile4}" /><Label class="kit-tile-val" text="{s:tile4v}" /></Button>
+			<Button id="tile5" class="kit-tile"><Label class="kit-tile-name" text="{s:tile5}" /><Label class="kit-tile-val" text="{s:tile5v}" /></Button>
+			<Button id="tile6" class="kit-tile"><Label class="kit-tile-name" text="{s:tile6}" /><Label class="kit-tile-val" text="{s:tile6v}" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

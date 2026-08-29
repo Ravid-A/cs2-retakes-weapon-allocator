@@ -1,0 +1,39 @@
+<!--
+  hud_detail — an item detail / buy-confirm panel: shop item detail, mmo market buy-confirm, trade
+  confirm, ability info. Title + price, up to 3 key:value stat rows, a description line, and a
+  Buy/Cancel footer. Server sets title/price/k1..k3/v1..v3/desc + the two button labels; clicks arrive
+  as button ids buy / cancel. (A Card with a decision footer — the step a flat menu can't show.)
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudDetail" class="HudRoot kit-panel kit-card">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-name" text="{s:title}" />
+			<Label class="kit-cash" text="{s:price}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel id="hero" class="kit-hero hidden">
+			<Panel class="kit-hero-portrait" />
+			<Panel class="kit-hero-body">
+				<Label class="kit-hero-name" text="{s:heroname}" />
+				<Label id="herosub" class="kit-hero-sub" text="{s:herosub}" />
+			</Panel>
+			<Image class="kit-hero-badge" src="s2r://panorama/images/icons/ui/player.vsvg" />
+		</Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k1}" /><Label class="kit-kv-val" text="{s:v1}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k2}" /><Label class="kit-kv-val" text="{s:v2}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k3}" /><Label class="kit-kv-val" text="{s:v3}" /></Panel>
+		<Panel id="kv4" class="kit-kv hidden"><Label class="kit-kv-key" text="{s:k4}" /><Label class="kit-kv-val" text="{s:v4}" /></Panel>
+		<Panel id="kv5" class="kit-kv hidden"><Label class="kit-kv-key" text="{s:k5}" /><Label class="kit-kv-val" text="{s:v5}" /></Panel>
+		<Panel class="kit-detail-desc"><Label class="kit-detail-desctext" text="{s:desc}" /></Panel>
+		<Panel class="kit-detail-foot">
+			<Button id="buy" class="kit-btn yes"><Label class="kit-btn-lbl" text="{s:buy}" /></Button>
+			<Button id="cancel" class="kit-btn no"><Label class="kit-btn-lbl" text="{s:cancel}" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

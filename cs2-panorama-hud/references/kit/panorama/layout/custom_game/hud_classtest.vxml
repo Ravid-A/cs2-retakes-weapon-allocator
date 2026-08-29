@@ -1,0 +1,22 @@
+<!--
+  PROBE — does a dialog variable substitute inside the `class` attribute (not just `text`)?
+  If `{s:posvar}` resolves in class=, then `SetDialogVariableString(Probe, "posvar", "anchor-br")` makes
+  this panel's class become "kit-panel HudRoot anchor-br" → it jumps bottom-right (visible proof), and we
+  can push ANY class name as a string = dynamic classes, no pre-define+toggle. If it does NOT resolve,
+  the panel stays centered / the literal text shows, and we're confirmed to `SetClassOverride` only.
+  Test: nhud_spawn this, `nhud_var Probe posvar anchor-br`, `nhud_class Probe show 1` → did it move?
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="Probe" class="HudRoot kit-panel kit-list {s:posvar}">
+		<Panel class="kit-head">
+			<Label class="kit-title" text="CLASS PROBE" />
+			<Label class="kit-tag" text="{s:posvar}" />
+		</Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="posvar" /><Label class="kit-kv-val" text="{s:posvar}" /></Panel>
+	</Panel>
+	</Panel>
+</root>

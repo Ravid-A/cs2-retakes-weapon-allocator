@@ -1,0 +1,37 @@
+<!--
+  hud_status — persistent corner HUD, N stat rows (icon + label + value). GENERIC:
+  TTT drives role/health/karma/credits; prophunt disguise/health; MMO level/HP/mana; retakes money/round.
+  Drive: SetHasClass HudStatus show. Coloured role banner: set {s:role} + toggle hrole class t|d|i (team tint).
+  Each row: set {s:lN}/{s:vN}; value severity via class on hvN (good|warn|bad); hide a row via its class hidden.
+  Anchor via anchor-* + pad-* on the root (default bottom-left). Icons are s2r placeholders — swap per game.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudStatus" class="HudRoot kit-panel kit-hud anchor-bl pad-md">
+		<Panel id="hrole" class="kit-hrole"><Label class="kit-hrole-txt" text="{s:role}" /></Panel>
+		<Panel id="hrow1" class="kit-hrow">
+			<Image class="kit-hico" src="s2r://panorama/images/icons/ui/player.vsvg" />
+			<Label class="kit-hlab" text="{s:l1}" />
+			<Label id="hv1" class="kit-hval" text="{s:v1}" />
+		</Panel>
+		<Panel id="hrow2" class="kit-hrow div">
+			<Image class="kit-hico" src="s2r://panorama/images/icons/ui/alert.vsvg" />
+			<Label class="kit-hlab" text="{s:l2}" />
+			<Label id="hv2" class="kit-hval" text="{s:v2}" />
+		</Panel>
+		<Panel id="hrow3" class="kit-hrow div">
+			<Image class="kit-hico" src="s2r://panorama/images/icons/ui/favorite.vsvg" />
+			<Label class="kit-hlab" text="{s:l3}" />
+			<Label id="hv3" class="kit-hval good" text="{s:v3}" />
+		</Panel>
+		<Panel id="hrow4" class="kit-hrow div hidden">
+			<Image class="kit-hico" src="s2r://panorama/images/icons/ui/check.vsvg" />
+			<Label class="kit-hlab" text="{s:l4}" />
+			<Label id="hv4" class="kit-hval" text="{s:v4}" />
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

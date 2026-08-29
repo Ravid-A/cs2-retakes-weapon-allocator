@@ -1,0 +1,27 @@
+<!--
+  hud_card — titled key-value panel: loadout, player stats, ban info, round status.
+  Server sets title/tag + up to 6 key:value pairs (k1/v1 .. k6/v6) as dialog variables.
+  Add class `empty` to a value (SetHasClass) to grey an unset slot. The loadout is just
+  this card with keys PRIMARY/SECONDARY/KNIFE/NADES/ARMOR.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudCard" class="HudRoot kit-panel kit-card">
+		<Panel class="kit-head">
+			<Button id="back" class="kit-back hidden"><Label class="kit-nav-x" text="‹" /></Button>
+			<Label class="kit-name" text="{s:title}" />
+			<Label class="kit-cash" text="{s:tag}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k1}" /><Label id="v1" class="kit-kv-val" text="{s:v1}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k2}" /><Label id="v2" class="kit-kv-val" text="{s:v2}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k3}" /><Label id="v3" class="kit-kv-val" text="{s:v3}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k4}" /><Label id="v4" class="kit-kv-val" text="{s:v4}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k5}" /><Label id="v5" class="kit-kv-val" text="{s:v5}" /></Panel>
+		<Panel class="kit-kv"><Label class="kit-kv-key" text="{s:k6}" /><Label id="v6" class="kit-kv-val" text="{s:v6}" /></Panel>
+	</Panel>
+	</Panel>
+</root>

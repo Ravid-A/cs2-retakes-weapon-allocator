@@ -1,0 +1,26 @@
+<!--
+  hud_settings — user-friendly preferences menu over IClientPreference cookies. GENERIC.
+  Three control types, all click-driven (no text input): a toggle switch for *_enabled booleans,
+  a stepper (‹ value ›) for enums (sound level, quality), a colour swatch picker for colour prefs.
+  Drive: SetHasClass HudSettings show; set row labels {s:lN}. Toggle: server flips class `on` on tN
+  (writes the cookie). Stepper: {s:vN} text + sNdec/sNinc buttons. Swatch: `sel` class on the picked
+  swatch id. Rows map 1:1 to our real prefs (show_role/health/karma, dead_talk, sound level, glowcolor…).
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudSettings" class="HudRoot kit-panel kit-set">
+		<Panel class="kit-head">
+			<Label class="kit-title" text="{s:title}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+		<Panel class="kit-set-row"><Label class="kit-set-lbl" text="{s:l1}" /><Button id="t1" class="kit-toggle on"><Panel class="kit-toggle-knob" /></Button></Panel>
+		<Panel class="kit-set-row"><Label class="kit-set-lbl" text="{s:l2}" /><Button id="t2" class="kit-toggle"><Panel class="kit-toggle-knob" /></Button></Panel>
+		<Panel class="kit-set-row"><Label class="kit-set-lbl" text="{s:l3}" /><Button id="t3" class="kit-toggle on"><Panel class="kit-toggle-knob" /></Button></Panel>
+		<Panel class="kit-set-row"><Label class="kit-set-lbl" text="{s:l4}" /><Panel class="kit-stepper"><Button id="s4dec" class="kit-step-btn"><Label class="kit-step-lbl" text="‹" /></Button><Label class="kit-step-val" text="{s:v4}" /><Button id="s4inc" class="kit-step-btn"><Label class="kit-step-lbl" text="›" /></Button></Panel></Panel>
+		<Panel class="kit-set-row"><Label class="kit-set-lbl" text="{s:l5}" /><Panel class="kit-swatches"><Button id="c1" class="kit-swatch red" /><Button id="c2" class="kit-swatch green sel" /><Button id="c3" class="kit-swatch blue" /><Button id="c4" class="kit-swatch gold" /><Button id="c5" class="kit-swatch purple" /></Panel></Panel>
+	</Panel>
+	</Panel>
+</root>

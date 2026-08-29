@@ -1,0 +1,46 @@
+<!--
+  hud_shop — fancy item grid for shop / inventory / loadout / buy-menu. GENERIC.
+  Drive: SetHasClass HudShop show; set {s:title} + {s:credits} header. Each tile: {s:nameN} label,
+  {s:priceN} price pill (or qty for inventory), rarity via class blue|purple|pink|red|gold (colours the
+  bottom strip), state via class selected|owned|locked, hide via class hidden. Tile icon binds {s:iconN}.
+  Click returns the tile id (item1..item12) or the footer action (buy/sell/gift) → drive hud_detail.
+  Body is a native scroll panel (12 tiles here; add rows for a bigger catalogue — scroll handles it).
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudShop" class="HudRoot kit-panel kit-shop">
+		<Panel class="kit-shop-head">
+			<Label class="kit-shop-title" text="{s:title}" />
+			<Label class="kit-shop-credits" text="{s:credits}" />
+		</Panel>
+		<Panel class="kit-shop-body scroll">
+			<Panel class="kit-irow">
+				<Button id="item1" class="kit-item gold selected"><Image class="kit-item-ico" src="{s:icon1}" /><Label class="kit-item-name" text="{s:name1}" /><Label class="kit-item-price" text="{s:price1}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item2" class="kit-item pink"><Image class="kit-item-ico" src="{s:icon2}" /><Label class="kit-item-name" text="{s:name2}" /><Label class="kit-item-price" text="{s:price2}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item3" class="kit-item purple"><Image class="kit-item-ico" src="{s:icon3}" /><Label class="kit-item-name" text="{s:name3}" /><Label class="kit-item-price" text="{s:price3}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item4" class="kit-item red"><Image class="kit-item-ico" src="{s:icon4}" /><Label class="kit-item-name" text="{s:name4}" /><Label class="kit-item-price" text="{s:price4}" /><Panel class="kit-item-rar" /></Button>
+			</Panel>
+			<Panel class="kit-irow">
+				<Button id="item5" class="kit-item blue owned"><Image class="kit-item-ico" src="{s:icon5}" /><Label class="kit-item-name" text="{s:name5}" /><Label class="kit-item-price" text="{s:price5}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item6" class="kit-item purple"><Image class="kit-item-ico" src="{s:icon6}" /><Label class="kit-item-name" text="{s:name6}" /><Label class="kit-item-price" text="{s:price6}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item7" class="kit-item blue"><Image class="kit-item-ico" src="{s:icon7}" /><Label class="kit-item-name" text="{s:name7}" /><Label class="kit-item-price" text="{s:price7}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item8" class="kit-item gold locked"><Image class="kit-item-ico" src="{s:icon8}" /><Label class="kit-item-name" text="{s:name8}" /><Label class="kit-item-price" text="{s:price8}" /><Panel class="kit-item-rar" /></Button>
+			</Panel>
+			<Panel class="kit-irow">
+				<Button id="item9" class="kit-item blue"><Image class="kit-item-ico" src="{s:icon9}" /><Label class="kit-item-name" text="{s:name9}" /><Label class="kit-item-price" text="{s:price9}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item10" class="kit-item purple"><Image class="kit-item-ico" src="{s:icon10}" /><Label class="kit-item-name" text="{s:name10}" /><Label class="kit-item-price" text="{s:price10}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item11" class="kit-item red"><Image class="kit-item-ico" src="{s:icon11}" /><Label class="kit-item-name" text="{s:name11}" /><Label class="kit-item-price" text="{s:price11}" /><Panel class="kit-item-rar" /></Button>
+				<Button id="item12" class="kit-item blue"><Image class="kit-item-ico" src="{s:icon12}" /><Label class="kit-item-name" text="{s:name12}" /><Label class="kit-item-price" text="{s:price12}" /><Panel class="kit-item-rar" /></Button>
+			</Panel>
+		</Panel>
+		<Panel class="kit-shop-foot">
+			<Button id="buy" class="kit-abtn good"><Label class="kit-abtn-lbl" text="{s:buy}" /></Button>
+			<Button id="sell" class="kit-abtn bad"><Label class="kit-abtn-lbl" text="{s:sell}" /></Button>
+			<Button id="gift" class="kit-abtn"><Label class="kit-abtn-lbl" text="{s:gift}" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

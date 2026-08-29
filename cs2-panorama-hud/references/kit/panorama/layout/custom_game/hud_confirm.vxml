@@ -1,0 +1,25 @@
+<!--
+  hud_confirm — a prompt + big buttons + countdown: surrender / timeout / knife-side / map vote,
+  coinflip, RPS. Server sets question + subtext (tally + clock), and steps the timer by swapping the
+  fill class on #ctimer (fill-100 -> fill-90 -> ...) via the 10 Hz driver. Clicks arrive as button
+  ids yes / no (rename / add more for N-option votes). A shared vote shows the same layout to everyone;
+  a minigame targets just the two duelists per-player.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudConfirm" class="HudRoot kit-panel kit-confirm">
+		<Label class="kit-q" text="{s:question}" />
+		<Label class="kit-csub" text="{s:subtext}" />
+		<Panel class="kit-btns">
+			<Button id="yes" class="kit-btn yes"><Label class="kit-btn-lbl" text="{s:yes}" /></Button>
+			<Button id="no" class="kit-btn no"><Label class="kit-btn-lbl" text="{s:no}" /></Button>
+		</Panel>
+		<Panel class="kit-timer">
+			<Panel id="ctimer" class="kit-timer-fill fill-100" />
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

@@ -1,0 +1,39 @@
+<!--
+  hud_bar — persistent status bars: objective / defuse-plant timer / XP-level / round clock / HP.
+  This is the always-on region that replaces the hand-rolled PrintCenterHtml + IsInMenu() hack.
+  Server sets each label + readout (b1/b1v ..) and steps the fill: swap the width class on #barN
+  (fill-0 .. fill-100) and pick a colour with class r (red) or b (blue); default is gold.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudBars" class="HudRoot">
+		<Panel class="kit-stat">
+			<Panel class="kit-stat-lab">
+				<Image class="kit-stat-ico" src="s2r://panorama/images/icons/ui/crosshair_circle.vsvg" />
+				<Label class="kit-stat-txt" text="{s:b1}" />
+				<Label class="kit-stat-val" text="{s:b1v}" />
+			</Panel>
+			<Panel class="kit-track"><Panel id="bar1" class="kit-fill r fill-60" /></Panel>
+		</Panel>
+		<Panel class="kit-stat">
+			<Panel class="kit-stat-lab">
+				<Image class="kit-stat-ico" src="s2r://panorama/images/icons/ui/favorite_yes.vsvg" />
+				<Label class="kit-stat-txt" text="{s:b2}" />
+				<Label class="kit-stat-val" text="{s:b2v}" />
+			</Panel>
+			<Panel class="kit-track"><Panel id="bar2" class="kit-fill fill-80" /></Panel>
+		</Panel>
+		<Panel class="kit-stat">
+			<Panel class="kit-stat-lab">
+				<Image class="kit-stat-ico" src="s2r://panorama/images/icons/ui/player.vsvg" />
+				<Label class="kit-stat-txt" text="{s:b3}" />
+				<Label class="kit-stat-val" text="{s:b3v}" />
+			</Panel>
+			<Panel class="kit-track"><Panel id="bar3" class="kit-fill b fill-90" /></Panel>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

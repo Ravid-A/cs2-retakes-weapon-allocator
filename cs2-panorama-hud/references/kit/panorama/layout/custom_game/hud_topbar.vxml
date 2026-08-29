@@ -1,0 +1,27 @@
+<!--
+  hud_topbar — top-centre competitive match HUD: team score · round timer · team score.
+  GENERIC comp header (mixscrims, retakes, arenas, any PvP). Replaces the center-HTML score hack.
+  Drive: SetHasClass HudTopbar show. Set {s:tname}/{s:tscore}/{s:ctname}/{s:ctscore}, {s:timer}, {s:phase}
+  (e.g. "ROUND 7" / "BOMB PLANTED" / "OVERTIME"). Toggle `urgent` on the timer under 10s. Persistent, no clicks.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudTopbar" class="HudRoot kit-topbar">
+		<Panel id="tteam" class="kit-tb-team t">
+			<Label class="kit-tb-name" text="{s:tname}" />
+			<Label class="kit-tb-score" text="{s:tscore}" />
+		</Panel>
+		<Panel class="kit-tb-mid">
+			<Label id="ttimer" class="kit-tb-timer" text="{s:timer}" />
+			<Label class="kit-tb-phase" text="{s:phase}" />
+		</Panel>
+		<Panel id="ctteam" class="kit-tb-team ct">
+			<Label class="kit-tb-name" text="{s:ctname}" />
+			<Label class="kit-tb-score" text="{s:ctscore}" />
+		</Panel>
+	</Panel>
+	</Panel>
+</root>

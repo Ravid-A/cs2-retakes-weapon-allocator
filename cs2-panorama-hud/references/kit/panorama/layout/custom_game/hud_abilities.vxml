@@ -1,0 +1,19 @@
+<!--
+  hud_abilities — bottom-centre ability / cooldown bar. GENERIC (SuperPowers, MMO skills, jailbreak
+  specials, traitor items). Drive: SetHasClass HudAbilities show; set icon {s:iN} (bound to the Image
+  src) + key {s:kN} (bind key, or the cooldown seconds while charging). Toggle class `ready` (accent glow)
+  or `cooldown` (desaturate + dim) per slot. Hide unused slots with class `hidden`. Anchored bottom-centre.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudAbilities" class="HudRoot kit-abilities anchor-bottom">
+		<Panel id="ab1" class="kit-ability ready"><Image class="kit-ab-ico" src="{s:i1}" /><Label class="kit-ab-key" text="{s:k1}" /></Panel>
+		<Panel id="ab2" class="kit-ability cooldown"><Image class="kit-ab-ico" src="{s:i2}" /><Label class="kit-ab-key" text="{s:k2}" /></Panel>
+		<Panel id="ab3" class="kit-ability"><Image class="kit-ab-ico" src="{s:i3}" /><Label class="kit-ab-key" text="{s:k3}" /></Panel>
+		<Panel id="ab4" class="kit-ability ready"><Image class="kit-ab-ico" src="{s:i4}" /><Label class="kit-ab-key" text="{s:k4}" /></Panel>
+	</Panel>
+	</Panel>
+</root>

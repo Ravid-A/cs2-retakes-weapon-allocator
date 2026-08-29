@@ -1,0 +1,17 @@
+<!--
+  hud_countdown — giant centre number/word for round transitions: "3" / "GO!" / "OVERTIME" / "LIVE".
+  GENERIC (round start, freeze end, timeout end, overtime). Drive: set {s:num} + {s:sub}, SetHasClass
+  HudCountdown show to play the scale-in; on "GO"/"LIVE" toggle class `go` (green). Toggle off to hide.
+  Centered, non-interactive. Pulse it (add class `pulse`) for a ticking urgency if wanted.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudCountdown" class="HudRoot kit-countdown anchor-center">
+		<Label id="cdnum" class="kit-cd-num" text="{s:num}" />
+		<Label class="kit-cd-sub" text="{s:sub}" />
+	</Panel>
+	</Panel>
+</root>

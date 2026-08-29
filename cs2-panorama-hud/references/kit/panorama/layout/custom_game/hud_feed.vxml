@@ -1,0 +1,31 @@
+<!--
+  hud_feed — timestamped read-only feed rows (killfeed, round/event log, damage log). GENERIC.
+  Drive: SetHasClass HudFeed show. Each row: set {s:tN}(time) + {s:xN}(text); severity via row class
+  kill|good|warn (recolours the icon). Reuse rows by reassigning text (fixed ids → no intern growth);
+  hide trailing rows via row class hidden. Head is optional (hide it for a bare killfeed).
+  Anchored top-right by default. Icons are s2r placeholders — swap per event type.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="HudFeed" class="HudRoot kit-panel kit-feed anchor-tr pad-md">
+		<Panel id="fhead" class="kit-head">
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+		</Panel>
+		<Panel id="frow1" class="kit-frow kill"><Label class="kit-ftime" text="{s:t1}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/kill.vsvg" /><Label class="kit-ftxt" text="{s:x1}" /></Panel>
+		<Panel id="frow2" class="kit-frow"><Label class="kit-ftime" text="{s:t2}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/alert.vsvg" /><Label class="kit-ftxt" text="{s:x2}" /></Panel>
+		<Panel id="frow3" class="kit-frow good"><Label class="kit-ftime" text="{s:t3}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/check.vsvg" /><Label class="kit-ftxt" text="{s:x3}" /></Panel>
+		<Panel id="frow4" class="kit-frow kill"><Label class="kit-ftime" text="{s:t4}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/kill.vsvg" /><Label class="kit-ftxt" text="{s:x4}" /></Panel>
+		<Panel id="frow5" class="kit-frow warn"><Label class="kit-ftime" text="{s:t5}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/alert.vsvg" /><Label class="kit-ftxt" text="{s:x5}" /></Panel>
+		<Panel id="frow6" class="kit-frow hidden"><Label class="kit-ftime" text="{s:t6}" /><Image class="kit-fico" src="s2r://panorama/images/icons/ui/alert.vsvg" /><Label class="kit-ftxt" text="{s:x6}" /></Panel>
+		<Panel id="fpager" class="kit-pager hidden">
+			<Button id="newer" class="kit-pager-btn"><Label class="kit-pager-lbl" text="‹ Newer" /></Button>
+			<Label class="kit-pager-info" text="{s:page}" />
+			<Button id="older" class="kit-pager-btn"><Label class="kit-pager-lbl" text="Older ›" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>
