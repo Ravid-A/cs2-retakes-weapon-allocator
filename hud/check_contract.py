@@ -27,13 +27,13 @@ PREFIXES = ["pt", "pc", "st", "sc"]
 
 
 def main() -> int:
-    layout = ET.fromstring((ROOT / "panorama/layout/custom_game/alloc_menu.vxml").read_text(encoding="utf-8"))
+    layout = ET.fromstring((ROOT / "panorama/layout/custom_game/alloc_menu.xml").read_text(encoding="utf-8"))
     ids = {n.get("id") for n in layout.iter() if n.get("id")}
     variables = {v for n in layout.iter() for v in re.findall(r"\{s:([^}]+)\}", n.get("text") or "")}
 
     css = "".join(
         (ROOT / "panorama/styles/custom_game" / name).read_text(encoding="utf-8")
-        for name in ("hudkit.vcss", "alloc_menu.vcss", "weapon_icons.vcss"))
+        for name in ("hudkit.css", "alloc_menu.css", "weapon_icons.css"))
     classes = set(re.findall(r"\.([A-Za-z][\w-]*)", css))
 
     tiles = {f"{p}{i}" for p in PREFIXES for i in range(1, SLOTS + 1)}

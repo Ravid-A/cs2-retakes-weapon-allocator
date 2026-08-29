@@ -350,7 +350,7 @@ public static class LoadoutPanel
 
     /// <summary>
     /// The icon class is the item name minus its weapon_ prefix - which is also the name of the
-    /// CS2 icon file - so weapon_icons.vcss needs no edit when a server developer changes
+    /// CS2 icon file - so weapon_icons.css needs no edit when a server developer changes
     /// Config.Weapons.
     /// </summary>
     private static string IconClass(string item) =>

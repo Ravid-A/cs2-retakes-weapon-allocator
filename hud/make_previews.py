@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Render alloc_menu.vxml into a single browser page, once per scenario.
+Render alloc_menu.xml into a single browser page, once per scenario.
 
 The layout file stays the only source of truth: this fills the dialog variables and toggles the
 classes exactly the way the plugin will (text into {s:ptN}, `sel` on the chosen row, `hidden` on
@@ -17,7 +17,7 @@ ROOT = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent / "cs2-panorama-hud" / "scripts"))
 import preview as pv  # translate_css + render
 
-LAYOUT = ROOT / "panorama" / "layout" / "custom_game" / "alloc_menu.vxml"
+LAYOUT = ROOT / "panorama" / "layout" / "custom_game" / "alloc_menu.xml"
 STYLES = ROOT / "panorama" / "styles" / "custom_game"
 
 # ---- scenarios -------------------------------------------------------------
@@ -264,7 +264,7 @@ li b{{color:var(--ink);font-weight:500}}
     <b>GiveAwp.Sometimes</b> is a roll. All three are stock CS2 UI icons, so nothing ships with the
     addon.</li>
     <li><span class="pg-b">&rsaquo;</span><b>Icons cost nothing to maintain.</b> The server cannot send
-    an image path, so all 34 are baked into <b>weapon_icons.vcss</b> as classes. The class is the item
+    an image path, so all 34 are baked into <b>weapon_icons.css</b> as classes. The class is the item
     name minus its <b>weapon_</b> prefix, so editing Config.Weapons never touches the stylesheet
     &mdash; only Valve shipping a new gun does.</li>
     <li><span class="pg-b">&rsaquo;</span><b>One thing to confirm in game.</b> Icon paths use
@@ -290,7 +290,7 @@ li b{{color:var(--ink);font-weight:500}}
 
 def main():
     css = []
-    for name in ("hudkit.vcss", "alloc_menu.vcss", "weapon_icons.vcss"):
+    for name in ("hudkit.css", "alloc_menu.css", "weapon_icons.css"):
         css.append(f"/* ---- {name} ---- */\n" + pv.translate_css(inline_icons((STYLES / name).read_text(encoding="utf-8"))))
 
     cards = []

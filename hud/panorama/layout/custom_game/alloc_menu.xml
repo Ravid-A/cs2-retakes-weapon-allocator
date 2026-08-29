@@ -4,7 +4,7 @@
   Primary and Secondary each carry a T row and a CT row of 8 tiles; the plugin fills
   {s:pt1}..{s:sc8} from Config.Weapons, adds `hidden` past the configured list length and
   `sel` on the pick. The weapon icon rides on the SAME class the plugin already sets: putting
-  `wi-ak47` on the tile picks the icon up through `.wi-ak47 .am-ico` in weapon_icons.vcss, so a
+  `wi-ak47` on the tile picks the icon up through `.wi-ak47 .am-ico` in weapon_icons.css, so a
   tile needs one id, not two.
 
   8 tiles is the ceiling for a configured list - Panorama has no wrapping and the server cannot

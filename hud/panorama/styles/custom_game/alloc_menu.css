@@ -1,8 +1,8 @@
 /* ============================================================================
    alloc_menu - RetakesAllocator loadout picker.
-   Adds only what hudkit.vcss does not already carry: the three horizontal bands,
+   Adds only what hudkit.css does not already carry: the three horizontal bands,
    the tile row and the footer save bar. Panel chrome, head, reveal and .hidden
-   all come from hudkit. Weapon icons live in weapon_icons.vcss.
+   all come from hudkit. Weapon icons live in weapon_icons.css.
    ============================================================================ */
 
 

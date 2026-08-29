@@ -13,7 +13,8 @@ AWP are three bands of one panel, each with a T row and a CT row, and nothing is
 SAVE. Any of the configured `TriggerWords` in chat opens it too.
 
 The card is a Panorama layout, so it lives on the **client**, not in the plugin. The plugin only
-fills it in. The layout source is in `hud/`:
+fills it in. The layout source is in `hud/` as `.xml` and `.css` - Source 2 keeps Panorama sources
+under the plain extensions and the compiler emits `.vxml_c` / `.vcss_c` into the game tree:
 
 ```
 python hud/build_layout.py --tiles 8   # regenerate the layout and its weapon-icon classes
