@@ -103,6 +103,15 @@ The `DbConnection.Provider` field selects the database engine:
 If the database can't be reached the plugin logs an error and keeps running, but
 weapon preferences won't load or persist — so make sure `DbConnection` is correct.
 
+### HUD logo
+
+`HudLogoUrl` puts a picture in the loadout card header, before the title. The
+plugin only writes the string; the client resolves it, so the safe values are
+paths the client already has - `s2r://panorama/images/...` from the game, or a
+`file://{images}/...` file your HUD addon ships. A remote `https://` URL is worth
+trying but unproven; if it comes up blank in game, that is why. Leave it empty and
+the logo panel collapses, leaving the header exactly as it was.
+
 ### Example config
 
 This is the full default config, generated on first load:
@@ -129,6 +138,7 @@ This is the full default config, generated on first load:
     "WeaponCt": "weapon_usp_silencer"
   },
   "TriggerWords": [ "guns", "gun", "weapon", "weapons" ],
+  "HudLogoUrl": "",
   "Weapons": {
     "PrimaryT": [
       { "Item": "weapon_ak47", "DisplayName": "AK-47" },

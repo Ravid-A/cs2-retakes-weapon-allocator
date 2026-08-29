@@ -3,7 +3,7 @@
    Panorama CSS (flow-children / align / gradient() / box-shadow fill), NOT web CSS.
    Every template <include>s this one file, so the whole kit is one consistent skin.
 
-   Colours + type mirror CS2's own HUD (Stratum2, near-black panels, gold accent,
+   Colours + type mirror CS2's own HUD (Stratum2, near-black panels, one accent colour,
    the .show brightness-flash reveal from retakeloadout.css). Hand-written source —
    compile with the CS2 SDK resourcecompiler, then re-check the few properties noted
    in README.md that Valve's compiler is picky about.
@@ -38,7 +38,7 @@
 {
 	flow-children: down;
 	border-radius: 3px;
-	border-left: 3px solid #f0a531;
+	border-left: 3px solid #ff0239;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #12171ee8 ), to( #0b0f14f2 ) );
 	box-shadow: #000000c0 0px 8px 30px 0px;
 }
@@ -63,7 +63,7 @@
 	letter-spacing: 1.6px;
 	vertical-align: center;
 }
-.kit-title-accent { color: #f0a531; }
+.kit-title-accent { color: #ff0239; }
 .kit-tag
 {
 	font-family: Stratum2 Mono;
@@ -116,8 +116,8 @@
 }
 .kit-row.selected
 {
-	background-color: gradient( linear, 0% 0%, 100% 0%, from( #f0a5312a ), to( #f0a53100 ) );
-	border-left: 2px solid #f0a531;
+	background-color: gradient( linear, 0% 0%, 100% 0%, from( #ff02392a ), to( #ff023900 ) );
+	border-left: 2px solid #ff0239;
 }
 .kit-row.selected .kit-label { color: #ffffff; }
 .kit-row.disabled { opacity: 0.3; }
@@ -166,13 +166,13 @@
 	padding: 11px 13px;
 	margin-bottom: 10px;
 	border-radius: 3px;
-	border-left: 3px solid #f0a531;
+	border-left: 3px solid #ff0239;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #12171ef2 ), to( #0b0f14f7 ) );
 	box-shadow: #000000b0 0px 8px 24px 0px;
 }
 .kit-toast.ok  { border-left-color: #9ccf4f; }
 .kit-toast.bad { border-left-color: #e0432f; }
-.kit-toast-ico { width: 24px; height: 24px; margin-right: 11px; vertical-align: center; wash-color: #f0a531; }
+.kit-toast-ico { width: 24px; height: 24px; margin-right: 11px; vertical-align: center; wash-color: #ff0239; }
 .kit-toast.ok  .kit-toast-ico { wash-color: #9ccf4f; }
 .kit-toast.bad .kit-toast-ico { wash-color: #e0432f; }
 .kit-toast-body { flow-children: down; width: fill-parent-flow( 1.0 ); vertical-align: center; }
@@ -208,7 +208,7 @@
 .kit-btn.yes .kit-btn-lbl { color: #9ccf4f; }
 .kit-btn.no  .kit-btn-lbl { color: #ff8a75; }
 .kit-timer { width: 100%; height: 3px; margin-top: 13px; border-radius: 2px; background-color: #ffffff12; }
-.kit-timer-fill { height: 100%; border-radius: 2px; background-color: gradient( linear, 0% 0%, 100% 0%, from( #f0a531 ), to( #ffd27a ) ); box-shadow: #c9812066 0px 0px 8px 0px; }
+.kit-timer-fill { height: 100%; border-radius: 2px; background-color: gradient( linear, 0% 0%, 100% 0%, from( #ff0239 ), to( #ff7d93 ) ); box-shadow: #ff023966 0px 0px 8px 0px; }
 
 /* ---------- 5 · STATUS BAR ---------- */
 .kit-stat { width: 300px; flow-children: down; padding: 9px 13px; margin-bottom: 12px; border-radius: 3px; border: 1px solid #ffffff14;
@@ -218,7 +218,7 @@
 .kit-stat-txt { font-family: Stratum2 Medium Condensed; font-size: 11.5px; color: #9aa2ac; text-transform: uppercase; letter-spacing: 1.4px; vertical-align: center; }
 .kit-stat-val { font-family: Stratum2 Mono; font-size: 12px; color: #f2f4f7; horizontal-align: right; vertical-align: center; }
 .kit-track { width: 100%; height: 7px; border-radius: 4px; background-color: #ffffff12; }
-.kit-fill { height: 100%; border-radius: 4px; background-color: gradient( linear, 0% 0%, 100% 0%, from( #f0a531 ), to( #ffd27a ) ); transition-property: width; transition-duration: 0.15s; transition-timing-function: linear; }
+.kit-fill { height: 100%; border-radius: 4px; background-color: gradient( linear, 0% 0%, 100% 0%, from( #ff0239 ), to( #ff7d93 ) ); transition-property: width; transition-duration: 0.15s; transition-timing-function: linear; }
 .kit-fill.r { background-color: gradient( linear, 0% 0%, 100% 0%, from( #e0432f ), to( #ff8a6a ) ); }
 .kit-fill.b { background-color: gradient( linear, 0% 0%, 100% 0%, from( #56a0dd ), to( #9fd0ff ) ); }
 /* stepped widths — SetHasClass one of these since we push classes, not raw width */
@@ -251,8 +251,8 @@
 .kit-tile-ico { width: 24px; height: 24px; horizontal-align: center; margin-bottom: 6px; wash-color: #9aa2ac; }
 .kit-tile-name { font-family: Stratum2; font-size: 11px; color: #f2f4f7; horizontal-align: center; text-align: center; }
 .kit-tile-val { font-family: Stratum2 Mono; font-size: 10.5px; color: #9ccf4f; horizontal-align: center; }
-.kit-tile.selected { border: 1px solid #f0a531; box-shadow: #f0a53133 0px 0px 14px 0px; }
-.kit-tile.selected .kit-tile-ico { wash-color: #f0a531; }
+.kit-tile.selected { border: 1px solid #ff0239; box-shadow: #ff023933 0px 0px 14px 0px; }
+.kit-tile.selected .kit-tile-ico { wash-color: #ff0239; }
 .kit-tile.hidden { visibility: collapse; }
 .kit-tile:hover { brightness: 1.25; }
 
@@ -266,7 +266,7 @@
 .kit-brow.head .kit-bname { font-family: Stratum2 Medium Condensed; font-size: 10.5px; color: #61686f; text-transform: uppercase; letter-spacing: 1.2px; }
 .kit-bstat { width: 36px; font-family: Stratum2 Mono; font-size: 12px; color: #9aa2ac; text-align: right; vertical-align: center; }
 .kit-brow.head .kit-bstat { color: #61686f; font-family: Stratum2 Medium Condensed; font-size: 10.5px; text-transform: uppercase; }
-.kit-bstat.hl { color: #f0a531; }
+.kit-bstat.hl { color: #ff0239; }
 
 /* ---------- 8 · TABS (tab bar + list body) ---------- */
 .kit-tabs { width: 320px; }
@@ -275,8 +275,8 @@
 .kit-tab-lbl { width: 100%; height: 100%; font-family: Stratum2 Medium Condensed; font-size: 12.5px;
 	color: #7d7d7d; text-transform: uppercase; letter-spacing: 1px; text-align: center; vertical-align: center; }
 .kit-tab:hover .kit-tab-lbl { color: #b8bcc2; }
-.kit-tab.active { border-bottom: 2px solid #f0a531; }
-.kit-tab.active .kit-tab-lbl { color: #f0a531; }
+.kit-tab.active { border-bottom: 2px solid #ff0239; }
+.kit-tab.active .kit-tab-lbl { color: #ff0239; }
 
 /* ---------- 9 · DETAIL / BUY-CONFIRM (card + decision footer) ---------- */
 .kit-detail-desc { width: 100%; padding: 8px 14px 12px 14px; }
@@ -326,7 +326,7 @@
 /* ---------- 10 · STATUS HUD (persistent corner panel, N stat rows) ---------- */
 .kit-hud { width: 216px; }
 .kit-hrole { width: 100%; padding: 8px 13px; border-bottom: 1px solid #ffffff12;
-	background-color: gradient( linear, 0% 0%, 100% 0%, from( #f0a53122 ), to( #f0a53100 ) ); }
+	background-color: gradient( linear, 0% 0%, 100% 0%, from( #ff023922 ), to( #ff023900 ) ); }
 .kit-hrole.t { background-color: gradient( linear, 0% 0%, 100% 0%, from( #e0432f30 ), to( #e0432f00 ) ); }
 .kit-hrole.d { background-color: gradient( linear, 0% 0%, 100% 0%, from( #56a0dd30 ), to( #56a0dd00 ) ); }
 .kit-hrole.i { background-color: gradient( linear, 0% 0%, 100% 0%, from( #9ccf4f30 ), to( #9ccf4f00 ) ); }
@@ -341,7 +341,7 @@
 .kit-hval { font-family: Stratum2 Mono; font-size: 14px; font-weight: bold; color: #ffffff;
 	horizontal-align: right; vertical-align: center; }
 .kit-hval.good { color: #9ccf4f; }
-.kit-hval.warn { color: #f0a531; }
+.kit-hval.warn { color: #ff0239; }
 .kit-hval.bad  { color: #e0432f; }
 /* a stat row can carry a bar under the label — reuse .kit-track/.kit-fill + fill-N steps */
 .kit-hbar { width: 100%; height: 6px; margin-top: 7px; border-radius: 3px; background-color: #ffffff12; }
@@ -354,24 +354,24 @@
 .kit-fico { width: 15px; height: 15px; margin: 0px 9px; vertical-align: center; wash-color: #9aa2ac; }
 .kit-frow.kill .kit-fico { wash-color: #e0432f; }
 .kit-frow.good .kit-fico { wash-color: #9ccf4f; }
-.kit-frow.warn .kit-fico { wash-color: #f0a531; }
+.kit-frow.warn .kit-fico { wash-color: #ff0239; }
 .kit-ftxt { width: fill-parent-flow( 1.0 ); font-family: Stratum2; font-size: 12px; color: #cdd3da; vertical-align: center; }
 
 /* ---------- 12 · REVEAL (center announcement: role reveal, round banner, MVP) ---------- */
 .kit-reveal { width: 440px; flow-children: down; padding: 28px 32px 30px 32px; horizontal-align: center;
-	border-radius: 4px; border-top: 3px solid #f0a531;
+	border-radius: 4px; border-top: 3px solid #ff0239;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #12171ee6 ), to( #0b0f14f0 ) );
 	background-blur: gaussian( 3.5 );
 	box-shadow: #000000c8 0px 14px 44px 0px; }
 .kit-reveal.t { border-top-color: #e0432f; }
 .kit-reveal.d { border-top-color: #56a0dd; }
 .kit-reveal.i { border-top-color: #9ccf4f; }
-.kit-reveal-ico { width: 56px; height: 56px; horizontal-align: center; margin-bottom: 12px; wash-color: #f0a531; }
+.kit-reveal-ico { width: 56px; height: 56px; horizontal-align: center; margin-bottom: 12px; wash-color: #ff0239; }
 .kit-reveal.t .kit-reveal-ico { wash-color: #e0432f; }
 .kit-reveal.d .kit-reveal-ico { wash-color: #56a0dd; }
 .kit-reveal.i .kit-reveal-ico { wash-color: #9ccf4f; }
 .kit-reveal-title { font-family: Stratum2 Bold; font-size: 36px; color: #ffffff; text-transform: uppercase;
-	letter-spacing: 3px; horizontal-align: center; text-align: center; text-shadow: 0px 0px 22px 3.0 #f0a53199; }
+	letter-spacing: 3px; horizontal-align: center; text-align: center; text-shadow: 0px 0px 22px 3.0 #ff023999; }
 .kit-reveal.t .kit-reveal-title { color: #ff6a55; text-shadow: 0px 0px 22px 3.0 #e0432f99; }
 .kit-reveal.d .kit-reveal-title { color: #7cb4e8; text-shadow: 0px 0px 22px 3.0 #56a0dd99; }
 .kit-reveal.i .kit-reveal-title { color: #b0dd6a; text-shadow: 0px 0px 22px 3.0 #9ccf4f99; }
@@ -391,7 +391,7 @@
 .kit-hero-sub.t { color: #ff6a55; }
 .kit-hero-sub.d { color: #7cb4e8; }
 .kit-hero-sub.i { color: #b0dd6a; }
-.kit-hero-badge { width: 30px; height: 30px; vertical-align: center; wash-color: #f0a531; }
+.kit-hero-badge { width: 30px; height: 30px; vertical-align: center; wash-color: #ff0239; }
 
 /* ---------- fancy SHOP / INVENTORY grid (item tiles: rarity, price, states) ---------- */
 .kit-shop { width: 468px; }
@@ -431,7 +431,7 @@
 .kit-item.pink   .kit-item-rar { background-color: #d32ce6; }
 .kit-item.red    .kit-item-rar { background-color: #eb4b4b; }
 .kit-item.gold   .kit-item-rar { background-color: #ffd700; }
-.kit-item.selected { border: 1px solid #f0a531; box-shadow: #f0a53140 0px 0px 16px 0px; }
+.kit-item.selected { border: 1px solid #ff0239; box-shadow: #ff023940 0px 0px 16px 0px; }
 .kit-item.owned  { opacity: 0.5; }
 .kit-item.owned .kit-item-price { color: #61686f; background-color: #ffffff0a; }
 .kit-item.locked { opacity: 0.35; }
@@ -457,7 +457,7 @@
 .kit-row.disabled { saturation: 0.15; }
 
 /* icon glow via img-shadow (h v blur strength colour) */
-.kit-reveal-ico { img-shadow: 0px 0px 14px 3.0 #f0a531aa; }
+.kit-reveal-ico { img-shadow: 0px 0px 14px 3.0 #ff0239aa; }
 .kit-reveal.t .kit-reveal-ico { img-shadow: 0px 0px 14px 3.0 #e0432faa; }
 .kit-reveal.d .kit-reveal-ico { img-shadow: 0px 0px 14px 3.0 #56a0ddaa; }
 .kit-reveal.i .kit-reveal-ico { img-shadow: 0px 0px 14px 3.0 #9ccf4faa; }
@@ -490,7 +490,7 @@
 
 /* ---------- 15 · COUNTDOWN (giant centre number: 3… GO / OVERTIME) ---------- */
 .kit-countdown { flow-children: down; horizontal-align: center; vertical-align: center; }
-.kit-cd-num { font-family: Stratum2 Bold; font-size: 120px; color: #ffffff; horizontal-align: center; text-align: center; text-shadow: 0px 0px 40px 4.0 #f0a531cc; }
+.kit-cd-num { font-family: Stratum2 Bold; font-size: 120px; color: #ffffff; horizontal-align: center; text-align: center; text-shadow: 0px 0px 40px 4.0 #ff0239cc; }
 .kit-cd-num.go { color: #9ccf4f; text-shadow: 0px 0px 40px 4.0 #9ccf4fcc; }
 .kit-cd-sub { font-family: Stratum2 Medium Condensed; font-size: 18px; color: #9aa2ac; text-transform: uppercase; letter-spacing: 4px; horizontal-align: center; margin-top: 2px; }
 
@@ -506,12 +506,12 @@
 .kit-step-btn { width: 20px; height: 20px; border-radius: 2px; background-color: #ffffff0d; border: 1px solid #ffffff14; }
 .kit-step-btn:hover { brightness: 1.3; }
 .kit-step-lbl { width: 100%; height: 100%; font-family: Stratum2; font-size: 14px; color: #9aa2ac; text-align: center; vertical-align: center; }
-.kit-step-val { width: 78px; font-family: Stratum2 Mono; font-size: 12px; color: #f0a531; text-align: center; vertical-align: center; }
+.kit-step-val { width: 78px; font-family: Stratum2 Mono; font-size: 12px; color: #ff0239; text-align: center; vertical-align: center; }
 .kit-swatches { flow-children: right; vertical-align: center; }
 .kit-swatch { width: 18px; height: 18px; margin-left: 5px; border-radius: 9px; border: 1px solid #ffffff20; }
 .kit-swatch.sel { border: 2px solid #ffffff; box-shadow: #ffffff44 0px 0px 8px 0px; }
 .kit-swatch.red { background-color: #e0432f; } .kit-swatch.green { background-color: #9ccf4f; }
-.kit-swatch.blue { background-color: #56a0dd; } .kit-swatch.gold { background-color: #f0a531; }
+.kit-swatch.blue { background-color: #56a0dd; } .kit-swatch.gold { background-color: #ff0239; }
 .kit-swatch.purple { background-color: #8847ff; }
 
 /* ---------- 17 · TRACKER (objective / mission checklist) ---------- */
@@ -522,17 +522,17 @@
 .kit-obj-ic { width: 100%; height: 100%; wash-color: #0b0f14; }
 .kit-obj-lbl { width: fill-parent-flow( 1.0 ); font-family: Stratum2; font-size: 13px; color: #f2f4f7; vertical-align: center; }
 .kit-obj.done .kit-obj-lbl { color: #9aa2ac; text-decoration: line-through; }
-.kit-obj-prog { font-family: Stratum2 Mono; font-size: 12px; color: #f0a531; vertical-align: center; }
+.kit-obj-prog { font-family: Stratum2 Mono; font-size: 12px; color: #ff0239; vertical-align: center; }
 .kit-obj.done .kit-obj-prog { color: #9ccf4f; }
 
 /* ---------- 18 · ABILITY BAR (icons + cooldown + key) ---------- */
 .kit-abilities { flow-children: right; horizontal-align: center; vertical-align: bottom; margin-bottom: 40px; }
 .kit-ability { width: 54px; height: 54px; margin: 0px 4px; border-radius: 5px; border: 1px solid #ffffff18; flow-children: down;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #1a222c ), to( #0b0f14 ) ); box-shadow: #00000066 0px 3px 10px 0px; }
-.kit-ability.ready { border: 1px solid #f0a53166; box-shadow: #f0a53133 0px 0px 12px 0px; }
+.kit-ability.ready { border: 1px solid #ff023966; box-shadow: #ff023933 0px 0px 12px 0px; }
 .kit-ability.cooldown { saturation: 0.2; opacity: 0.55; }
 .kit-ab-ico { width: 30px; height: 30px; horizontal-align: center; margin-top: 6px; wash-color: #cdd3da; }
-.kit-ability.ready .kit-ab-ico { wash-color: #f0a531; }
+.kit-ability.ready .kit-ab-ico { wash-color: #ff0239; }
 .kit-ab-key { font-family: Stratum2 Mono; font-size: 10px; color: #9aa2ac; horizontal-align: center; }
 .kit-ab-cd { font-family: Stratum2 Bold; font-size: 18px; color: #ffffff; horizontal-align: center; vertical-align: center; }
 

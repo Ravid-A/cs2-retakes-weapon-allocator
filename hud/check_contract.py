@@ -29,7 +29,9 @@ PREFIXES = ["pt", "pc", "st", "sc"]
 def main() -> int:
     layout = ET.fromstring((ROOT / "panorama/layout/custom_game/alloc_menu.xml").read_text(encoding="utf-8"))
     ids = {n.get("id") for n in layout.iter() if n.get("id")}
-    variables = {v for n in layout.iter() for v in re.findall(r"\{s:([^}]+)\}", n.get("text") or "")}
+    # `text` on a Label, `src` on an Image - both are strings the server writes.
+    variables = {v for n in layout.iter() for attr in ("text", "src")
+                 for v in re.findall(r"\{s:([^}]+)\}", n.get(attr) or "")}
 
     css = "".join(
         (ROOT / "panorama/styles/custom_game" / name).read_text(encoding="utf-8")
@@ -44,9 +46,9 @@ def main() -> int:
         items |= set(re.findall(r'"(weapon_[a-z0-9_]+)"', (REPO / source).read_text(encoding="utf-8")))
 
     checks = [
-        ("panel ids", tiles | {f"awp{i}" for i in (1, 2, 3)} | {"save", "exit", "AllocMenu"}, ids),
-        ("dialog variables", tiles | {"title", "tag", "status", "awphint"}, variables),
-        ("state classes", {"sel", "hidden", "show"}, classes),
+        ("panel ids", tiles | {f"awp{i}" for i in (1, 2, 3)} | {"save", "exit", "logo", "AllocMenu"}, ids),
+        ("dialog variables", tiles | {"title", "tag", "status", "awphint", "logo"}, variables),
+        ("state classes", {"sel", "hidden", "show", "logo-on"}, classes),
         ("icon classes", {"wi-" + i[len("weapon_"):] for i in items}, classes),
     ]
 

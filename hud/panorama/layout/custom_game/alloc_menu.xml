@@ -10,6 +10,10 @@
   8 tiles is the ceiling for a configured list - Panorama has no wrapping and the server cannot
   create panels, so raising it is a VPK re-release rather than a plugin update.
   Clicks arrive as the button ids. `save` writes to the DB, `exit` closes without saving.
+
+  The header logo is the one picture the server picks: Config.HudLogoUrl goes into {s:logo}, and
+  `logo-on` on the root reveals it. Collapsed by default, so a server that configures no logo gets
+  no gap. Panorama resolves the string itself - s2r:// and file:// paths are the sure things.
 -->
 <root>
 	<styles>
@@ -20,6 +24,7 @@
 	<Panel class="HudScreen">
 	<Panel id="AllocMenu" class="HudRoot kit-panel am-card">
 		<Panel class="kit-head">
+			<Image id="logo" class="am-logo" src="{s:logo}" />
 			<Label class="kit-title" text="{s:title}" />
 			<Label class="kit-tag" text="{s:tag}" />
 			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>

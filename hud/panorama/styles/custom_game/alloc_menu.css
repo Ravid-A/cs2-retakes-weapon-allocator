@@ -7,6 +7,21 @@
 
 
 
+/* ---------- server logo, before the title ---------- */
+/* An <Image>, not a background: the picture is a string the plugin sends (Config.HudLogoUrl into
+   {s:logo}), and CSS cannot take a runtime string. Collapsed until SetVariant("logo", "on") puts
+   `logo-on` on the root, so a server that configures no logo gets no gap rather than a 20px hole
+   where a picture failed to load. */
+.am-logo
+{
+	width: 20px;
+	height: 20px;
+	margin-right: 9px;
+	vertical-align: center;
+	visibility: collapse;
+}
+.logo-on .am-logo { visibility: visible; }
+
 .am-body
 {
 	flow-children: down;
@@ -27,7 +42,7 @@
 {
 	font-family: Stratum2 Medium Condensed;
 	font-size: 12px;
-	color: #f0a531;
+	color: #ff0239;
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	margin-bottom: 8px;
@@ -54,7 +69,7 @@
 }
 .am-chip.t   { color: #e0a24a; border-left-color: #e0a24a; }
 .am-chip.ct  { color: #56a0dd; border-left-color: #56a0dd; }
-.am-chip.any { color: #f0a531; border-left-color: #f0a531; }
+.am-chip.any { color: #ff0239; border-left-color: #ff0239; }
 
 /* ---------- a weapon tile ---------- */
 .am-tile
@@ -94,6 +109,8 @@
 .am-tile:hover { background-color: #ffffff14; brightness: 1.15; sound: "UIPanorama.ButtonRollover"; }
 .am-tile:hover .am-ico { wash-color: #d6dbe1; }
 
+/* The pick stays gold while the card's accent is red: a selected tile has to read as chosen at a
+   glance against a header, a chip and a border that are all already accent-coloured. */
 .am-tile.sel
 {
 	border: 1px solid #f0a531;

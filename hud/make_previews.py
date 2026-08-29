@@ -48,6 +48,10 @@ SCENARIOS = [
 
 AWP_HINT = "How often you take the AWP when you win the roll."
 
+# Stands in for whatever Config.HudLogoUrl points at. The plugin writes the string straight into
+# {s:logo} and the client resolves it, so what goes here is exactly what goes in the config.
+SAMPLE_LOGO = "https://i.imgur.com/8IWBf6s.png"
+
 
 WASH_RE = __import__("re").compile(r"wash-color:\s*(#[0-9a-fA-F]{6,8})")
 
@@ -123,10 +127,15 @@ def inline_icons(css_text):
                    sub, css_text)
 
 
-def fill(tree, lists, picked, awp):
+def fill(tree, lists, picked, awp, logo=False):
     """Do to the tree exactly what the plugin does to the live panel."""
     vals = {"title": "Retakes \u00b7 Loadout", "tag": "!guns",
-            "status": "Unsaved changes", "awphint": AWP_HINT}
+            "status": "Unsaved changes", "awphint": AWP_HINT,
+            "logo": SAMPLE_LOGO}
+
+    if logo:
+        root = next(n for n in tree.iter() if n.get("id") == "AllocMenu")
+        root.set("class", root.get("class", "") + " logo-on")     # what SetVariant("logo","on") does
     for prefix, weapons in lists.items():
         for i, (_item, name) in enumerate(weapons, 1):
             vals[f"{prefix}{i}"] = name
@@ -180,7 +189,7 @@ def write_artifact(dest, css, cards):
 :root {{
   --ground:#0b0f14; --surface:#11161d; --hair:#ffffff14; --hair-2:#ffffff0a;
   --ink:#e7ebf0; --muted:#6b747e; --dim:#4d555e;
-  --gold:#f0a531; --t:#e0a24a; --ct:#56a0dd; --go:#9ccf4f;
+  --gold:#ff0239; --t:#e0a24a; --ct:#56a0dd; --go:#9ccf4f;
   --ui:'Barlow Condensed',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
 }}
 *{{box-sizing:border-box;margin:0;padding:0;border:0 solid transparent}}
@@ -293,10 +302,18 @@ def main():
     for name in ("hudkit.css", "alloc_menu.css", "weapon_icons.css"):
         css.append(f"/* ---- {name} ---- */\n" + pv.translate_css(inline_icons((STYLES / name).read_text(encoding="utf-8"))))
 
+    # The browser cannot honour Panorama's visibility:visible over a collapse the translator turned
+    # into display:none, and it drops the Image src along with the tag - so the logo is painted here.
+    css.append('/* ---- preview-only: the header logo ---- */'
+               '.logo-on .am-logo{display:block;background-size:contain;'
+               'background-position:50% 50%;background-repeat:no-repeat;'
+               f'background-image:url("{SAMPLE_LOGO}")' + '}')
+
     cards = []
-    for title, blurb, pt, pc, st, sc, picked, awp in SCENARIOS:
+    # First card carries a logo, second does not: both halves of Config.HudLogoUrl in one page.
+    for i, (title, blurb, pt, pc, st, sc, picked, awp) in enumerate(SCENARIOS):
         tree = ET.fromstring(LAYOUT.read_text(encoding="utf-8"))
-        fill(tree, {"pt": pt, "pc": pc, "st": st, "sc": sc}, picked, awp)
+        fill(tree, {"pt": pt, "pc": pc, "st": st, "sc": sc}, picked, awp, logo=i == 0)
         out = []
         for child in tree:
             if child.tag != "styles":
@@ -316,7 +333,7 @@ def main():
 <style>
   *{{box-sizing:border-box;margin:0;padding:0;border:0 solid transparent}}
   body{{background:#0e1218;color:#e7ebf0;font-family:'Barlow Condensed',system-ui,sans-serif;padding:32px}}
-  h1{{font-size:22px;letter-spacing:2px;text-transform:uppercase;color:#f0a531;margin-bottom:4px}}
+  h1{{font-size:22px;letter-spacing:2px;text-transform:uppercase;color:#ff0239;margin-bottom:4px}}
   h2{{font-size:15px;letter-spacing:1.6px;text-transform:uppercase;color:#e7ebf0;margin:34px 0 2px}}
   p{{font:12px/1.6 ui-monospace,monospace;color:#6c757f;margin-bottom:14px}}
   .stage{{background:#161b22 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 0h40v40H0z' fill='%23161b22'/%3E%3Cpath d='M0 0h20v20H0zM20 20h20v20H20z' fill='%23181e26'/%3E%3C/svg%3E");

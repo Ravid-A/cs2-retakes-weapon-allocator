@@ -24,7 +24,7 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     public static Core Plugin = null!;
 
     public override string ModuleName => "[Retakes] Weapons Allocator";
-    public override string ModuleVersion => "3.1.0";
+    public override string ModuleVersion => "3.2.0";
     public override string ModuleAuthor => "Ravid & B3none";
     public override string ModuleDescription => "Weapons Allocator plugin for retakes";
 
