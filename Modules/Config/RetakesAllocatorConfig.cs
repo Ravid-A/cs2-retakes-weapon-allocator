@@ -26,9 +26,6 @@ public class RetakesAllocatorConfig : BasePluginConfig
     [JsonPropertyName("TriggerWords")]
     public string[] TriggerWords { get; set; } = { "guns", "gun", "weapon", "weapons" };
 
-    [JsonPropertyName("AddSkipOption")]
-    public bool AddSkipOption { get; set; } = true;
-
     [JsonPropertyName("Weapons")]
     public WeaponsSection Weapons { get; set; } = new();
 

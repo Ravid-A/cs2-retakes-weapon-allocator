@@ -1,0 +1,185 @@
+/* ============================================================================
+   alloc_menu - RetakesAllocator loadout picker.
+   Adds only what hudkit.vcss does not already carry: the three horizontal bands,
+   the tile row and the footer save bar. Panel chrome, head, reveal and .hidden
+   all come from hudkit. Weapon icons live in weapon_icons.vcss.
+   ============================================================================ */
+
+
+
+.am-body
+{
+	flow-children: down;
+	width: 100%;
+	padding: 4px 16px 12px 16px;
+}
+
+/* ---------- a band: one section of the card ---------- */
+.am-band
+{
+	flow-children: down;
+	width: 100%;
+	padding: 11px 0px 9px 0px;
+	border-bottom: 1px solid #ffffff0f;
+}
+.am-band-awp { border-bottom-width: 0px; padding-bottom: 2px; }
+.am-band-h
+{
+	font-family: Stratum2 Medium Condensed;
+	font-size: 12px;
+	color: #f0a531;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	margin-bottom: 8px;
+}
+
+/* ---------- a row inside a band: team chip, then tiles ---------- */
+.am-row
+{
+	flow-children: right;
+	width: 100%;
+	margin-bottom: 5px;
+}
+.am-chip
+{
+	width: 26px;
+	height: 62px;
+	margin-right: 9px;
+	font-family: Stratum2 Mono;
+	font-size: 11px;
+	color: #61686f;
+	text-align: center;
+	vertical-align: center;
+	border-left: 2px solid #ffffff14;
+}
+.am-chip.t   { color: #e0a24a; border-left-color: #e0a24a; }
+.am-chip.ct  { color: #56a0dd; border-left-color: #56a0dd; }
+.am-chip.any { color: #f0a531; border-left-color: #f0a531; }
+
+/* ---------- a weapon tile ---------- */
+.am-tile
+{
+	width: 96px;
+	height: 62px;
+	margin-right: 4px;
+	padding: 8px 4px 6px 4px;
+	flow-children: down;
+	border-radius: 2px;
+	border: 1px solid #ffffff10;
+	background-color: #ffffff06;
+	transition-property: background-color, brightness;
+	transition-duration: 0.12s;
+	transition-timing-function: ease-out;
+}
+.am-ico
+{
+	width: 76px;
+	height: 26px;
+	horizontal-align: center;
+	margin-bottom: 4px;
+	background-size: contains;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	wash-color: #7b838d;
+}
+.am-tile-l
+{
+	width: 100%;
+	font-family: Stratum2;
+	font-size: 11px;
+	color: #9aa2ac;
+	text-align: center;
+	text-overflow: ellipsis;
+}
+.am-tile:hover { background-color: #ffffff14; brightness: 1.15; sound: "UIPanorama.ButtonRollover"; }
+.am-tile:hover .am-ico { wash-color: #d6dbe1; }
+
+.am-tile.sel
+{
+	border: 1px solid #f0a531;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #f0a53126 ), to( #f0a5310a ) );
+	box-shadow: #f0a53140 0px 0px 16px 0px;
+}
+.am-tile.sel .am-ico   { wash-color: #ffd27a; }
+.am-tile.sel .am-tile-l { color: #ffffff; }
+.am-tile.hidden { visibility: collapse; }
+
+/* ---------- the AWP band: three wide tiles, colour-coded by how often ---------- */
+.am-awp { width: 132px; }
+
+/* Each option carries the glyph that describes it rather than three identical AWPs: the band
+   header already says AWP, so the tile art is free to say how often. `random` is not a stand-in -
+   GiveAwp.Sometimes is a roll. Stock CS2 UI icons, so nothing ships with the addon. */
+.am-ico-awp { width: 24px; height: 22px; margin-bottom: 5px; }
+.am-awp.never     .am-ico { background-image: url("s2r://panorama/images/icons/ui/cancel.vsvg" ); wash-color: #8c5148; }
+.am-awp.sometimes .am-ico { background-image: url("s2r://panorama/images/icons/ui/random.vsvg" ); wash-color: #8d7442; }
+.am-awp.always    .am-ico { background-image: url("s2r://panorama/images/icons/ui/check.vsvg" );  wash-color: #6b8347; }
+
+.am-awp-l
+{
+	width: 100%;
+	font-family: Stratum2 Medium Condensed;
+	font-size: 14px;
+	color: #9aa2ac;
+	text-transform: uppercase;
+	letter-spacing: 1.4px;
+	text-align: center;
+}
+.am-awp.never.sel     { border-color: #e0432f; box-shadow: #e0432f40 0px 0px 16px 0px;
+                        background-color: gradient( linear, 0% 0%, 0% 100%, from( #e0432f26 ), to( #e0432f0a ) ); }
+.am-awp.sometimes.sel { border-color: #f0a531; box-shadow: #f0a53140 0px 0px 16px 0px; }
+.am-awp.always.sel    { border-color: #9ccf4f; box-shadow: #9ccf4f40 0px 0px 16px 0px;
+                        background-color: gradient( linear, 0% 0%, 0% 100%, from( #9ccf4f26 ), to( #9ccf4f0a ) ); }
+.am-awp.never.sel     .am-awp-l { color: #ff8a75; }
+.am-awp.always.sel    .am-awp-l { color: #b8e07a; }
+.am-awp.never.sel     .am-ico { wash-color: #ff8a75; }
+.am-awp.sometimes.sel .am-ico { wash-color: #ffd27a; }
+.am-awp.always.sel    .am-ico { wash-color: #b8e07a; }
+
+.am-hint
+{
+	width: fill-parent-flow( 1.0 );
+	margin-left: 14px;
+	font-family: Stratum2;
+	font-size: 11px;
+	color: #5b626a;
+	vertical-align: center;
+}
+
+/* ---------- footer ---------- */
+.am-foot
+{
+	flow-children: right;
+	width: 100%;
+	padding: 9px 16px;
+	border-top: 1px solid #ffffff12;
+}
+.am-status
+{
+	width: fill-parent-flow( 1.0 );
+	font-family: Stratum2 Mono;
+	font-size: 11px;
+	color: #61686f;
+	vertical-align: center;
+}
+.am-save
+{
+	width: 150px;
+	height: 30px;
+	border-radius: 2px;
+	border: 1px solid #9ccf4f66;
+	background-color: #9ccf4f18;
+}
+.am-save:hover { background-color: #9ccf4f30; brightness: 1.2; sound: "UIPanorama.ButtonRollover"; }
+.am-save-l
+{
+	width: 100%;
+	height: 100%;
+	font-family: Stratum2 Medium Condensed;
+	font-size: 14px;
+	color: #9ccf4f;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	text-align: center;
+	vertical-align: center;
+}

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using RetakesAllocator.Modules.Config;
 using RetakesAllocator.Modules.Models;
 using RetakesAllocator.Modules.Votes;
+using RetakesAllocator.Modules.Weapons;
 
 using static RetakesAllocator.Modules.RetakeCapability;
 using static RetakesAllocator.Modules.Utils;
@@ -17,7 +18,7 @@ using static RetakesAllocator.Modules.Votes.Votes;
 
 namespace RetakesAllocator.Modules;
 
-[MinimumApiVersion(360)]
+[MinimumApiVersion(373)]
 public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 {
     public static Core Plugin = null!;
@@ -65,6 +66,8 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
 
         RetakeCapability_OnLoad();
 
+        LoadoutPanel.Init();
+
         _loaded = true;
 
         if (hotReload)
@@ -85,6 +88,8 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
         Utilities.GetPlayers().ForEach(p => RemovePlayerFromList(p, flush: true));
 
         RetakeCapability_OnUnload();
+
+        LoadoutPanel.Shutdown();
     }
 
     public static CCSGameRules GetGameRules()
@@ -151,6 +156,10 @@ public class Core : BasePlugin, IPluginConfig<RetakesAllocatorConfig>
     {
         ConfigApplier.Apply(Config);
         Votes_OnConfigParsed(Config.Votes.WeaponSelectionTime, Config.Votes.RequiredPercentage);
+
+        // Weapon lists may have changed under a card that is already open.
+        LoadoutPanel.RefreshOpen();
+
         Plugin.Logger.LogInformation("Configuration reloaded and applied");
     }
 }

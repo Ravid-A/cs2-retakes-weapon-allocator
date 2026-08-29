@@ -1,10 +1,34 @@
 ## cs2-retakes-weapon-allocator
 
-WeaponsAllocator plugin for retakes written in C# (.NET 8) for CounterStrikeSharp.
+WeaponsAllocator plugin for retakes written in C# (.NET 10) for CounterStrikeSharp.
 
 ## Retakes
 
 This plugin runs alongside B3none's retakes implementation: https://github.com/b3none/cs2-retakes
+
+## Loadout menu
+
+`css_guns`, `css_pistols` and `css_awp` all open the same Panorama card: primary, secondary and
+AWP are three bands of one panel, each with a T row and a CT row, and nothing is written until
+SAVE. Any of the configured `TriggerWords` in chat opens it too.
+
+The card is a Panorama layout, so it lives on the **client**, not in the plugin. The plugin only
+fills it in. The layout source is in `hud/`:
+
+```
+python hud/build_layout.py --tiles 8   # regenerate the layout and its weapon-icon classes
+python hud/check_contract.py           # assert the plugin and the layout still agree on every id
+python hud/make_previews.py            # render it to hud/previews/ in a browser
+```
+
+`--tiles` is the ceiling on a configured weapon list *and* the card width: Panorama cannot wrap
+and the server cannot create panels, so a list longer than the tile count is truncated. Build with
+the number your `Weapons` config actually uses. Changing it means recompiling and redeploying the
+VPK, not just the plugin.
+
+> The retail client still refuses addon-supplied layouts, so today the compiled layout has to
+> reach clients through a `gameinfo.gi` search path. If the layout is missing the plugin logs the
+> failure, keeps allocating weapons, and tells players the menu is unavailable.
 
 ## Config
 
@@ -61,7 +85,6 @@ This is the full default config, generated on first load:
     "WeaponCt": "weapon_usp_silencer"
   },
   "TriggerWords": [ "guns", "gun", "weapon", "weapons" ],
-  "AddSkipOption": true,
   "Weapons": {
     "PrimaryT": [
       { "Item": "weapon_ak47", "DisplayName": "AK-47" },

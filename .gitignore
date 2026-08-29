@@ -4,3 +4,8 @@ build/
 .vscode/
 .idea/
 *.DotSettings.user
+
+# generated preview output and local tooling state
+hud/previews/
+__pycache__/
+.claude/

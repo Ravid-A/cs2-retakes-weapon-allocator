@@ -4,7 +4,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 
 using static RetakesAllocator.Modules.Core;
 using static RetakesAllocator.Modules.Utils;
-using static RetakesAllocator.Modules.Weapons.Menu;
+using RetakesAllocator.Modules.Weapons;
 using static RetakesAllocator.Modules.Votes.Votes;
 using RetakesAllocator.Modules.Votes;
 
@@ -12,15 +12,15 @@ namespace RetakesAllocator.Modules.Handlers;
 
 internal static class Commands
 {
+    private static readonly string[] LoadoutCommands =
+        ["css_guns", "css_pistols", "css_awp"];
+
     public static void RegisterCommands()
     {
-        Plugin.AddCommand("css_guns", "Opens the guns menu", GunsCommand);
-
-        Plugin.AddCommand("css_ct_guns", "Opens the CT guns menu", CTGunsCommand);
-        Plugin.AddCommand("css_t_guns", "Opens the T guns menu", TGunsCommand);
-        Plugin.AddCommand("css_t_pistols", "Opens the pistols menu", PistolsTCommand);
-        Plugin.AddCommand("css_ct_pistols", "Opens the pistols menu", PistolsCTCommand);
-        Plugin.AddCommand("css_awp", "Opens the awps menu", AwpCommand);
+        foreach (var name in LoadoutCommands)
+        {
+            Plugin.AddCommand(name, "Opens the loadout menu", LoadoutCommand);
+        }
 
         Plugin.AddCommand("css_weapons_reload", "Reloads the weapons allocator's weapons configs", ReloadCommand);
         Plugin.AddCommand("css_skip_pistol", "Skips the pistol round", SkipPistolRoundCommand);
@@ -28,165 +28,34 @@ internal static class Commands
 
     public static void UnRegisterCommands()
     {
-        Plugin.RemoveCommand("css_guns", GunsCommand);
-
-        Plugin.RemoveCommand("css_ct_guns", CTGunsCommand);
-        Plugin.RemoveCommand("css_t_guns", TGunsCommand);
-        Plugin.RemoveCommand("css_t_pistols", PistolsTCommand);
-        Plugin.RemoveCommand("css_ct_pistols", PistolsCTCommand);
-        Plugin.RemoveCommand("css_awp", AwpCommand);
+        foreach (var name in LoadoutCommands)
+        {
+            Plugin.RemoveCommand(name, LoadoutCommand);
+        }
 
         Plugin.RemoveCommand("css_weapons_reload", ReloadCommand);
     }
 
-    private static void GunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    /// <summary>
+    /// css_guns, css_pistols and css_awp all open the same card: primary, secondary and AWP are
+    /// three bands of one panel now, not three menus, so there is nothing for them to open
+    /// separately. The names stay because the binds do.
+    /// </summary>
+    private static void LoadoutCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-        
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
+        if (player == null || !player.IsValid)
         {
             ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
-        OpenTPrimaryMenu(player);
-    }
-
-    private static void CTGunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
+        if (FindPlayer(player) == null!)
         {
             ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
             return;
         }
 
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenCTPrimaryMenu(player, false);
-    }
-
-    private static void TGunsCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenTPrimaryMenu(player, false);
-    }
-
-    private static void PistolsTCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenSecondaryTMenu(player, false);
-    }
-
-    private static void PistolsCTCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenSecondaryCTMenu(player, false);
-    }
-
-    private static void AwpCommand(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a player.");
-            return;
-        }
-
-        if (!player.IsValid)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        var playerObj = FindPlayer(player);
-
-        if (playerObj == null!)
-        {
-            ReplyToCommand(commandInfo, $"{Prefix} This command can only be executed by a valid player.");
-            return;
-        }
-
-        OpenGiveAWPMenu(player);
+        LoadoutPanel.Open(player);
     }
 
     [RequiresPermissions(new string[] { "@css/root" })]

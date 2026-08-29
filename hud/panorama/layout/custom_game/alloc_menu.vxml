@@ -1,0 +1,97 @@
+<!--
+  alloc_menu - RetakesAllocator loadout picker. One card, three horizontal bands.
+
+  Primary and Secondary each carry a T row and a CT row of 8 tiles; the plugin fills
+  {s:pt1}..{s:sc8} from Config.Weapons, adds `hidden` past the configured list length and
+  `sel` on the pick. The weapon icon rides on the SAME class the plugin already sets: putting
+  `wi-ak47` on the tile picks the icon up through `.wi-ak47 .am-ico` in weapon_icons.vcss, so a
+  tile needs one id, not two.
+
+  8 tiles is the ceiling for a configured list - Panorama has no wrapping and the server cannot
+  create panels, so raising it is a VPK re-release rather than a plugin update.
+  Clicks arrive as the button ids. `save` writes to the DB, `exit` closes without saving.
+-->
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hudkit.vcss_c" />
+		<include src="s2r://panorama/styles/custom_game/alloc_menu.vcss_c" />
+		<include src="s2r://panorama/styles/custom_game/weapon_icons.vcss_c" />
+	</styles>
+	<Panel class="HudScreen">
+	<Panel id="AllocMenu" class="HudRoot kit-panel am-card">
+		<Panel class="kit-head">
+			<Label class="kit-title" text="{s:title}" />
+			<Label class="kit-tag" text="{s:tag}" />
+			<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="✕" /></Button>
+		</Panel>
+
+		<Panel class="am-body">
+			<Panel class="am-band">
+				<Label class="am-band-h" text="Primary" />
+				<Panel class="am-row">
+					<Label class="am-chip t" text="T" />
+					<Button id="pt1" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt1}" /></Button>
+					<Button id="pt2" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt2}" /></Button>
+					<Button id="pt3" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt3}" /></Button>
+					<Button id="pt4" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt4}" /></Button>
+					<Button id="pt5" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt5}" /></Button>
+					<Button id="pt6" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt6}" /></Button>
+					<Button id="pt7" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt7}" /></Button>
+					<Button id="pt8" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pt8}" /></Button>
+				</Panel>
+				<Panel class="am-row">
+					<Label class="am-chip ct" text="CT" />
+					<Button id="pc1" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc1}" /></Button>
+					<Button id="pc2" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc2}" /></Button>
+					<Button id="pc3" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc3}" /></Button>
+					<Button id="pc4" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc4}" /></Button>
+					<Button id="pc5" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc5}" /></Button>
+					<Button id="pc6" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc6}" /></Button>
+					<Button id="pc7" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc7}" /></Button>
+					<Button id="pc8" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:pc8}" /></Button>
+				</Panel>
+			</Panel>
+			<Panel class="am-band">
+				<Label class="am-band-h" text="Secondary" />
+				<Panel class="am-row">
+					<Label class="am-chip t" text="T" />
+					<Button id="st1" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st1}" /></Button>
+					<Button id="st2" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st2}" /></Button>
+					<Button id="st3" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st3}" /></Button>
+					<Button id="st4" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st4}" /></Button>
+					<Button id="st5" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st5}" /></Button>
+					<Button id="st6" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st6}" /></Button>
+					<Button id="st7" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st7}" /></Button>
+					<Button id="st8" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:st8}" /></Button>
+				</Panel>
+				<Panel class="am-row">
+					<Label class="am-chip ct" text="CT" />
+					<Button id="sc1" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc1}" /></Button>
+					<Button id="sc2" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc2}" /></Button>
+					<Button id="sc3" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc3}" /></Button>
+					<Button id="sc4" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc4}" /></Button>
+					<Button id="sc5" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc5}" /></Button>
+					<Button id="sc6" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc6}" /></Button>
+					<Button id="sc7" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc7}" /></Button>
+					<Button id="sc8" class="am-tile"><Panel class="am-ico" /><Label class="am-tile-l" text="{s:sc8}" /></Button>
+				</Panel>
+			</Panel>
+			<Panel class="am-band am-band-awp">
+				<Label class="am-band-h" text="AWP" />
+				<Panel class="am-row">
+					<Label class="am-chip any" text="⚑" />
+					<Button id="awp1" class="am-tile am-awp never"><Panel class="am-ico am-ico-awp" /><Label class="am-awp-l" text="Never" /></Button>
+					<Button id="awp2" class="am-tile am-awp sometimes"><Panel class="am-ico am-ico-awp" /><Label class="am-awp-l" text="Sometimes" /></Button>
+					<Button id="awp3" class="am-tile am-awp always"><Panel class="am-ico am-ico-awp" /><Label class="am-awp-l" text="Always" /></Button>
+					<Label class="am-hint" text="{s:awphint}" />
+				</Panel>
+			</Panel>
+		</Panel>
+
+		<Panel class="am-foot">
+			<Label class="am-status" text="{s:status}" />
+			<Button id="save" class="am-save"><Label class="am-save-l" text="SAVE" /></Button>
+		</Panel>
+	</Panel>
+	</Panel>
+</root>
