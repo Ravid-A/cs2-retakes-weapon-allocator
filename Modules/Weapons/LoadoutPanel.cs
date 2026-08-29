@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
 using PanoramaManager;
 using RetakesAllocator.Modules.Models;
@@ -54,6 +55,15 @@ public static class LoadoutPanel
         public int SecondaryCt;
         public GiveAwp Awp;
         public bool Dirty;
+
+        /// <summary>
+        /// What was saved last, so a save can tell which slots actually changed and re-issue only
+        /// those. Re-baselined after each save, so saving twice does not re-apply the first edit.
+        /// </summary>
+        public int SavedPrimaryT;
+        public int SavedPrimaryCt;
+        public int SavedSecondaryT;
+        public int SavedSecondaryCt;
     }
 
     public static void Init()
@@ -128,20 +138,28 @@ public static class LoadoutPanel
 
         ClampToLists(draft);
 
+        draft.SavedPrimaryT = draft.PrimaryT;
+        draft.SavedPrimaryCt = draft.PrimaryCt;
+        draft.SavedSecondaryT = draft.SecondaryT;
+        draft.SavedSecondaryCt = draft.SecondaryCt;
+
         Drafts[player.Slot] = draft;
 
-        // A fresh open re-applies every icon class from scratch, so a slot reused by a different
-        // player never inherits the previous occupant's tiles.
-        AppliedIcons.Remove(player.Slot);
-
-        Render(player, draft);
+        // Open BEFORE rendering. Per-player writes made while the panel is not yet open for that
+        // player never reach them - only global state survives - so rendering first draws an empty
+        // card and, worse, leaves AppliedIcons believing it already applied every icon class, which
+        // makes the icons permanently missing rather than merely late.
         _panel.Open(player);
+        Render(player, draft);
     }
 
     public static void OnPlayerDisconnect(int slot)
     {
+        // The draft is per session and goes. The icon record is NOT cleared: it mirrors class state
+        // that lives on the entity per slot, and that outlives both the menu closing and the player
+        // leaving. Forgetting it here would leave the next occupant's tiles wearing two icons,
+        // since we would no longer know which one to take off.
         Drafts.Remove(slot);
-        AppliedIcons.Remove(slot);
     }
 
     /// <summary>Redraws every open card. Used after a config reload changes the weapon lists.</summary>
@@ -174,6 +192,9 @@ public static class LoadoutPanel
         // back - it never saw what those ids meant.
         if (e.Action == PanelAction.Restored)
         {
+            // The entity is a new one, so nothing we ever applied is on it. Drop the icon record
+            // before redrawing or the diff will skip every class it thinks is already set.
+            AppliedIcons.Clear();
             RefreshOpen();
             return;
         }
@@ -246,6 +267,25 @@ public static class LoadoutPanel
         allocator.SecondaryWeaponCt = draft.SecondaryCt;
         allocator.GiveAwp = draft.Awp;
 
+        // Hand the new loadout over now rather than at the next spawn - a menu whose result only
+        // shows up a round later is hard to tell apart from one that did not save. Only the slots
+        // that changed for the team being played are re-issued: editing the CT columns while on T
+        // touches nothing, and changing only the rifle leaves the pistol in hand.
+        var terrorist = player.Team == CsTeam.Terrorist;
+
+        playerObj.ApplyLoadoutChange(
+            primaryChanged: terrorist
+                ? draft.PrimaryT != draft.SavedPrimaryT
+                : draft.PrimaryCt != draft.SavedPrimaryCt,
+            secondaryChanged: terrorist
+                ? draft.SecondaryT != draft.SavedSecondaryT
+                : draft.SecondaryCt != draft.SavedSecondaryCt);
+
+        draft.SavedPrimaryT = draft.PrimaryT;
+        draft.SavedPrimaryCt = draft.PrimaryCt;
+        draft.SavedSecondaryT = draft.SecondaryT;
+        draft.SavedSecondaryCt = draft.SecondaryCt;
+
         draft.Dirty = false;
 
         // Read the CounterStrikeSharp-bound values on the game thread before going async.
@@ -260,32 +300,29 @@ public static class LoadoutPanel
         };
 
         var slot = player.Slot;
-        _panel!.SetVariableFor(player, "status", "Saving...");
+
+        // Close on save. The picks are already live on the allocator, so the card has nothing left
+        // to show, and the confirmation belongs in chat where it survives the panel going away.
+        _panel!.Close(player);
+        PrintToChat(player, $"{Prefix} Loadout saved.");
 
         Task.Run(async () =>
         {
-            string status;
-
             try
             {
                 await Store.SaveUserAsync(pref);
-                status = "Saved to your profile";
+                return;
             }
             catch (Exception e)
             {
                 Plugin.Logger.LogError(e, "Failed to save weapon preferences for {SteamId}", pref.Auth);
-                status = "Could not save - your picks apply to this session only";
             }
 
-            // Native calls are not thread-safe: come back to the game thread before touching the
-            // panel, and only if the player still has it open.
+            // Native calls are not thread-safe: come back to the game thread to talk to the player.
+            // Only the failure is reported here - success was already confirmed above, and making
+            // players wait on a database round trip to see it would be worse.
             Server.NextFrame(() =>
             {
-                if (_panel == null || !Drafts.ContainsKey(slot))
-                {
-                    return;
-                }
-
                 var current = Utilities.GetPlayerFromSlot(slot);
 
                 if (current == null || !current.IsValid)
@@ -293,7 +330,7 @@ public static class LoadoutPanel
                     return;
                 }
 
-                _panel.SetVariableFor(current, "status", status);
+                PrintToChat(current, $"{Prefix} Your loadout could not be stored - it applies to this session only.");
             });
         });
     }

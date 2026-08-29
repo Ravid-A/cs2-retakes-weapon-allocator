@@ -171,15 +171,20 @@
 	background-color: #9ccf4f18;
 }
 .am-save:hover { background-color: #9ccf4f30; brightness: 1.2; sound: "UIPanorama.ButtonRollover"; }
+/* Centring text in a button takes two different properties, and vertical-align is neither of them
+   for the vertical axis: it positions the PANEL within its parent, not the text within the label.
+   Horizontally it is text-align; vertically it is line-height set to the label's own height, which
+   is how Valve does it (popup_capability_can_stattrack_swap: height 256px, line-height 147px).
+   line-height must track .am-save's height - 30px - if that ever changes. */
 .am-save-l
 {
 	width: 100%;
 	height: 100%;
+	line-height: 30px;
 	font-family: Stratum2 Medium Condensed;
 	font-size: 14px;
 	color: #9ccf4f;
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	text-align: center;
-	vertical-align: center;
 }
