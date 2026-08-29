@@ -6,6 +6,39 @@ WeaponsAllocator plugin for retakes written in C# (.NET 10) for CounterStrikeSha
 
 This plugin runs alongside B3none's retakes implementation: https://github.com/b3none/cs2-retakes
 
+## Requirements
+
+- **CounterStrikeSharp on .NET 10** (API 1.0.373 or newer). The loadout menu is driven through
+  [PanoramaManager](https://www.nuget.org/packages/PanoramaManager), which targets `net10.0`, and
+  CounterStrikeSharp itself moved there at 1.0.373.
+- **[MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager)** — required for the
+  loadout menu.
+- **The HUD workshop addon:
+  [Retakes Allocator - HUD](https://steamcommunity.com/sharedfiles/filedetails/?id=3792297574)**
+  (`3792297574`).
+
+The menu is a Panorama layout, which means it is drawn from a file on the **client**. The server
+cannot send it: it can only point at a layout the client already has, then write text into it and
+toggle classes on it. A CS2 server otherwise distributes only its map addon, so MultiAddonManager is
+what gets the layout to players alongside the map.
+
+Add the addon in `game/csgo/cfg/multiaddonmanager/multiaddonmanager.cfg`:
+
+```
+mm_extra_addons 3792297574
+```
+
+The addon is client-side content only, so `mm_client_extra_addons` also works and skips the
+server-side mount, at the cost of applying only to new connections. Either list takes effect on a
+map reload, and clients download the addon when they connect.
+
+Without it the plugin still allocates weapons normally — it logs the failure at load and tells
+players the menu is unavailable, rather than opening nothing.
+
+> The addon carries the compiled layout, so **any change under `hud/` needs the addon republished**
+> and re-downloaded by clients. Ship the plugin and the HUD together: the plugin drives panels by
+> id, and an id it expects that the layout does not have fails silently on both sides.
+
 ## Loadout menu
 
 `css_guns`, `css_pistols` and `css_awp` all open the same Panorama card: primary, secondary and
@@ -24,12 +57,22 @@ python hud/make_previews.py            # render it to hud/previews/ in a browser
 
 `--tiles` is the ceiling on a configured weapon list *and* the card width: Panorama cannot wrap
 and the server cannot create panels, so a list longer than the tile count is truncated. Build with
-the number your `Weapons` config actually uses. Changing it means recompiling and redeploying the
-VPK, not just the plugin.
+the number your `Weapons` config actually uses. Changing it means recompiling and republishing the
+addon, not just the plugin.
 
-> The retail client still refuses addon-supplied layouts, so today the compiled layout has to
-> reach clients through a `gameinfo.gi` search path. If the layout is missing the plugin logs the
-> failure, keeps allocating weapons, and tells players the menu is unavailable.
+### Building the layout
+
+Compiling needs `resourcecompiler.exe`, which ships with CS2 in `game\bin\win64` — Workshop Tools
+is a GUI over it, and is not required:
+
+```
+# stage hud/panorama into content\csgo_addons\retakes_allocator\, then
+.\cs2-panorama-hud\scripts\build-hud.ps1 -Cs2Root "<CS2 install>" -Addon retakes_allocator
+```
+
+Sources are `.xml` and `.css`; the compiler emits `.vxml_c` and `.vcss_c` into the matching
+`game\csgo_addons\...` tree. That compiled `panorama/` folder is what gets published to the
+workshop addon. Publish it from Workshop Tools under the same `retakes_allocator` source folder.
 
 ## Config
 

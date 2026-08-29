@@ -21,16 +21,22 @@ internal static class Events
 
     private static HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
-        if (GetGameRules().WarmupPeriod)
+        var warmup = GetGameRules() is { WarmupPeriod: true };
+
+        // A warmup round still must not count towards the pistol-round tally.
+        if (warmup)
         {
             _ignoreRoundEnd = true;
-            return HookResult.Continue;
         }
 
+        // These two run in warmup as well. The nade pools are shared by every player and refilled
+        // per round, so skipping this while players are spawning drains them across warmup respawns
+        // and never refills; SetupPlayers is what decides who carries the AWP.
         SetupPlayers(Players);
         ResetNades();
 
-        if(CurrentVote != null && CurrentVote.Vote.OnlyHeadshots)
+        // The vote belongs to the match, not to warmup.
+        if(!warmup && CurrentVote != null && CurrentVote.Vote.OnlyHeadshots)
         {
             mp_damage_headshot_only.SetValue(true);
         }
@@ -54,11 +60,9 @@ internal static class Events
 
     private static HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
-        if(GetGameRules().WarmupPeriod)
-        {
-            return HookResult.Continue;
-        }
-
+        // No warmup guard here any more. Newer retakes builds let players spawn during warmup, and
+        // bailing out left them with nothing at all; Timer_GiveWeapons decides what a warmup spawn
+        // gets, which is the same loadout a normal round gives.
         var playerController = @event.Userid;
 
         if (playerController == null! || !playerController.IsValid)
