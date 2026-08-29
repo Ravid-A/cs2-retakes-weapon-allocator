@@ -442,9 +442,9 @@
    the libpanorama.so reference: @keyframes animation, saturation, img-shadow
    glow, sound events. Full audit: docs/PANORAMA_CSS_CAPABILITIES.md
    ============================================================================ */
-@keyframes kit-pulse   { 0% { opacity: 1.0; } 50% { opacity: 0.40; } 100% { opacity: 1.0; } }
-@keyframes kit-shimmer { 0% { brightness: 1.0; } 50% { brightness: 1.5; } 100% { brightness: 1.0; } }
-@keyframes kit-blink   { 0% { opacity: 1.0; } 49% { opacity: 1.0; } 50% { opacity: 0.15; } 100% { opacity: 0.15; } }
+@keyframes 'kit-pulse'   { 0% { opacity: 1.0; } 50% { opacity: 0.40; } 100% { opacity: 1.0; } }
+@keyframes 'kit-shimmer' { 0% { brightness: 1.0; } 50% { brightness: 1.5; } 100% { brightness: 1.0; } }
+@keyframes 'kit-blink'   { 0% { opacity: 1.0; } 49% { opacity: 1.0; } 50% { opacity: 0.15; } 100% { opacity: 0.15; } }
 
 /* urgent/critical — server toggles `pulse`/`shimmer` on low health, ticking timers, a hot item */
 .pulse   { animation-name: kit-pulse;   animation-duration: 1.0s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }

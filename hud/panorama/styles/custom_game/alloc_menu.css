@@ -77,7 +77,7 @@
 	height: 26px;
 	horizontal-align: center;
 	margin-bottom: 4px;
-	background-size: contains;
+	background-size: contain;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	wash-color: #7b838d;
