@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
@@ -134,6 +135,77 @@ public class Allocator(Player player)
             CsItem.SmokeGrenade => nades.HasSmokes(),
             _ => false
         };
+    }
+
+    /// <summary>
+    /// Empties the two slots allocation is about to refill, so giving a loadout twice leaves the
+    /// player with one of each instead of two. Every allocation path only ever gives, so without
+    /// this a duplicated spawn event stacks a second full loadout.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately NOT <c>RemoveWeapons()</c>: that also takes the C4, which the retakes plugin
+    /// hands to a terrorist at round start, before this runs 0.1s after spawn. The bomb has a slot
+    /// of its own and is never cleared here.
+    ///
+    /// The knife IS cleared, because all three paths hand one straight back - the only exception
+    /// being a vote with <c>GiveKnife: false</c>, which now genuinely leaves the player without one
+    /// rather than silently keeping the spawn knife as it did before.
+    /// </remarks>
+    public void ClearAllocatedWeapons()
+    {
+        if (!player.Controller.IsValid || !CCsPlayerController.PawnIsAlive)
+        {
+            return;
+        }
+
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_RIFLE);
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_PISTOL);
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_GRENADES);
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_KNIFE);
+    }
+
+    private bool CanAllocate() =>
+        player.Controller.IsValid
+        && CCsPlayerController.PawnIsAlive
+        && CCsPlayerController.Team is >= CsTeam.Terrorist and <= CsTeam.CounterTerrorist;
+
+    /// <summary>
+    /// Swaps just the primary for the one the loadout now names, leaving the pistol, knife,
+    /// grenades and bomb untouched. Used when a saved loadout changed only that slot.
+    /// </summary>
+    /// <remarks>
+    /// Does nothing while <see cref="ShouldGiveAwp"/> is set: that player's rifle this round came
+    /// from the AWP roll and not from their loadout, so swapping it would quietly take the AWP away.
+    /// </remarks>
+    public void ReplacePrimary()
+    {
+        if (!CanAllocate() || ShouldGiveAwp)
+        {
+            return;
+        }
+
+        var item = CCsPlayerController.Team == CsTeam.Terrorist
+            ? PrimaryT[PrimaryWeaponT].Item
+            : PrimaryCt[PrimaryWeaponCt].Item;
+
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_RIFLE);
+        CCsPlayerController.GiveNamedItem(item);
+    }
+
+    /// <summary>As <see cref="ReplacePrimary"/>, for the pistol slot.</summary>
+    public void ReplaceSecondary()
+    {
+        if (!CanAllocate() || ShouldGiveAwp)
+        {
+            return;
+        }
+
+        var item = CCsPlayerController.Team == CsTeam.Terrorist
+            ? PistolsT[SecondaryWeaponT].Item
+            : PistolsCT[SecondaryWeaponCt].Item;
+
+        CCsPlayerController.RemoveItemBySlot(gear_slot_t.GEAR_SLOT_PISTOL);
+        CCsPlayerController.GiveNamedItem(item);
     }
 
     public void AllocateArmor(bool giveFull = true)
