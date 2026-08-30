@@ -88,17 +88,11 @@ public class Allocator(Player player)
             return;
         }
 
-        // Warmup is not a round: the pools exist to shape a real round's economy, and they are
-        // refilled at round prestart - which fires once for the whole of warmup, so respawns would
-        // drain them dry (and after a mid-warmup plugin load they start empty). Hand out a nade
-        // without counting it against anything.
+        // No nades in warmup. Nobody is playing for anything there, and the pools they would draw
+        // from are refilled at round prestart - which fires once for the whole of warmup, so
+        // warmup spawns would drain what the first real round is entitled to.
         if (Core.GetGameRules() is { WarmupPeriod: true })
         {
-            if (CCsPlayerController.Team is CsTeam.Terrorist or CsTeam.CounterTerrorist)
-            {
-                CCsPlayerController.GiveNamedItem(SelectGrenade());
-            }
-
             return;
         }
 
