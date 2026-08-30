@@ -136,7 +136,7 @@
 {
 	border: 1px solid #f0a531;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #f0a53126 ), to( #f0a5310a ) );
-	box-shadow: #f0a53140 0px 0px 16px 0px;
+	box-shadow: #f0a53128 0px 0px 8px 0px;
 }
 .am-tile.sel .am-ico   { wash-color: #ffd27a; }
 .am-tile.sel .am-tile-l { color: #ffffff; }
@@ -163,10 +163,10 @@
 	letter-spacing: 1.4px;
 	text-align: center;
 }
-.am-awp.never.sel     { border-color: #e0432f; box-shadow: #e0432f40 0px 0px 16px 0px;
+.am-awp.never.sel     { border-color: #e0432f; box-shadow: #e0432f28 0px 0px 8px 0px;
                         background-color: gradient( linear, 0% 0%, 0% 100%, from( #e0432f26 ), to( #e0432f0a ) ); }
-.am-awp.sometimes.sel { border-color: #f0a531; box-shadow: #f0a53140 0px 0px 16px 0px; }
-.am-awp.always.sel    { border-color: #9ccf4f; box-shadow: #9ccf4f40 0px 0px 16px 0px;
+.am-awp.sometimes.sel { border-color: #f0a531; box-shadow: #f0a53128 0px 0px 8px 0px; }
+.am-awp.always.sel    { border-color: #9ccf4f; box-shadow: #9ccf4f28 0px 0px 8px 0px;
                         background-color: gradient( linear, 0% 0%, 0% 100%, from( #9ccf4f26 ), to( #9ccf4f0a ) ); }
 .am-awp.never.sel     .am-awp-l { color: #ff8a75; }
 .am-awp.always.sel    .am-awp-l { color: #b8e07a; }
