@@ -39,6 +39,16 @@ players the menu is unavailable, rather than opening nothing.
 > and re-downloaded by clients. Ship the plugin and the HUD together: the plugin drives panels by
 > id, and an id it expects that the layout does not have fails silently on both sides.
 
+### Branding
+
+The official addon is branded: it ships our logo and colour scheme. If that does not suit
+your server, everything needed to publish your own is in this repository — the layout and
+stylesheets under `hud/` are the full source. Replace `logo.png`, adjust the palette in the
+stylesheets to taste, build as described in [Building the layout](#building-the-layout), and
+publish the result as your own workshop item. Point `mm_extra_addons` and `HudLogoUrl` at it
+and the plugin works with it unchanged — it only drives panel ids and dialog variables, and
+takes no dependency on the artwork.
+
 ## Loadout menu
 
 `css_guns`, `css_pistols` and `css_awp` all open the same Panorama card: primary, secondary and
