@@ -48,8 +48,9 @@ SCENARIOS = [
 
 AWP_HINT = "How often you take the AWP when you win the roll."
 
-# Stands in for whatever Config.HudLogoUrl points at. The plugin writes the string straight into
-# {s:logo} and the client resolves it, so what goes here is exactly what goes in the config.
+# The same picture the addon ships as panorama/images/custom_game/logo.png, served over http here
+# because a browser cannot resolve the s2r:// path the config actually holds - Panorama resolves
+# that against mounted addon content, and does not fetch over the network at all.
 SAMPLE_LOGO = "https://i.imgur.com/8IWBf6s.png"
 
 
@@ -304,6 +305,10 @@ def main():
 
     # The browser cannot honour Panorama's visibility:visible over a collapse the translator turned
     # into display:none, and it drops the Image src along with the tag - so the logo is painted here.
+    # horizontal-/vertical-align on the save label translate to auto-margins and align-self, which
+    # only bite inside a flex parent - in Panorama the button positions its child without one.
+    css.append('.am-save,.kit-btn{display:flex}')
+
     css.append('/* ---- preview-only: the header logo ---- */'
                '.logo-on .am-logo{display:block;background-size:contain;'
                'background-position:50% 50%;background-repeat:no-repeat;'

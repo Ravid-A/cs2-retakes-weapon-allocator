@@ -10,17 +10,38 @@
 /* ---------- server logo, before the title ---------- */
 /* An <Image>, not a background: the picture is a string the plugin sends (Config.HudLogoUrl into
    {s:logo}), and CSS cannot take a runtime string. Collapsed until SetVariant("logo", "on") puts
-   `logo-on` on the root, so a server that configures no logo gets no gap rather than a 20px hole
-   where a picture failed to load. */
+   `logo-on` on the root, so a server that configures no logo gets no gap rather than a hole where
+   a picture failed to load.
+
+   Panorama scales the image to the panel with no object-fit to fall back on, so this box IS the
+   aspect ratio: 38x20 fits the shipped 340x178 mark. A logo of another shape wants these two
+   numbers changed, and nothing else. */
 .am-logo
 {
-	width: 20px;
+	width: 38px;
 	height: 20px;
 	margin-right: 9px;
 	vertical-align: center;
 	visibility: collapse;
 }
 .logo-on .am-logo { visibility: visible; }
+
+/* The logo lives HERE, beside the stylesheets, and not under panorama/images where it belongs:
+   Workshop Tools packs only panorama/layout and panorama/styles, so an image anywhere else is
+   silently left out of the published VPK. Verified by putting the same texture in both folders and
+   watching which one the publish dialog listed.
+
+   The url() is also load-bearing rather than decorative - the plugin names the picture at runtime,
+   and a string sent over the wire is invisible to the packer, so this reference is what keeps the
+   texture in the addon's dependency graph. It draws too: if `src` fails to resolve, the header
+   falls back to the shipped logo instead of an empty box. */
+.am-logo
+{
+	background-image: url( "s2r://panorama/styles/custom_game/logo.png" );
+	background-size: contain;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
 
 .am-body
 {
@@ -188,20 +209,18 @@
 	background-color: #9ccf4f18;
 }
 .am-save:hover { background-color: #9ccf4f30; brightness: 1.2; sound: "UIPanorama.ButtonRollover"; }
-/* Centring text in a button takes two different properties, and vertical-align is neither of them
-   for the vertical axis: it positions the PANEL within its parent, not the text within the label.
-   Horizontally it is text-align; vertically it is line-height set to the label's own height, which
-   is how Valve does it (popup_capability_can_stattrack_swap: height 256px, line-height 147px).
-   line-height must track .am-save's height - 30px - if that ever changes. */
+/* Centring a label in a button: size the label to its TEXT and centre it as a panel, the same
+   horizontal-align/vertical-align pair that centres .HudRoot in .HudScreen. The width/height 100%
+   + line-height approach reads right in the browser preview but not in game - a label stretched
+   over the whole button cannot be positioned, and its text sits on the top baseline. No width, no
+   height, no line-height: the alignment pair needs the label at its natural size to mean anything. */
 .am-save-l
 {
-	width: 100%;
-	height: 100%;
-	line-height: 30px;
+	horizontal-align: center;
+	vertical-align: center;
 	font-family: Stratum2 Medium Condensed;
 	font-size: 14px;
 	color: #9ccf4f;
 	text-transform: uppercase;
 	letter-spacing: 2px;
-	text-align: center;
 }

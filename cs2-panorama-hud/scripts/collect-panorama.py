@@ -43,6 +43,9 @@ def sources(root):
     return found
 
 
+SOURCES = {".xml", ".css", ".vtex", ".svg", ".png", ".jpg"}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Assemble panorama files from every project.")
     ap.add_argument("--out", required=True, help="addon content directory; panorama/ is written into it")
@@ -71,7 +74,8 @@ def main():
         print(f"  from {base.relative_to(root)}")
 
         for src in sorted(base.rglob("*")):
-            if not src.is_file() or src.suffix not in {".xml", ".css"}:
+            # .png/.jpg ride along as the input a .vtex names; they are not compiled on their own.
+            if not src.is_file() or src.suffix not in SOURCES:
                 continue
 
             key = str(src.relative_to(base))

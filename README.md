@@ -105,12 +105,30 @@ weapon preferences won't load or persist — so make sure `DbConnection` is corr
 
 ### HUD logo
 
-`HudLogoUrl` puts a picture in the loadout card header, before the title. The
-plugin only writes the string; the client resolves it, so the safe values are
-paths the client already has - `s2r://panorama/images/...` from the game, or a
-`file://{images}/...` file your HUD addon ships. A remote `https://` URL is worth
-trying but unproven; if it comes up blank in game, that is why. Leave it empty and
-the logo panel collapses, leaving the header exactly as it was.
+`HudLogoUrl` puts a picture in the loadout card header, before the title:
+
+```json
+"HudLogoUrl": "s2r://panorama/styles/custom_game/logo.png"
+```
+
+**It is not a URL.** Panorama never fetches over the network - an `https://` address
+draws nothing, silently. The plugin only writes the string; the client resolves it
+against content it already has, so the value is a path into a mounted addon.
+
+To use your own logo, replace `hud/panorama/styles/custom_game/logo.png`, keep
+`logo_png.vtex` beside it (that file is what tells resourcecompiler to compile the
+PNG - there is no compiler for a bare `.png`), rebuild the addon and republish it.
+The `_png` in that filename is load-bearing: a reference to `logo.png` is resolved
+by the engine to `logo_png.vtex_c`, so the definition has to be named for the source
+extension or the texture is compiled under a name nothing looks for. The
+picture sits with the stylesheets rather than under `panorama/images` because
+Workshop Tools packs only `panorama/layout` and `panorama/styles` - an image
+anywhere else never reaches the published VPK. The box
+is `38x20` in `alloc_menu.css`, sized to the shipped mark's aspect ratio; Panorama
+scales the image to the panel, so a logo of another shape wants those two numbers
+changed.
+
+Leave it empty and the logo panel collapses, leaving the header exactly as it was.
 
 ### Example config
 

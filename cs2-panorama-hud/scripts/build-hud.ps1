@@ -66,9 +66,11 @@ function Build {
         if ($LASTEXITCODE -ne 0) { throw 'Collect failed - see the conflict above.' }
     }
 
-    $sources = Get-ChildItem -Path $contentDir -Recurse -Include *.xml, *.css -File
+    # .vtex is the compile definition for a raster image - resourcecompiler has no compiler for a
+    # bare .png, so a picture ships as <name>.png plus a <name>.vtex that names it.
+    $sources = Get-ChildItem -Path $contentDir -Recurse -Include *.xml, *.css, *.vtex, *.svg -File
 
-    if (-not $sources) { throw "No .xml or .css under $contentDir" }
+    if (-not $sources) { throw "Nothing compilable under $contentDir" }
 
     Write-Host "`n[1/2] Compiling $($sources.Count) file(s)" -ForegroundColor Cyan
 
@@ -84,7 +86,7 @@ function Build {
         Write-Host "      $($src.Name)" -ForegroundColor DarkGray
     }
 
-    $compiled = Get-ChildItem -Path $gameDir -Recurse -Include *.vxml_c, *.vcss_c -File -ErrorAction SilentlyContinue
+    $compiled = Get-ChildItem -Path $gameDir -Recurse -Include *.vxml_c, *.vcss_c, *.vtex_c, *.vsvg_c -File -ErrorAction SilentlyContinue
 
     if (-not $compiled) {
         throw "Nothing compiled into $gameDir. The compiler ran but produced no _c files - check its output above."
@@ -126,7 +128,7 @@ if ($Watch) {
         $change = $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::All, 1000)
 
         if ($change.TimedOut) { continue }
-        if ($change.Name -notmatch '\.(xml|css)$') { continue }
+        if ($change.Name -notmatch '\.(xml|css|vtex|svg)$') { continue }
 
         Start-Sleep -Milliseconds 250
         while (-not $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::All, 150).TimedOut) { }
