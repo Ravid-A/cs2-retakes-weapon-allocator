@@ -26,16 +26,6 @@ public class RetakesAllocatorConfig : BasePluginConfig
     [JsonPropertyName("TriggerWords")]
     public string[] TriggerWords { get; set; } = { "guns", "gun", "weapon", "weapons" };
 
-    /// <summary>
-    /// Picture shown in the loadout card header, before the title. NOT a URL: Panorama does not
-    /// fetch over the network, it resolves the string against the content the client already has.
-    /// So this is a path into the mounted addons - `s2r://panorama/styles/custom_game/logo.png`
-    /// for the picture this repo's HUD addon ships, or any `s2r://panorama/images/...` file from
-    /// the game itself. Empty hides the logo panel entirely.
-    /// </summary>
-    [JsonPropertyName("HudLogoUrl")]
-    public string HudLogoUrl { get; set; } = "";
-
     [JsonPropertyName("Weapons")]
     public WeaponsSection Weapons { get; set; } = new();
 

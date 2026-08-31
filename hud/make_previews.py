@@ -48,9 +48,9 @@ SCENARIOS = [
 
 AWP_HINT = "How often you take the AWP when you win the roll."
 
-# The same picture the addon ships as panorama/images/custom_game/logo.png, served over http here
-# because a browser cannot resolve the s2r:// path the config actually holds - Panorama resolves
-# that against mounted addon content, and does not fetch over the network at all.
+# The same picture the addon ships as panorama/styles/custom_game/logo.png, served over http here
+# because a browser cannot resolve the s2r:// path the stylesheet holds - Panorama resolves that
+# against mounted addon content, and does not fetch over the network at all.
 SAMPLE_LOGO = "https://i.imgur.com/8IWBf6s.png"
 
 
@@ -128,15 +128,11 @@ def inline_icons(css_text):
                    sub, css_text)
 
 
-def fill(tree, lists, picked, awp, logo=False):
+def fill(tree, lists, picked, awp):
     """Do to the tree exactly what the plugin does to the live panel."""
     vals = {"title": "Retakes \u00b7 Loadout", "tag": "!guns",
-            "status": "Unsaved changes", "awphint": AWP_HINT,
-            "logo": SAMPLE_LOGO}
+            "status": "Unsaved changes", "awphint": AWP_HINT}
 
-    if logo:
-        root = next(n for n in tree.iter() if n.get("id") == "AllocMenu")
-        root.set("class", root.get("class", "") + " logo-on")     # what SetVariant("logo","on") does
     for prefix, weapons in lists.items():
         for i, (_item, name) in enumerate(weapons, 1):
             vals[f"{prefix}{i}"] = name
@@ -303,22 +299,18 @@ def main():
     for name in ("hudkit.css", "alloc_menu.css", "weapon_icons.css"):
         css.append(f"/* ---- {name} ---- */\n" + pv.translate_css(inline_icons((STYLES / name).read_text(encoding="utf-8"))))
 
-    # The browser cannot honour Panorama's visibility:visible over a collapse the translator turned
-    # into display:none, and it drops the Image src along with the tag - so the logo is painted here.
     # horizontal-/vertical-align on the save label translate to auto-margins and align-self, which
     # only bite inside a flex parent - in Panorama the button positions its child without one.
     css.append('.am-save,.kit-btn{display:flex}')
 
+    # The s2r:// texture is unreachable from a browser, so the http copy stands in for it.
     css.append('/* ---- preview-only: the header logo ---- */'
-               '.logo-on .am-logo{display:block;background-size:contain;'
-               'background-position:50% 50%;background-repeat:no-repeat;'
-               f'background-image:url("{SAMPLE_LOGO}")' + '}')
+               f'.am-logo{{background-image:url("{SAMPLE_LOGO}")}}')
 
     cards = []
-    # First card carries a logo, second does not: both halves of Config.HudLogoUrl in one page.
-    for i, (title, blurb, pt, pc, st, sc, picked, awp) in enumerate(SCENARIOS):
+    for title, blurb, pt, pc, st, sc, picked, awp in SCENARIOS:
         tree = ET.fromstring(LAYOUT.read_text(encoding="utf-8"))
-        fill(tree, {"pt": pt, "pc": pc, "st": st, "sc": sc}, picked, awp, logo=i == 0)
+        fill(tree, {"pt": pt, "pc": pc, "st": st, "sc": sc}, picked, awp)
         out = []
         for child in tree:
             if child.tag != "styles":

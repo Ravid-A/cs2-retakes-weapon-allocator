@@ -88,7 +88,6 @@ public static class LoadoutPanel
             _panel.Title = "Retakes · Loadout";
             _panel.Subtitle = TriggerHint();
             _panel.SetVariable("awphint", "How often you take the AWP when you win the roll.");
-            SetLogo(Core.Config.HudLogoUrl);
             _panel.OnEvent += OnEvent;
 
             Plugin.Logger.LogInformation("Loadout panel spawned from {Layout}", LayoutPath);
@@ -163,26 +162,6 @@ public static class LoadoutPanel
         Drafts.Remove(slot);
     }
 
-    /// <summary>
-    /// Point the header logo at whatever the config names, or take it off the card when nothing is
-    /// configured. The image is one string the client resolves itself, so an unresolvable path
-    /// draws nothing and reports nothing - the same failure as a typo'd icon.
-    ///
-    /// The reveal is a variant rather than a class on the image, because a class toggle that is the
-    /// same for everyone belongs on the root: the library replays variants for anyone who opens the
-    /// card later, and per-player writes it does not.
-    ///
-    /// Handle-level, not per player: every viewer sees the same server logo, and handle state is
-    /// what the library restores by itself after a round restart destroys the entity.
-    /// </summary>
-    private static void SetLogo(string? url)
-    {
-        var logo = url?.Trim() ?? string.Empty;
-
-        _panel!.SetVariable("logo", logo);
-        _panel.SetVariant("logo", logo.Length == 0 ? null : "on");
-    }
-
     /// <summary>Redraws every open card. Used after a config reload changes the weapon lists.</summary>
     public static void RefreshOpen()
     {
@@ -190,9 +169,6 @@ public static class LoadoutPanel
         {
             return;
         }
-
-        // A reload can have changed the logo as easily as the weapon lists.
-        SetLogo(Core.Config.HudLogoUrl);
 
         foreach (var (slot, draft) in Drafts.ToArray())
         {

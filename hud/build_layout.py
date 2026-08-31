@@ -75,9 +75,8 @@ xml = f'''<!--
   create panels, so raising it is a VPK re-release rather than a plugin update.
   Clicks arrive as the button ids. `save` writes to the DB, `exit` closes without saving.
 
-  The header logo is the one picture the server picks: Config.HudLogoUrl goes into {{s:logo}}, and
-  `logo-on` on the root reveals it. Collapsed by default, so a server that configures no logo gets
-  no gap. Panorama resolves the string itself - s2r:// and file:// paths are the sure things.
+  The header logo is a plain panel: the addon ships the picture, so alloc_menu.css paints it
+  as a background and nothing about it is configurable at runtime.
 -->
 <root>
 \t<styles>
@@ -88,7 +87,7 @@ xml = f'''<!--
 \t<Panel class="HudScreen">
 \t<Panel id="AllocMenu" class="HudRoot kit-panel am-card">
 \t\t<Panel class="kit-head">
-\t\t\t<Image id="logo" class="am-logo" src="{{s:logo}}" />
+\t\t\t<Panel class="am-logo" />
 \t\t\t<Label class="kit-title" text="{{s:title}}" />
 \t\t\t<Label class="kit-tag" text="{{s:tag}}" />
 \t\t\t<Button id="exit" class="kit-exit"><Label class="kit-nav-x" text="\u2715" /></Button>

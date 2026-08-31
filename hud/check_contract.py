@@ -46,9 +46,9 @@ def main() -> int:
         items |= set(re.findall(r'"(weapon_[a-z0-9_]+)"', (REPO / source).read_text(encoding="utf-8")))
 
     checks = [
-        ("panel ids", tiles | {f"awp{i}" for i in (1, 2, 3)} | {"save", "exit", "logo", "AllocMenu"}, ids),
-        ("dialog variables", tiles | {"title", "tag", "status", "awphint", "logo"}, variables),
-        ("state classes", {"sel", "hidden", "show", "logo-on"}, classes),
+        ("panel ids", tiles | {f"awp{i}" for i in (1, 2, 3)} | {"save", "exit", "AllocMenu"}, ids),
+        ("dialog variables", tiles | {"title", "tag", "status", "awphint"}, variables),
+        ("state classes", {"sel", "hidden", "show"}, classes),
         ("icon classes", {"wi-" + i[len("weapon_"):] for i in items}, classes),
     ]
 

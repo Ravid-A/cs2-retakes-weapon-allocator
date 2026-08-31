@@ -45,9 +45,9 @@ The official addon is branded: it ships our logo and colour scheme. If that does
 your server, everything needed to publish your own is in this repository — the layout and
 stylesheets under `hud/` are the full source. Replace `logo.png`, adjust the palette in the
 stylesheets to taste, build as described in [Building the layout](#building-the-layout), and
-publish the result as your own workshop item. Point `mm_extra_addons` and `HudLogoUrl` at it
-and the plugin works with it unchanged — it only drives panel ids and dialog variables, and
-takes no dependency on the artwork.
+publish the result as your own workshop item. Point `mm_extra_addons` at it and the plugin
+works with it unchanged — it only drives panel ids and dialog variables, and takes no
+dependency on the artwork.
 
 ## Loadout menu
 
@@ -115,17 +115,10 @@ weapon preferences won't load or persist — so make sure `DbConnection` is corr
 
 ### HUD logo
 
-`HudLogoUrl` puts a picture in the loadout card header, before the title:
+The logo in the loadout card header ships with the addon, painted as a background by
+`alloc_menu.css` — there is no config for it.
 
-```json
-"HudLogoUrl": "s2r://panorama/styles/custom_game/logo.png"
-```
-
-**It is not a URL.** Panorama never fetches over the network - an `https://` address
-draws nothing, silently. The plugin only writes the string; the client resolves it
-against content it already has, so the value is a path into a mounted addon.
-
-To use your own logo, replace `hud/panorama/styles/custom_game/logo.png`, keep
+To use your own, replace `hud/panorama/styles/custom_game/logo.png`, keep
 `logo_png.vtex` beside it (that file is what tells resourcecompiler to compile the
 PNG - there is no compiler for a bare `.png`), rebuild the addon and republish it.
 The `_png` in that filename is load-bearing: a reference to `logo.png` is resolved
@@ -137,8 +130,6 @@ anywhere else never reaches the published VPK. The box
 is `38x20` in `alloc_menu.css`, sized to the shipped mark's aspect ratio; Panorama
 scales the image to the panel, so a logo of another shape wants those two numbers
 changed.
-
-Leave it empty and the logo panel collapses, leaving the header exactly as it was.
 
 ### Example config
 
@@ -166,7 +157,6 @@ This is the full default config, generated on first load:
     "WeaponCt": "weapon_usp_silencer"
   },
   "TriggerWords": [ "guns", "gun", "weapon", "weapons" ],
-  "HudLogoUrl": "",
   "Weapons": {
     "PrimaryT": [
       { "Item": "weapon_ak47", "DisplayName": "AK-47" },

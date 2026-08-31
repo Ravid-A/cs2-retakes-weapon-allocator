@@ -7,11 +7,13 @@
 
 
 
-/* ---------- server logo, before the title ---------- */
-/* An <Image>, not a background: the picture is a string the plugin sends (Config.HudLogoUrl into
-   {s:logo}), and CSS cannot take a runtime string. Collapsed until SetVariant("logo", "on") puts
-   `logo-on` on the root, so a server that configures no logo gets no gap rather than a hole where
-   a picture failed to load.
+/* ---------- logo, before the title ---------- */
+/* The addon ships the picture, so it is a static background rather than a string the plugin sends.
+
+   It lives HERE, beside the stylesheets, and not under panorama/images where it belongs: Workshop
+   Tools packs only panorama/layout and panorama/styles, so an image anywhere else is silently left
+   out of the published VPK. Verified by putting the same texture in both folders and watching which
+   one the publish dialog listed.
 
    Panorama scales the image to the panel with no object-fit to fall back on, so this box IS the
    aspect ratio: 38x20 fits the shipped 340x178 mark. A logo of another shape wants these two
@@ -22,21 +24,6 @@
 	height: 20px;
 	margin-right: 9px;
 	vertical-align: center;
-	visibility: collapse;
-}
-.logo-on .am-logo { visibility: visible; }
-
-/* The logo lives HERE, beside the stylesheets, and not under panorama/images where it belongs:
-   Workshop Tools packs only panorama/layout and panorama/styles, so an image anywhere else is
-   silently left out of the published VPK. Verified by putting the same texture in both folders and
-   watching which one the publish dialog listed.
-
-   The url() is also load-bearing rather than decorative - the plugin names the picture at runtime,
-   and a string sent over the wire is invisible to the packer, so this reference is what keeps the
-   texture in the addon's dependency graph. It draws too: if `src` fails to resolve, the header
-   falls back to the shipped logo instead of an empty box. */
-.am-logo
-{
 	background-image: url( "s2r://panorama/styles/custom_game/logo.png" );
 	background-size: contain;
 	background-position: 50% 50%;
