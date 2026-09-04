@@ -41,9 +41,9 @@ public static class LoadoutPanel
     private static readonly Dictionary<int, Draft> Drafts = new();
 
     /// <summary>
-    /// The icon class currently applied to each tile, per player. Classes only toggle, so a config
-    /// reload that puts a different weapon in a slot has to take the stale icon off before putting
-    /// the new one on - otherwise the tile wears both.
+    /// The icon class currently applied to each tile, per player, for the current open session
+    /// only. Classes only toggle, so a config reload that puts a different weapon in a slot has to
+    /// take the stale icon off before putting the new one on - otherwise the tile wears both.
     /// </summary>
     private static readonly Dictionary<int, Dictionary<string, string>> AppliedIcons = new();
 
@@ -150,16 +150,20 @@ public static class LoadoutPanel
         // card and, worse, leaves AppliedIcons believing it already applied every icon class, which
         // makes the icons permanently missing rather than merely late.
         _panel.Open(player);
+
+        // Since PanoramaManager 0.3 Open strips every class the library ever turned on for this
+        // slot, so the tiles are bare now whatever this record says. Forget it before drawing or
+        // the diff below skips every icon it believes is still applied.
+        AppliedIcons.Remove(player.Slot);
         Render(player, draft);
     }
 
     public static void OnPlayerDisconnect(int slot)
     {
-        // The draft is per session and goes. The icon record is NOT cleared: it mirrors class state
-        // that lives on the entity per slot, and that outlives both the menu closing and the player
-        // leaving. Forgetting it here would leave the next occupant's tiles wearing two icons,
-        // since we would no longer know which one to take off.
+        // The library scrubs the slot's classes itself on leave and on the next Open, so nothing
+        // recorded here can outlive the session it was drawn in.
         Drafts.Remove(slot);
+        AppliedIcons.Remove(slot);
     }
 
     /// <summary>Redraws every open card. Used after a config reload changes the weapon lists.</summary>
