@@ -105,6 +105,14 @@ public static class Utils
         var playerObj = new Player(player);
         Players[playerObj.Slot] = playerObj;
 
+        // Still connected across a map change: keep what they chose on the last map rather
+        // than re-reading a database row that may not have caught up yet.
+        if (TakeCarriedPreferences(playerObj.GetSteamId2()) is { } carried)
+        {
+            ApplyPreferences(playerObj, carried);
+            return;
+        }
+
         if (Store is null)
         {
             // The database failed to initialise; run with in-memory defaults.
@@ -204,27 +212,13 @@ public static class Utils
         }
 
         // Snapshot all values on the game thread before going async.
-        var auth = playerObj.GetSteamId2();
+        var pref = SnapshotPreferences(playerObj);
 
-        if (auth.Length == 0)
+        if (pref is null)
         {
             // Never authorized (or already gone) — nothing we can key a row on.
             return;
         }
-
-        var allocator = playerObj.WeaponsAllocator;
-        var pref = new WeaponPreference
-        {
-            Auth = auth,
-            Name = playerObj.GetName(),
-            TPrimary = allocator.PrimaryWeaponT,
-            CtPrimary = allocator.PrimaryWeaponCt,
-            TSecondary = allocator.SecondaryWeaponT,
-            CtSecondary = allocator.SecondaryWeaponCt,
-            TPistolRound = allocator.PistolRoundWeaponT,
-            CtPistolRound = allocator.PistolRoundWeaponCt,
-            GiveAwp = (int)allocator.GiveAwp,
-        };
 
         var store = Store;
 
@@ -253,6 +247,94 @@ public static class Utils
                 Plugin.Logger.LogError(e, "Failed to save weapon preferences for {SteamId}", pref.Auth);
             }
         });
+    }
+
+    /// <summary>
+    /// Preferences of the players who were connected when the map changed, keyed by SteamID2.
+    /// Players stay connected through a map change, so no disconnect save runs for them, and
+    /// OnMapStart used to drop their in-memory choices and reload the stale database row.
+    /// </summary>
+    private static readonly Dictionary<string, WeaponPreference> CarriedPreferences = new(StringComparer.Ordinal);
+
+    private static long _carriedAt;
+
+    // Long enough for a slow client to load the next map; after that the saved row is current.
+    private const long CarryLifetimeMs = 180_000;
+
+    /// <summary>
+    /// Called on map start before the tracked players are cleared: saves every tracked
+    /// player's preferences and keeps them in memory for when that player is re-added.
+    /// </summary>
+    public static void CarryPreferencesOverMapChange()
+    {
+        CarriedPreferences.Clear();
+        _carriedAt = Environment.TickCount64;
+
+        foreach (var tracked in Players.Values.ToArray())
+        {
+            var pref = SnapshotPreferences(tracked);
+
+            if (pref is null)
+            {
+                continue;
+            }
+
+            CarriedPreferences[pref.Auth] = pref;
+
+            var store = Store;
+
+            if (store is null)
+            {
+                continue;
+            }
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await store.SaveUserAsync(pref);
+                }
+                catch (Exception e)
+                {
+                    Plugin.Logger.LogError(e, "Failed to save weapon preferences for {SteamId}", pref.Auth);
+                }
+            });
+        }
+    }
+
+    private static WeaponPreference? TakeCarriedPreferences(string auth)
+    {
+        if (auth.Length == 0 || !CarriedPreferences.Remove(auth, out var carried))
+        {
+            return null;
+        }
+
+        return Environment.TickCount64 - _carriedAt <= CarryLifetimeMs ? carried : null;
+    }
+
+    private static WeaponPreference? SnapshotPreferences(Player playerObj)
+    {
+        var auth = playerObj.GetSteamId2();
+
+        if (auth.Length == 0)
+        {
+            return null;
+        }
+
+        var allocator = playerObj.WeaponsAllocator;
+
+        return new WeaponPreference
+        {
+            Auth = auth,
+            Name = playerObj.GetName(),
+            TPrimary = allocator.PrimaryWeaponT,
+            CtPrimary = allocator.PrimaryWeaponCt,
+            TSecondary = allocator.SecondaryWeaponT,
+            CtSecondary = allocator.SecondaryWeaponCt,
+            TPistolRound = allocator.PistolRoundWeaponT,
+            CtPistolRound = allocator.PistolRoundWeaponCt,
+            GiveAwp = (int)allocator.GiveAwp,
+        };
     }
 
     public static CCSPlayerController[] ValidPlayers(bool considerBots = false)

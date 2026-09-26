@@ -30,6 +30,7 @@ internal static class Listeners
         InvalidateGameRules();
 
         RoundsCounter = 0;
+        CarryPreferencesOverMapChange();
         Players.Clear();
         ResetState();
         ClearHeadshotOnly();
