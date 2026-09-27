@@ -8,9 +8,9 @@ This plugin runs alongside B3none's retakes implementation: https://github.com/b
 
 ## Requirements
 
-- **CounterStrikeSharp on .NET 10** (API 1.0.373 or newer). The loadout menu is driven through
-  [PanoramaManager](https://www.nuget.org/packages/PanoramaManager), which targets `net10.0`, and
-  CounterStrikeSharp itself moved there at 1.0.373.
+- **CounterStrikeSharp on .NET 10** (API 1.0.374 or newer). The loadout menu is driven through
+  [PanoramaManager](https://www.nuget.org/packages/PanoramaManager), which drives the HUD through
+  CounterStrikeSharp's `CCSCustomHudLayout` API, added in 1.0.374.
 - **[MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager)** — required for the
   loadout menu.
 - **The HUD workshop addon:
